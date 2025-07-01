@@ -3,7 +3,6 @@ package com.capstone.HRMS.Controller;
 import com.capstone.HRMS.Entity.Role;
 import com.capstone.HRMS.Entity.Users;
 import com.capstone.HRMS.Repository.UserRepo;
-import com.capstone.HRMS.Service.AdminService;
 import com.capstone.HRMS.Service.EmployeeService;
 import com.capstone.HRMS.Service.HRService;
 import lombok.RequiredArgsConstructor;
@@ -17,37 +16,33 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/hr")
 @RequiredArgsConstructor
-public class AdminController {
-
-    private final AdminService adminService;
+public class HRController {
     private final HRService hrService;
     private final EmployeeService employeeService;
     private final UserRepo userRepo;
 
-
-
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody Users loginRequest) { // Renamed to 'loginRequest' for clarity
-        String result = adminService.verify(loginRequest, Role.ADMIN); // Role.ADMIN is passed by the server
+    public ResponseEntity<Map<String, Object>> login(@RequestBody Users loginRequest) {
+        String result = hrService.verify(loginRequest, Role.HR);
 
         if (result.equals("failed") || result.equals("unauthorized")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("error", "Authentication failed"));
         }
 
-        Optional<Users> dbAdminOpt = userRepo.findByUsername(loginRequest.getUsername());
-        if (dbAdminOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", "Admin not found"));
+        Optional<Users> dbHrOpt = userRepo.findByUsername(loginRequest.getUsername());
+        if (dbHrOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", "Employee not found"));
         }
 
-        Users dbAdmin = dbAdminOpt.get();
+        Users dbHr = dbHrOpt.get();
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", result);
-        response.put("role", dbAdmin.getRole().name()); // Role comes from DB, not request
-        response.put("username", dbAdmin.getUsername());
-        response.put("userId", dbAdmin.getUserId());
+        response.put("role", dbHr.getRole().name());
+        response.put("username", dbHr.getUsername());
+        response.put("userId", dbHr.getUserId());
 
         return ResponseEntity.ok(response);
     }
