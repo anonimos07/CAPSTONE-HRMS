@@ -29,8 +29,8 @@ public class AdminController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody Users loginRequest) { // Renamed to 'loginRequest' for clarity
-        String result = adminService.verify(loginRequest, Role.ADMIN); // Role.ADMIN is passed by the server
+    public ResponseEntity<Map<String, Object>> login(@RequestBody Users loginRequest) {
+        String result = adminService.verify(loginRequest, Role.ADMIN);
 
         if (result.equals("failed") || result.equals("unauthorized")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("error", "Authentication failed"));
@@ -45,7 +45,7 @@ public class AdminController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", result);
-        response.put("role", dbAdmin.getRole().name()); // Role comes from DB, not request
+        response.put("role", dbAdmin.getRole().name());
         response.put("username", dbAdmin.getUsername());
         response.put("userId", dbAdmin.getUserId());
 

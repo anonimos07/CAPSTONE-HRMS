@@ -66,11 +66,11 @@ public class EmployeeService {
 
         if (details == null) {
             details = new EmployeeDetails();
-            details.setUser(employee); // Set the bidirectional relationship
+            details.setUser(employee);
             employee.setEmployeeDetails(details);
         }
 
-        // Update all fields, checking for null to avoid overwriting with null unintentionally
+
         if (updatedData.getFirstName() != null) {
             details.setFirstName(updatedData.getFirstName());
         }

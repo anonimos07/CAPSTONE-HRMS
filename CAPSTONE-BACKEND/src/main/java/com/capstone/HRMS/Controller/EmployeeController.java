@@ -66,7 +66,7 @@ public class EmployeeController {
 
             EmployeeDetails empDetails = employeeOptional.get().getEmployeeDetails();
 
-            // Handle case where employeeDetails is null
+
             if (empDetails == null) {
                 return ResponseEntity.ok(Map.of(
                         "message", "Employee details not yet created"
