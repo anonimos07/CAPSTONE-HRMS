@@ -44,12 +44,47 @@ export const ApplicationForm = () => {
     setFormData(prev => ({ ...prev, file: e.target.files[0] }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Application submitted successfully!');
-    navigate('/');
-  };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+   const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+  const file = formData.file;
+
+  if (!allowedTypes.includes(file.type)) {
+    alert("Only PDF, DOC, and DOCX files are allowed!");
+    return;
+  }
+
+  const formDataToSend = new FormData();
+  formDataToSend.append('position', formData.position);
+  formDataToSend.append('email', formData.email);
+  formDataToSend.append('contact', formData.contact);
+  formDataToSend.append('fullName', formData.fullName);
+  formDataToSend.append('file', formData.file);
+
+  try {
+    const response = await fetch('http://localhost:8080/api/applications/submit', {
+      method: 'POST',
+      body: formDataToSend,
+      // Remove "Content-Type": "application/json" (let browser set it)
+      // Remove "credentials: 'include'" (not needed for public endpoints)
+    });
+
+    if (response.ok) {
+      alert('Application submitted successfully!');
+      navigate('/');
+    } else {
+      const errorText = await response.text();
+      console.error('Submission error:', errorText);
+      alert(`Failed to submit: ${errorText}`);
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+    alert(`Error: ${error.message}`);
+  }
+};
+
 
   return (
     <ParentLayout>

@@ -45,7 +45,8 @@ public class SecConfig {
                                 "/employee/login",
                                 "/hr/login",
                                 "/admin/login",
-                                "/api/password/**"
+                                "/api/password/**",
+                                "/api/applications/submit"
 
                         ).permitAll()
 
