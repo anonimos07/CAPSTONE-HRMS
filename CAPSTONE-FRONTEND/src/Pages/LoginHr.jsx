@@ -3,14 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
-const LoginPage = () => {
+const LoginHr = () => {
   const navigate = useNavigate();
 
-  const handleHRLogin = (e) => {
+  const handleEmployeeLogin = (e) => {
     e.preventDefault()
-
+    
     setTimeout(() => {
-      navigate("/hr")
+      navigate("/login")
     }, 500)
   }
 
@@ -53,7 +53,7 @@ const LoginPage = () => {
                 type="email"
                 id="email"
                 className="block w-full pl-10 pr-3 py-3 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white placeholder-purple-400 transition-all"
-                placeholder="employee@company.com"
+                placeholder="hr@company.com"
                 required
               />
             </div>
@@ -97,9 +97,9 @@ const LoginPage = () => {
         
         <div className="mt-8 text-center text-sm">
                 <p>
-                  HR Personnel?{" "}
-                  <a href="/hr" onClick={handleHRLogin} className="font-medium text-[#800080] hover:text-[#800080]/80 transition-colors">
-                    Login as HR
+                  Employee?{" "}
+                  <a href="/login" onClick={handleEmployeeLogin} className="font-medium text-[#800080] hover:text-[#800080]/80 transition-colors">
+                    Login as Employee
                   </a>
                 </p>
               </div>
@@ -108,4 +108,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default LoginHr;
