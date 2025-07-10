@@ -1,5 +1,5 @@
 import { Outlet, Navigate } from "react-router-dom";
-import Unauthorized from "../components/layout/Unauthorized";
+import Unauthorized from "../ErrorPages/Unauthorized";
 
 /**
  * @param {Object} props - Component props

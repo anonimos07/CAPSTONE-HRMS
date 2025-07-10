@@ -1,5 +1,5 @@
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { Routes, Route } from 'react-router-dom';
+import { Router, Routes, Route } from 'react-router-dom';
 import Homepage from './Pages/HomePage';
 import { HiringPage } from './Pages/HiringPage';
 import { ApplicationForm } from './Pages/ApplicationForm';
@@ -8,6 +8,8 @@ import LoginHr from './Pages/LoginHr';
 import NotFound from './ErrorPages/NotFound';
 import Forbidden from './ErrorPages/Forbidden';
 import Unauthorized from './ErrorPages/Unauthorized';
+import ProtectedRoutes from './utils/ProtectedRoutes';
+
 
 const qry = new QueryClient();
 
@@ -15,7 +17,7 @@ function App() {
   return (
 
 <QueryClientProvider client={qry}>
-  <Router>
+  
     <Routes>
 
       <Route path="/401" element={<Unauthorized />} />
@@ -29,19 +31,20 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/hr" element={<LoginHr />} />
 
-      <Route element={<ProtectedRoutes allowedRoles={["EMPLOYEE"]} />}>
-       {/* ari ibutang route sa employee */}
+      {/* <Route element={<ProtectedRoutes allowedRoles={["EMPLOYEE"]} />}>
+       ari ibutang route sa employee
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["HR"]} />}>
-      {/* ari ibutang route sa HR */}</Route>
-
-      <Route element={<ProtectedRoutes allowedRoles={["ADMIN"]} />}>
-      {/* ari ibutang route sa ADMIN */}
+      ari ibutang route sa HR
       </Route>
 
+      <Route element={<ProtectedRoutes allowedRoles={["ADMIN"]} />}>
+      ari ibutang route sa ADMIN
+      </Route> */}
+
     </Routes>
-  </Router>
+  
 </QueryClientProvider>
   );
 }
