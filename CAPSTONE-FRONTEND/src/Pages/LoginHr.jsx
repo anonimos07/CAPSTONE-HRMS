@@ -142,7 +142,7 @@ const LoginHr = () => {
           <div className="mt-8 text-center text-sm">
             <p>
               HR Personnel?{" "}
-              <a href="/hr" className="font-medium text-[#800080] hover:text-[#800080]/80 transition-colors">
+              <a href="/login" className="font-medium text-[#800080] hover:text-[#800080]/80 transition-colors">
                 Login as HR
               </a>
             </p>

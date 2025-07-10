@@ -5,6 +5,8 @@ import { HiringPage } from './Pages/HiringPage';
 import { ApplicationForm } from './Pages/ApplicationForm';
 import LoginPage from './Pages/Login';
 import LoginHr from './Pages/LoginHr';
+import HrPage from './Pages/HrPage';
+import EmployeePage from './Pages/EmployeePage';
 import NotFound from './ErrorPages/NotFound';
 import Forbidden from './ErrorPages/Forbidden';
 import Unauthorized from './ErrorPages/Unauthorized';
@@ -30,6 +32,8 @@ function App() {
       <Route path="/apply/:id" element={<ApplicationForm />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/hr" element={<LoginHr />} />
+      <Route path="/hrpage" element={<HrPage />} />
+      <Route path="/employee" element={<EmployeePage />} />
 
       {/* <Route element={<ProtectedRoutes allowedRoles={["EMPLOYEE"]} />}>
        ari ibutang route sa employee
