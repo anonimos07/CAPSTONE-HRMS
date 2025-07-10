@@ -3,8 +3,10 @@ import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
-import React, { useState } from 'react';
-import api from '@/utils/api'; 
+import React, { useState} from 'react';
+import axios from 'axios';
+
+const API_BASE_URL_EMPLOYEE = import.meta.env.VITE_API_BASE_URL_EMPLOYEE;
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -23,7 +25,7 @@ const LoginPage = () => {
 
   const loginMutation = useMutation({
     mutationFn: async ({ username, password }) => {
-      const response = await api.post('/employee/login', {
+      const response = await axios.post(`${API_BASE_URL_EMPLOYEE}/login`, {
         username: username, // Your backend expects "username"
         password: password
       })
@@ -94,7 +96,7 @@ const LoginPage = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="block w-full pl-10 pr-3 py-3 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white placeholder-purple-400 transition-all"
-                placeholder="employee@company.com"
+                placeholder="username.EMPLOYEE"
                 required
               />
             </div>
