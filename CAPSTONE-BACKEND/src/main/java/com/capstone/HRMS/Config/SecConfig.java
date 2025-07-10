@@ -50,7 +50,9 @@ public class SecConfig {
 
                         ).permitAll()
 
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                       .requestMatchers("/admin/**",
+                                                "/api/positions/add")
+                        .hasRole("ADMIN")
                         .requestMatchers("/hr/**").hasRole("HR")
                         .requestMatchers("/employee/**").hasRole("EMPLOYEE")
 

@@ -1,5 +1,6 @@
 package com.capstone.HRMS.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,12 +24,18 @@ public class Users {
     @OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private EmployeeDetails employeeDetails;
 
+    @ManyToOne
+    @JoinColumn(name = "position_id")
+    @JsonBackReference
+    private Position position;
+
     public Users() {
     }
 
-    public Users(String username, String password, Role role) {
+    public Users(String username, String password, Role role, Position position) {
         this.username = username;
         this.password = password;
         this.role = role;
+        this.position = position;
     }
 }

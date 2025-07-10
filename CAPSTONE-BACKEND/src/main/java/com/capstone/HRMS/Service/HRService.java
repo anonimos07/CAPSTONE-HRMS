@@ -1,8 +1,10 @@
 package com.capstone.HRMS.Service;
 
 import com.capstone.HRMS.Entity.EmployeeDetails;
+import com.capstone.HRMS.Entity.Position;
 import com.capstone.HRMS.Entity.Role;
 import com.capstone.HRMS.Entity.Users;
+import com.capstone.HRMS.Repository.PositionRepo;
 import com.capstone.HRMS.Repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ public class HRService {
 
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final PositionRepo positionRepo;
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -40,6 +43,15 @@ public class HRService {
         hr.setPassword(passwordEncoder.encode(hr.getPassword()));
         hr.setRole(Role.HR);
         hr.setEmployeeDetails(details);
+        if (hr.getPosition() != null && hr.getPosition().getTitle() != null) {
+
+            Position position = positionRepo.findByTitle(hr.getPosition().getTitle())
+                    .orElseThrow(() -> new RuntimeException("Position not found with title: " + hr.getPosition().getTitle()));
+
+            hr.setPosition(position);
+        } else {
+            throw new RuntimeException("Position title must be provided");
+        }
         return userRepo.save(hr);
     }
 

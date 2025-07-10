@@ -1,8 +1,10 @@
 package com.capstone.HRMS.Service;
 
 import com.capstone.HRMS.Entity.EmployeeDetails;
+import com.capstone.HRMS.Entity.Position;
 import com.capstone.HRMS.Entity.Role;
 import com.capstone.HRMS.Entity.Users;
+import com.capstone.HRMS.Repository.PositionRepo;
 import com.capstone.HRMS.Repository.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class EmployeeService {
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final PositionRepo positionRepo;
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -33,11 +36,22 @@ public class EmployeeService {
         if (existingEmployee.isPresent()) {
             throw new RuntimeException("Username already exists: " + employee.getUsername());
         }
+
         EmployeeDetails details = new EmployeeDetails();
 
         employee.setPassword(passwordEncoder.encode(employee.getPassword()));
         employee.setRole(Role.EMPLOYEE);
         employee.setEmployeeDetails(details);
+
+        if (employee.getPosition() != null && employee.getPosition().getTitle() != null) {
+
+            Position position = positionRepo.findByTitle(employee.getPosition().getTitle())
+                    .orElseThrow(() -> new RuntimeException("Position not found with title: " + employee.getPosition().getTitle()));
+
+            employee.setPosition(position);
+        } else {
+            throw new RuntimeException("Position title must be provided");
+        }
         return userRepo.save(employee);
     }
 
@@ -85,9 +99,6 @@ public class EmployeeService {
         }
         if (updatedData.getDepartment() != null) {
             details.setDepartment(updatedData.getDepartment());
-        }
-        if (updatedData.getPosition() != null) {
-            details.setPosition(updatedData.getPosition());
         }
         if (updatedData.getAddress() != null) {
             details.setAddress(updatedData.getAddress());

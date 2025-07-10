@@ -25,8 +25,6 @@ public class EmployeeDetails {
     @Nullable
     public String department;
     @Nullable
-    public String position;
-    @Nullable
     public String address;
 
     @OneToOne

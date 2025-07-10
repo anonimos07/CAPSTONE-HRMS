@@ -78,7 +78,6 @@ public class EmployeeController {
                     "lastName", empDetails.getLastName() != null ? empDetails.getLastName() : "",
                     "email", empDetails.getEmail() != null ? empDetails.getEmail() : "",
                     "contact", empDetails.getContact() != null ? empDetails.getContact() : "",
-                    "position", empDetails.getPosition() != null ? empDetails.getPosition() : "",
                     "department", empDetails.getDepartment() != null ? empDetails.getDepartment() : "",
                     "address", empDetails.getAddress() != null ? empDetails.getAddress() : ""
             ));
