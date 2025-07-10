@@ -1,7 +1,10 @@
-import React from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import api from '@/utils/api'; 
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -14,7 +17,43 @@ const LoginPage = () => {
     }, 500)
   }
 
-  return (
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const loginMutation = useMutation({
+    mutationFn: async ({ username, password }) => {
+      const response = await api.post('/employee/login', {
+        username: username, // Your backend expects "username"
+        password: password
+      })
+      return response.data
+    },
+    onSuccess: (data) => {
+      console.log('Login success:', data)
+
+      // Example: store token
+      localStorage.setItem('token', data.token)
+      localStorage.setItem("username", data.username)
+      localStorage.setItem("userId", data.userId)
+      localStorage.setItem("user", JSON.stringify({ role: data.role }))
+      localStorage.setItem("position", data.position)
+
+      // Redirect to dashboard or HR page
+      navigate('/hr')
+    },
+    onError: (error) => {
+      console.error('Login failed:', error)
+      alert('Invalid credentials')
+    },
+  });
+
+   const handleSubmit = (e) => {
+    e.preventDefault()
+    loginMutation.mutate({ username, password })
+  }
+
+ return (
     <div className="min-h-screen bg-purple-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-purple-100">
         {/* Back Button */}
@@ -25,7 +64,7 @@ const LoginPage = () => {
           <ArrowLeft className="h-5 w-5 mr-1 group-hover:-translate-x-1 transition-transform" />
           <span className="text-sm font-medium">Back to homepage</span>
         </button>
-        
+
         {/* Header */}
         <div className="text-center mb-8">
           <div className="mb-4">
@@ -36,11 +75,11 @@ const LoginPage = () => {
           <h1 className="text-3xl font-bold text-purple-800 mb-2">TechStaffHub</h1>
           <h2 className="text-lg text-purple-600">HR Management Portal</h2>
         </div>
-        
+
         {/* Form */}
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-purple-700 mb-2">
+            <label htmlFor="username" className="block text-sm font-medium text-purple-700 mb-2">
               Work Email
             </label>
             <div className="relative">
@@ -50,15 +89,17 @@ const LoginPage = () => {
                 </svg>
               </div>
               <input
-                type="email"
-                id="email"
+                type="text"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="block w-full pl-10 pr-3 py-3 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white placeholder-purple-400 transition-all"
                 placeholder="employee@company.com"
                 required
               />
             </div>
           </div>
-          
+
           <div>
             <div className="flex items-center justify-between mb-2">
               <label htmlFor="password" className="block text-sm font-medium text-purple-700">
@@ -80,32 +121,35 @@ const LoginPage = () => {
               <input
                 type="password"
                 id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="block w-full pl-10 pr-3 py-3 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white placeholder-purple-400 transition-all"
                 placeholder="••••••••"
                 required
               />
             </div>
           </div>
-          
+
           <Button 
             type="submit" 
             className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 text-base font-medium transition-colors shadow-md hover:shadow-lg"
+            disabled={loginMutation.isPending}
           >
-            Sign In to Dashboard
+            {loginMutation.isPending ? 'Signing In...' : 'Sign In to Dashboard'}
           </Button>
         </form>
-        
+
         <div className="mt-8 text-center text-sm">
-                <p>
-                  HR Personnel?{" "}
-                  <a href="/hr" onClick={handleHRLogin} className="font-medium text-[#800080] hover:text-[#800080]/80 transition-colors">
-                    Login as HR
-                  </a>
-                </p>
-              </div>
+          <p>
+            HR Personnel?{" "}
+            <a href="/hr" className="font-medium text-[#800080] hover:text-[#800080]/80 transition-colors">
+              Login as HR
+            </a>
+          </p>
+        </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default LoginPage;
+export default LoginPage
