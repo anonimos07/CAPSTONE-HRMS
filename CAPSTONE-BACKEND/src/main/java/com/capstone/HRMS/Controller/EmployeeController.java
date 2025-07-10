@@ -1,8 +1,10 @@
 package com.capstone.HRMS.Controller;
 
 import com.capstone.HRMS.Entity.EmployeeDetails;
+import com.capstone.HRMS.Entity.Position;
 import com.capstone.HRMS.Entity.Role;
 import com.capstone.HRMS.Entity.Users;
+import com.capstone.HRMS.Repository.PositionRepo;
 import com.capstone.HRMS.Repository.UserRepo;
 import com.capstone.HRMS.Service.EmployeeService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import java.util.Optional;
 public class EmployeeController {
     private final EmployeeService employeeService;
     private final UserRepo userRepo;
+    private final PositionRepo positionRepo;
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody Users loginRequest) {
@@ -37,13 +40,20 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", "Employee not found"));
         }
 
+
         Users dbEmp = dbEmpOpt.get();
+
+        String positionTitle = null;
+        if (dbEmp.getPosition() != null) {
+            positionTitle = dbEmp.getPosition().getTitle();
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", result);
         response.put("role", dbEmp.getRole().name());
         response.put("username", dbEmp.getUsername());
         response.put("userId", dbEmp.getUserId());
+        response.put("position", positionTitle);
 
         return ResponseEntity.ok(response);
     }

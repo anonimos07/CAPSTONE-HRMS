@@ -37,12 +37,17 @@ public class HRController {
         }
 
         Users dbHr = dbHrOpt.get();
+        String positionTitle = null;
+        if (dbHr.getPosition() != null) {
+            positionTitle = dbHr.getPosition().getTitle();
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", result);
         response.put("role", dbHr.getRole().name());
         response.put("username", dbHr.getUsername());
         response.put("userId", dbHr.getUserId());
+        response.put("position", positionTitle);
 
         return ResponseEntity.ok(response);
     }

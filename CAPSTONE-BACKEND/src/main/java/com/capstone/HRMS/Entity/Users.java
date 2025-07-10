@@ -26,7 +26,7 @@ public class Users {
 
     @ManyToOne
     @JoinColumn(name = "position_id")
-    @JsonBackReference
+//    @JsonBackReference
     private Position position;
 
     public Users() {
