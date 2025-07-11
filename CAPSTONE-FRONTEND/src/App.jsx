@@ -11,6 +11,11 @@ import NotFound from './ErrorPages/NotFound';
 import Forbidden from './ErrorPages/Forbidden';
 import Unauthorized from './ErrorPages/Unauthorized';
 import ProtectedRoutes from './utils/ProtectedRoutes';
+import EmployeeDashboard from './Pages/EmployeeDashboard';
+import EmployeeLogin from './Pages/EmployeeLogin';
+import Attendance from './Pages/Attendance';
+import LeaveRequest from './Pages/LeaveRequest';
+import Profile from './Pages/Profile';
 
 
 const qry = new QueryClient();
@@ -34,6 +39,12 @@ function App() {
       <Route path="/hr" element={<LoginHr />} />
       <Route path="/hrpage" element={<HrPage />} />
       <Route path="/employee" element={<EmployeePage />} />
+
+      <Route path="/employee/login" element={<EmployeeLogin />} />
+      <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+      <Route path="/employee/attendance" element={<Attendance />} />
+      <Route path="/employee/leave" element={<LeaveRequest />} />
+      <Route path="/employee/profile" element={<Profile />} />
 
       {/* <Route element={<ProtectedRoutes allowedRoles={["EMPLOYEE"]} />}>
        ari ibutang route sa employee
