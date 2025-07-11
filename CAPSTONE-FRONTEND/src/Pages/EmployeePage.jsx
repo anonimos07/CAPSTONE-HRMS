@@ -1,5 +1,4 @@
 import React, { useState} from 'react';
-import { Button } from '@/components/ui/button';
 import { FiArrowLeft, FiBriefcase, FiHome } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 
@@ -42,7 +41,7 @@ const EmployeePage = () => {
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold hover:bg-purple-200 transition-colors"
             >
-              MS
+              JD
             </button>
             
             {isDropdownOpen && (
@@ -75,8 +74,8 @@ const EmployeePage = () => {
           <section className="col-span-1 flex flex-col gap-6">
             {/* User Card */}
             <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center">
-            <div className="w-12 h-12 bg-gray-300 rounded-full" />
-              <div className="text-2xl font-bold text-purple-800">Hi, Marcus Stonelius</div>
+            <div className="w-12 h-12 bg-purple-300 rounded-full" />
+              <div className="text-2xl font-bold text-purple-800">Hi, John Doe</div>
             </div>
             {/* My Time Card */}
             <div className="bg-white rounded-xl shadow p-6 w-full">
@@ -100,16 +99,18 @@ const EmployeePage = () => {
                 <button className="bg-gray-200 px-2 py-1 rounded">My Timesheet</button>
               </div>
             </div>
+
             {/* My Stuff Card */}
             <div className="bg-white rounded-xl shadow p-6">
               <div className="font-semibold text-purple-700 mb-2">My Stuff</div>
               <div className="font-bold">Training</div>
               <div className="text-gray-500 text-sm">2 active trainings, 6 past due or expired</div>
             </div>
+
             {/* Celebrations Card */}
             <div className="bg-white rounded-xl shadow p-6">
               <div className="font-semibold text-purple-700 mb-2">Celebrations</div>
-              <div className="text-gray-700">Marcus Stonelius<br /><span className="text-gray-500 text-sm">October 1 - Happy Birthday!</span></div>
+              <div className="text-gray-700">John Doe<br /><span className="text-gray-500 text-sm">October 1 - Happy Birthday!</span></div>
             </div>
           </section>
           {/* Center/Right Column */}

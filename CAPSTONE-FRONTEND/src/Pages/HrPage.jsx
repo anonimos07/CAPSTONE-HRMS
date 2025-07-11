@@ -42,7 +42,7 @@ const HrPage = () => {
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold hover:bg-purple-200 transition-colors"
             >
-              MS
+              JD
             </button>
             
             {isDropdownOpen && (
@@ -79,12 +79,13 @@ const HrPage = () => {
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-gray-300 rounded-full" />
                 <div>
-                  <div className="font-bold text-lg">Marcus Stonelius</div>
+                  <div className="font-bold text-lg">John Doe</div>
                 </div>
               </div>
-              <Button className="w-full" style={{ backgroundColor: '#a020f0', color: '#fff' }}>
-                Request Time Off
+              <Button className="w-full bg-[#a020f0] text-white py-3 rounded-lg font-semibold mb-4 hover:bg-[#a020f0]/90 transition-colors">
+                Request Time off
               </Button>
+            
               <div className="mb-0">
                 <div className="font-semibold text-gray-800 mb-2">Who's Out</div>
                 <div className="text-xs text-gray-500 mb-1 uppercase">Today</div>
@@ -101,6 +102,30 @@ const HrPage = () => {
               </div>
             </div>
           </div>
+
+          {/* My Time Card */}
+          <div className="bg-white rounded-xl shadow p-6 w-full mb-8">
+              <div className="flex items-center gap-2 mb-2">
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" className="text-purple-700">
+                  <circle cx="12" cy="12" r="10" stroke="#a020f0" strokeWidth="2" fill="none"/>
+                  <path d="M12 6v6l4 2" stroke="#a020f0" strokeWidth="2" fill="none"/>
+                </svg>
+                <span className="font-semibold text-purple-700">My Time</span>
+              </div>
+              <div className="text-center text-gray-500 mb-2">Not Clocked In</div>
+              <div className="text-center text-2xl font-bold text-purple-700 mb-2">Oh 00m Today</div>
+              <button className="w-full bg-purple-700 text-white py-2 rounded-lg font-semibold mb-2">Clock In</button>
+              <div className="flex justify-between text-xs text-gray-500 mb-2">
+                <span>Today → Oh 00m</span>
+                <button className="text-blue-600 hover:underline">+ Add Time Entry</button>
+              </div>
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>This Week<br /><span className="font-bold">Oh 00m</span></span>
+                <span>Pay Period<br /><span className="font-bold">Oh 00m</span></span>
+                <button className="bg-gray-200 px-2 py-1 rounded">My Timesheet</button>
+              </div>
+            </div>
+            
           {/* Company Links Card */}
           <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
             <div className="flex items-center justify-between mb-2">
@@ -130,7 +155,7 @@ const HrPage = () => {
                 <path d="M24 44L20 36H28L24 44Z" fill="#fff" stroke="#a020f0" strokeWidth="2"/>
                 <text x="16" y="28" fontFamily="Arial, sans-serif" fontWeight="bold" fontSize="18" fill="#a020f0">hi.</text>
               </svg>
-              <span className="text-2xl font-bold">Welcome, Marcus!</span>
+              <span className="text-2xl font-bold">Welcome, John!</span>
             </div>
             <div className="text-gray-700 mb-6">
               You're looking at TechStaffHub, your new tool for work. Here's a quick <span className="text-700">look at some of the things you can do with TechStaffHub.</span>

@@ -7,10 +7,13 @@ import LoginPage from './Pages/Login';
 import LoginHr from './Pages/LoginHr';
 import HrPage from './Pages/HrPage';
 import EmployeePage from './Pages/EmployeePage';
+import EmployeeProfile from './Pages/EmployeeProfile';
+import HrProfile from './Pages/HrProfile';
 import NotFound from './ErrorPages/NotFound';
 import Forbidden from './ErrorPages/Forbidden';
 import Unauthorized from './ErrorPages/Unauthorized';
 import ProtectedRoutes from './utils/ProtectedRoutes';
+
 
 
 const qry = new QueryClient();
@@ -32,6 +35,10 @@ function App() {
       <Route path="/apply/:id" element={<ApplicationForm />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/hr" element={<LoginHr />} />
+      <Route path="/employeepage" element={<EmployeePage />} />
+      <Route path="/hrpage" element={<HrPage />} />
+      <Route path="/employeeprofile" element={<EmployeeProfile />} />
+      <Route path="/Hrprofile" element={<HrProfile />} />
       
        
 
