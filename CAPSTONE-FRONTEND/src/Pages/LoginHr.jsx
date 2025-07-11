@@ -40,7 +40,7 @@ const LoginHr = () => {
       localStorage.setItem("position", data.position)
 
       // Redirect to dashboard or HR page
-      navigate('/hr')
+      navigate('/hrpage')
     },
     onError: (error) => {
       console.error('Login failed:', error)

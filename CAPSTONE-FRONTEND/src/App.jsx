@@ -32,20 +32,22 @@ function App() {
       <Route path="/apply/:id" element={<ApplicationForm />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/hr" element={<LoginHr />} />
-      <Route path="/hrpage" element={<HrPage />} />
-      <Route path="/employee" element={<EmployeePage />} />
+      
+       
 
-      {/* <Route element={<ProtectedRoutes allowedRoles={["EMPLOYEE"]} />}>
-       ari ibutang route sa employee
+      <Route element={<ProtectedRoutes allowedRoles={["EMPLOYEE"]} />}>
+       {/* ari ibutang route sa employee */}
+      <Route path="/employee" element={<EmployeePage />} />
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["HR"]} />}>
-      ari ibutang route sa HR
+      {/* ari ibutang route sa HR */}
+      <Route path="/hrpage" element={<HrPage />} />
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["ADMIN"]} />}>
-      ari ibutang route sa ADMIN
-      </Route> */}
+      {/* ari ibutang route sa ADMIN */}
+      </Route>
 
     </Routes>
   

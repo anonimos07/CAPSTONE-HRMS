@@ -34,15 +34,15 @@ const LoginPage = () => {
     onSuccess: (data) => {
       console.log('Login success:', data)
 
-      // Example: store token
+    
       localStorage.setItem('token', data.token)
       localStorage.setItem("username", data.username)
       localStorage.setItem("userId", data.userId)
       localStorage.setItem("user", JSON.stringify({ role: data.role }))
       localStorage.setItem("position", data.position)
 
-      // Redirect to dashboard or HR page
-      navigate('/hr')
+     
+      navigate('/employee')
     },
     onError: (error) => {
       console.error('Login failed:', error)
