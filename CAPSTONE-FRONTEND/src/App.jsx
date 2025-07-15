@@ -7,6 +7,8 @@ import LoginPage from './Pages/Login';
 import LoginHr from './Pages/LoginHr';
 import HrPage from './Pages/HrPage';
 import EmployeePage from './Pages/EmployeePage';
+import EmployeeProfile from './Pages/EmployeeProfile';
+import HrProfile from './Pages/HrProfile';
 import NotFound from './ErrorPages/NotFound';
 import Forbidden from './ErrorPages/Forbidden';
 import Unauthorized from './ErrorPages/Unauthorized';
@@ -16,6 +18,7 @@ import EmployeeLogin from './Pages/EmployeeLogin';
 import Attendance from './Pages/Attendance';
 import LeaveRequest from './Pages/LeaveRequest';
 import Profile from './Pages/Profile';
+
 
 
 const qry = new QueryClient();
@@ -37,26 +40,26 @@ function App() {
       <Route path="/apply/:id" element={<ApplicationForm />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/hr" element={<LoginHr />} />
+      <Route path="/employeepage" element={<EmployeePage />} />
       <Route path="/hrpage" element={<HrPage />} />
+      <Route path="/employeeprofile" element={<EmployeeProfile />} />
+      <Route path="/Hrprofile" element={<HrProfile />} />
+      
+       
+
+      <Route element={<ProtectedRoutes allowedRoles={["EMPLOYEE"]} />}>
+       {/* ari ibutang route sa employee */}
       <Route path="/employee" element={<EmployeePage />} />
-
-      <Route path="/employee/login" element={<EmployeeLogin />} />
-      <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
-      <Route path="/employee/attendance" element={<Attendance />} />
-      <Route path="/employee/leave" element={<LeaveRequest />} />
-      <Route path="/employee/profile" element={<Profile />} />
-
-      {/* <Route element={<ProtectedRoutes allowedRoles={["EMPLOYEE"]} />}>
-       ari ibutang route sa employee
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["HR"]} />}>
-      ari ibutang route sa HR
+      {/* ari ibutang route sa HR */}
+      <Route path="/hrpage" element={<HrPage />} />
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["ADMIN"]} />}>
-      ari ibutang route sa ADMIN
-      </Route> */}
+      {/* ari ibutang route sa ADMIN */}
+      </Route>
 
     </Routes>
   

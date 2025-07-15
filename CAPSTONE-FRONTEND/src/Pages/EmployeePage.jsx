@@ -1,8 +1,17 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
+import React, { useState} from 'react';
 import { FiArrowLeft, FiBriefcase, FiHome } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 const EmployeePage = () => {
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/');
+  };
+
     return (
       <div className="min-h-screen bg-gray-100">
         {/* Header */}
@@ -25,11 +34,39 @@ const EmployeePage = () => {
             <a href="#" className="hover:underline">Reports</a>
             <a href="#" className="hover:underline">Files</a>
           </nav>
-          <div className="flex items-center gap-4">
-            <input type="text" placeholder="Search..." className="rounded px-2 py-1 text-black border border-gray-300" />
-            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold">MS</div>
+           <div className="flex items-center gap-4">
+          <input type="text" placeholder="Search..." className="rounded px-2 py-1 text-black border border-gray-300" />
+          <div className="relative">
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold hover:bg-purple-200 transition-colors"
+            >
+              JD
+            </button>
+            
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">Profile</a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">Settings</a>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-red-600"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
-        </header>
+        </div>
+        
+        {/* Click outside to close dropdown */}
+        {isDropdownOpen && (
+          <div 
+            className="fixed inset-0 z-40" 
+            onClick={() => setIsDropdownOpen(false)}
+          />
+        )}
+      </header>
   
         {/* Main Content */}
         <main className="px-8 py-6 grid grid-cols-3 gap-6">
@@ -37,8 +74,8 @@ const EmployeePage = () => {
           <section className="col-span-1 flex flex-col gap-6">
             {/* User Card */}
             <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center">
-            <div className="w-12 h-12 bg-gray-300 rounded-full" />
-              <div className="text-2xl font-bold text-purple-800">Hi, Marcus Stonelius</div>
+            <div className="w-12 h-12 bg-purple-300 rounded-full" />
+              <div className="text-2xl font-bold text-purple-800">Hi, John Doe</div>
             </div>
             {/* My Time Card */}
             <div className="bg-white rounded-xl shadow p-6 w-full">
@@ -62,16 +99,18 @@ const EmployeePage = () => {
                 <button className="bg-gray-200 px-2 py-1 rounded">My Timesheet</button>
               </div>
             </div>
+
             {/* My Stuff Card */}
             <div className="bg-white rounded-xl shadow p-6">
               <div className="font-semibold text-purple-700 mb-2">My Stuff</div>
               <div className="font-bold">Training</div>
               <div className="text-gray-500 text-sm">2 active trainings, 6 past due or expired</div>
             </div>
+
             {/* Celebrations Card */}
             <div className="bg-white rounded-xl shadow p-6">
               <div className="font-semibold text-purple-700 mb-2">Celebrations</div>
-              <div className="text-gray-700">Marcus Stonelius<br /><span className="text-gray-500 text-sm">October 1 - Happy Birthday!</span></div>
+              <div className="text-gray-700">John Doe<br /><span className="text-gray-500 text-sm">October 1 - Happy Birthday!</span></div>
             </div>
           </section>
           {/* Center/Right Column */}
