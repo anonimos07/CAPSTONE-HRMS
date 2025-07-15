@@ -13,13 +13,7 @@ import NotFound from './ErrorPages/NotFound';
 import Forbidden from './ErrorPages/Forbidden';
 import Unauthorized from './ErrorPages/Unauthorized';
 import ProtectedRoutes from './utils/ProtectedRoutes';
-import EmployeeDashboard from './Pages/EmployeeDashboard';
 import EmployeeLogin from './Pages/EmployeeLogin';
-import Attendance from './Pages/Attendance';
-import LeaveRequest from './Pages/LeaveRequest';
-import Profile from './Pages/Profile';
-
-
 
 const qry = new QueryClient();
 
@@ -44,12 +38,13 @@ function App() {
       <Route path="/hrpage" element={<HrPage />} />
       <Route path="/employeeprofile" element={<EmployeeProfile />} />
       <Route path="/Hrprofile" element={<HrProfile />} />
+      <Route path="/employee" element={<EmployeeLogin />} />
       
        
 
       <Route element={<ProtectedRoutes allowedRoles={["EMPLOYEE"]} />}>
        {/* ari ibutang route sa employee */}
-      <Route path="/employee" element={<EmployeePage />} />
+      <Route path="/employeepage" element={<EmployeePage />} />
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["HR"]} />}>
