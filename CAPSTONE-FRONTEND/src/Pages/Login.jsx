@@ -38,7 +38,7 @@ const LoginPage = () => {
       localStorage.setItem("userId", data.userId)
       localStorage.setItem("user", JSON.stringify({ role: data.role }))
       localStorage.setItem("position", data.position)
-      navigate("/employee")
+      navigate("/employeepage")
     },
     onError: (error) => {
       console.error("Login failed:", error)
@@ -96,7 +96,7 @@ const LoginPage = () => {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       className="pl-10 h-12 border-purple-200 focus:border-purple-500 focus:ring-purple-500 bg-white/50"
-                      placeholder="example@gmail.com"
+                      placeholder="username.EMPLOYEE"
                       required
                     />
                   </div>
@@ -154,6 +154,18 @@ const LoginPage = () => {
                   )}
                 </Button>
               </form>
+
+              <div className="mt-8 pt-6 border-t border-purple-100">
+                <p className="text-center text-sm text-gray-600">
+                  HR Personnel?{" "}
+                  <a
+                    href="/hr"
+                    className="font-semibold text-purple-600 hover:text-purple-800 transition-colors underline underline-offset-2"
+                  >
+                    Sign as HR
+                  </a>
+                </p>
+              </div>
             </CardContent>
           </Card>
 

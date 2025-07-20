@@ -18,7 +18,7 @@ const LoginHr = () => {
     e.preventDefault()
 
     setTimeout(() => {
-      navigate("/employee")
+      navigate("/login")
     }, 500)
   }
 
@@ -205,7 +205,7 @@ const LoginHr = () => {
                 <p className="text-center text-sm text-gray-600">
                   Employee?{" "}
                   <a
-                    href="/employee"
+                    href="/login"
                     onClick={handleEmployeeLogin}
                     className="font-semibold text-purple-600 hover:text-purple-800 transition-colors underline underline-offset-2"
                   >

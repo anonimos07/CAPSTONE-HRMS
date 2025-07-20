@@ -163,7 +163,7 @@ const Homepage = () => {
               <Button 
                 variant="outline" 
                 className="w-full text-purple-600 border-purple-600 hover:bg-purple-50 py-6 text-lg"
-                onClick={() => navigate('/employee')}
+                onClick={() => navigate('/login')}
               >
                 Employee Portal
               </Button>

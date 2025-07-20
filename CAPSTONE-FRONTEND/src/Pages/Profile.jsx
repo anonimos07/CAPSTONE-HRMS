@@ -4,12 +4,12 @@ import { User, Mail, Phone, MapPin, Briefcase, Edit } from 'lucide-react';
 const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
-    name: 'John Doe',
-    email: 'john.doe@company.com',
-    phone: '+1 (555) 123-4567',
-    position: 'Software Developer',
-    department: 'Engineering',
-    address: '123 Tech St, San Francisco, CA'
+    name: '',
+    email: '',
+    phone: '',
+    position: '',
+    department: '',
+    address: ''
   });
 
   const handleChange = (e) => {

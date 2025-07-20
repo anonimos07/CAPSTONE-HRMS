@@ -13,9 +13,19 @@ import NotFound from './ErrorPages/NotFound';
 import Forbidden from './ErrorPages/Forbidden';
 import Unauthorized from './ErrorPages/Unauthorized';
 import ProtectedRoutes from './utils/ProtectedRoutes';
-import EmployeeLogin from './Pages/EmployeeLogin';
 
-const qry = new QueryClient();
+
+const qry = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      staleTime: 5 * 60 * 1000, 
+      gcTime: 10 * 60 * 1000,
+      retry: 1,
+    },
+  },
+});
 
 function App() {
   return (
@@ -34,11 +44,10 @@ function App() {
       <Route path="/apply/:id" element={<ApplicationForm />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/hr" element={<LoginHr />} />
-      <Route path="/employeepage" element={<EmployeePage />} />
       <Route path="/hrpage" element={<HrPage />} />
       <Route path="/employeeprofile" element={<EmployeeProfile />} />
-      <Route path="/Hrprofile" element={<HrProfile />} />
-      <Route path="/employee" element={<EmployeeLogin />} />
+       
+     
       
        
 
@@ -50,6 +59,7 @@ function App() {
       <Route element={<ProtectedRoutes allowedRoles={["HR"]} />}>
       {/* ari ibutang route sa HR */}
       <Route path="/hrpage" element={<HrPage />} />
+      <Route path="/Hrprofile" element={<HrProfile />} />
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["ADMIN"]} />}>

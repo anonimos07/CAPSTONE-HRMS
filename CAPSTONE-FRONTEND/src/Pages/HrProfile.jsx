@@ -1,13 +1,94 @@
-import React, { useState } from 'react';
-
+import { Button } from '@/components/ui/button';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { fetchCurrentUserDetails, updateUserProfile } from '../Api/hr';
 
 const EmployeeProfile = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleLogout = () => {
     setIsDropdownOpen(false);
-    // Add your logout logic here
+    localStorage.clear();
   };
+
+  const initialFormState = {
+    firstName: '',
+    lastName: '',
+    contact: '',
+    department: '',
+    address: '',
+    email: '',
+  };
+
+  const [form, setForm] = useState(initialFormState);
+  const [isEmptyDetails, setIsEmptyDetails] = useState(false);
+
+  const token = localStorage.getItem('token');
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['employeeDetails'],
+    queryFn: fetchCurrentUserDetails,
+    enabled: !!token,
+  });
+
+  // Process data with useEffect to ensure it runs every time data changes
+  useEffect(() => {
+   
+    if (data && !isLoading) {
+      console.log('Processing data...');
+      
+      // Check if it's an empty details response
+      if (data.message === 'Employee details not yet created') {
+        console.log('Employee details not created yet');
+        setIsEmptyDetails(true);
+        return;
+      }
+      
+      // Try multiple possible response structures
+      let employeeData = data;
+  
+      const newFormState = {
+        firstName: employeeData.firstName,
+        lastName: employeeData.lastName,
+        contact: employeeData.contact,
+        department: employeeData.department,
+        address: employeeData.address,
+        email: employeeData.email,
+      };
+      
+      setForm(newFormState);
+      setIsEmptyDetails(false);
+    }
+  }, [data, isLoading]);
+
+  // Mutation for update
+  const updateMutation = useMutation({
+    mutationFn: updateUserProfile,
+    onSuccess: (responseData) => {
+      console.log('Update success:', responseData);
+      queryClient.invalidateQueries({ queryKey: ['employeeDetails'] });
+      alert('Profile updated successfully');
+      setIsEmptyDetails(false);
+    },
+    onError: (error) => {
+      console.error('Update error:', error);
+      alert('Failed to update profile');
+    },
+  });
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Submitting form:', form);
+    updateMutation.mutate(form);
+  };
+
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error loading profile data: {error?.message}</p>;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -24,7 +105,7 @@ const EmployeeProfile = () => {
           <span className="text-3xl font-bold text-purple-700">TechStaffHub</span>
         </div>
         <nav className="flex gap-8 text-lg font-medium text-gray-700">
-          <a href="#" className="hover:underline">Home</a>
+          <a href="/hrpage" className="hover:underline">Home</a>
           <a href="#" className="hover:underline">My Info</a>
           <a href="#" className="hover:underline">People</a>
           <a href="#" className="hover:underline">Hiring</a>
@@ -71,6 +152,7 @@ const EmployeeProfile = () => {
               <rect x="4" y="16" width="16" height="6" rx="3" fill="#a020f0" />
             </svg>
           </div>
+          {/* Avatar Section */}
           <div className="text-lg font-bold text-gray-800 mb-1">John Doe</div>
           <div className="text-gray-400 mb-6">&bull;</div>
           <nav className="w-full px-6">
@@ -83,64 +165,98 @@ const EmployeeProfile = () => {
           </nav>
         </aside>
         {/* Main Content */}
-        <main className="flex-1 p-10">
-          {/* Tabs */}
-          <div className="bg-white rounded-t-lg shadow flex flex-col mb-6">
-            <div className="flex items-center px-8 pt-6 pb-2">
-              <svg className="text-purple-600 mr-2" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <circle cx="12" cy="8" r="6" fill="#a020f0" />
-                <rect x="4" y="16" width="16" height="6" rx="3" fill="#a020f0" />
-              </svg>
-              <span className="text-xl font-semibold text-gray-700">John Doe</span>
-            </div>
-            <nav className="flex border-b border-gray-200 px-8">
-              <button className="py-3 px-4 text-sm font-medium text-purple-600 border-b-2 border-purple-600 focus:outline-none">Personal Info</button>
-              <button className="py-3 px-4 text-sm font-medium text-gray-500 hover:text-purple-600">Leave</button>
-              <button className="py-3 px-4 text-sm font-medium text-gray-500 hover:text-purple-600">Social Media</button>
-              <button className="py-3 px-4 text-sm font-medium text-gray-500 hover:text-purple-600">Change Password</button>
-            </nav>
-          </div>
+        <main className="flex-1 p-10">    
           {/* Profile Card */}
-          <div className="bg-white rounded-b-lg shadow p-8 flex gap-12 max-w-5xl mx-auto">
-            {/* Avatar and Name */}
-            <div className="flex flex-col items-center w-1/3">
-              <div className="w-32 h-32 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                <svg width="80" height="80" fill="none" viewBox="0 0 24 24">
-                  <circle cx="12" cy="8" r="8" fill="#a020f0" />
-                  <rect x="2" y="16" width="20" height="6" rx="3" fill="#a020f0" />
-                </svg>
+          <form onSubmit={handleSubmit}>
+            <div className="bg-white rounded-b-lg shadow p-8 flex gap-12 max-w-5xl mx-auto">
+              <div className="flex-1 grid grid-cols-2 gap-6">
+                {isEmptyDetails && (
+                  <div className="col-span-2 text-red-600 font-medium">
+                    Your details are empty, please fill up your details.
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-gray-600 mb-1">First Name</label>
+                  <input
+                    name="firstName"
+                    value={form.firstName}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="First Name"
+                    className="w-full border border-gray-300 rounded px-3 py-2"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-600 mb-1">Last Name</label>
+                  <input
+                    name="lastName"
+                    value={form.lastName}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="Last Name"
+                    className="w-full border border-gray-300 rounded px-3 py-2"
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-gray-600 mb-1">Contact</label>
+                  <input
+                    name="contact"
+                    value={form.contact}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="Contact Number"
+                    className="w-full border border-gray-300 rounded px-3 py-2"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-600 mb-1">Department</label>
+                  <input
+                    name="department"
+                    value={form.department}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="Department"
+                    className="w-full border border-gray-300 rounded px-3 py-2"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-600 mb-1">Address</label>
+                  <input
+                    name="address"
+                    value={form.address}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="Address"
+                    className="w-full border border-gray-300 rounded px-3 py-2"
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-gray-600 mb-1">Email</label>
+                  <input
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    type="email"
+                    placeholder="Email"
+                    className="w-full border border-gray-300 rounded px-3 py-2"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-40 h-10 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  Save Changes
+                </Button>
               </div>
-              <div className="text-xl font-bold text-gray-800 mb-1">John Doe</div>
-              <div className="text-gray-500">Software Engineer</div>
             </div>
-            {/* Employee Details */}
-            <div className="flex-1 grid grid-cols-2 gap-6">
-              <div>
-                <label className="block text-gray-600 mb-1">First Name</label>
-                <input type="text" value="John" className="w-full border border-gray-300 rounded px-3 py-2" readOnly />
-              </div>
-              <div>
-                <label className="block text-gray-600 mb-1">Last Name</label>
-                <input type="text" value="Doe" className="w-full border border-gray-300 rounded px-3 py-2" readOnly />
-              </div>
-              <div className="col-span-2">
-                <label className="block text-gray-600 mb-1">Contact</label>
-                <input type="text" value="09123456789" className="w-full border border-gray-300 rounded px-3 py-2" readOnly />
-              </div>
-              <div>
-                <label className="block text-gray-600 mb-1">Department</label>
-                <input type="text" value="IT Department" className="w-full border border-gray-300 rounded px-3 py-2" readOnly />
-              </div>
-              <div>
-                <label className="block text-gray-600 mb-1">Address</label>
-                <input type="text" value="123 Main St, City, Country" className="w-full border border-gray-300 rounded px-3 py-2" readOnly />
-              </div>
-              <div className="col-span-2">
-                <label className="block text-gray-600 mb-1">Email</label>
-                <input type="email" value="john.doe@email.com" className="w-full border border-gray-300 rounded px-3 py-2" readOnly />
-              </div>
-            </div>
-          </div>
+          </form>
         </main>
       </div>
     </div>
