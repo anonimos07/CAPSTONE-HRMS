@@ -45,7 +45,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/hr" element={<LoginHr />} />
       <Route path="/hrpage" element={<HrPage />} />
-      <Route path="/employeeprofile" element={<EmployeeProfile />} />
+       
        
      
       
@@ -54,6 +54,7 @@ function App() {
       <Route element={<ProtectedRoutes allowedRoles={["EMPLOYEE"]} />}>
        {/* ari ibutang route sa employee */}
       <Route path="/employeepage" element={<EmployeePage />} />
+      <Route path="/employeeprofile" element={<EmployeeProfile />} />
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["HR"]} />}>
