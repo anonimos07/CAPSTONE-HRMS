@@ -56,21 +56,46 @@ public class ResumeController {
         List<CoreMap> sentences = document.get(CoreAnnotations.SentencesAnnotation.class);
 
         List<Map<String, String>> sentimentResults = new ArrayList<>();
+        double score = 0.0;
+
         for (CoreMap sentence : sentences) {
             String sentiment = sentence.get(SentimentCoreAnnotations.SentimentClass.class);
             String sentenceText = sentence.toString();
 
             Map<String, String> entry = new HashMap<>();
-            entry.put("sentence", sentenceText);
-            entry.put("sentiment", sentiment);
+            entry.put("Sentence", sentenceText);
+            entry.put("Feedback", sentiment);
             sentimentResults.add(entry);
+
+            if (sentiment.equalsIgnoreCase("Positive") || sentiment.equalsIgnoreCase("Very positive")) {
+                score += 1.0;
+            } else if (sentiment.equalsIgnoreCase("Neutral")) {
+                score += 0.5;
+            }
+            // Negative and Very negative get 0 points
         }
 
-        // You can add more NLP steps here (NER, keywords, etc.)
+        int totalSentences = sentences.size();
+        double scorePercentage = totalSentences > 0 ? (score / totalSentences) * 100 : 0;
+
+        String overallAnalysis;
+        if (scorePercentage >= 70) {
+            overallAnalysis = "The resume shows a great potential candidate with strong positive traits.";
+        } else if (scorePercentage >= 40) {
+            overallAnalysis = "The resume indicates a good candidate with some areas for improvement.";
+        } else {
+            overallAnalysis = "The resume needs improvement; the candidate's traits appear less positive.";
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("originalText", text);
-        result.put("sentimentAnalysis", sentimentResults);
+        result.put("Feedback Analysis", sentimentResults);
+        result.put("Sentiment Score", String.format("%.2f", score));
+        result.put("Score Percentage", String.format("%.2f%%", scorePercentage));
+        result.put("Overall Analysis", overallAnalysis);
+
         return result;
     }
+
+
 }
