@@ -53,7 +53,7 @@ public class SecConfig {
                        .requestMatchers("/admin/**",
                                                 "/api/positions/add")
                         .hasRole("ADMIN")
-                        .requestMatchers("/hr/**").hasRole("HR")
+                        .requestMatchers("/hr/**","/api/applications/application").hasRole("HR")
                         .requestMatchers("/employee/**").hasRole("EMPLOYEE")
 
                         .requestMatchers("/hr/available-hr-for-leave").hasAnyRole("EMPLOYEE", "HR")

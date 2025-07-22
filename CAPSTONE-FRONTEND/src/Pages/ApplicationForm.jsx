@@ -67,7 +67,7 @@ export const ApplicationForm = () => {
     const response = await fetch('http://localhost:8080/api/applications/submit', {
       method: 'POST',
       body: formDataToSend,
-      // Remove "Content-Type": "application/json" (let browser set it)
+      // Content-Type: "application/json" (let browser set it)
       // Remove "credentials: 'include'" (not needed for public endpoints)
     });
 
