@@ -64,7 +64,7 @@ export const ApplicationForm = () => {
   formDataToSend.append('file', formData.file);
 
   try {
-    const response = await fetch('http://localhost:8080/api/applications/submit', {
+    const response = await fetch('http://localhost:8080/applications/submit', {
       method: 'POST',
       body: formDataToSend,
       // Content-Type: "application/json" (let browser set it)

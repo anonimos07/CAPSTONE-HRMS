@@ -46,14 +46,14 @@ public class SecConfig {
                                 "/hr/login",
                                 "/admin/login",
                                 "/api/password/**",
-                                "/api/applications/submit"
+                                "/applications/submit"
 
                         ).permitAll()
 
                        .requestMatchers("/admin/**",
-                                                "/api/positions/add")
+                                                "/positions/add")
                         .hasRole("ADMIN")
-                        .requestMatchers("/hr/**","/api/applications/application").hasRole("HR")
+                        .requestMatchers("/hr/**","/applications/application").hasRole("HR")
                         .requestMatchers("/employee/**").hasRole("EMPLOYEE")
 
                         .requestMatchers("/hr/available-hr-for-leave").hasAnyRole("EMPLOYEE", "HR")
