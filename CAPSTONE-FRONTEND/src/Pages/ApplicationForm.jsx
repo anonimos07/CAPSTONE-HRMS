@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { FiUser, FiMail, FiPhone, FiBriefcase, FiArrowLeft } from 'react-icons/fi';
 import { ParentLayout } from '../Parent/ParentLayout';
+import { useMutation } from '@tanstack/react-query';
+import { submitJobApplication } from '../Api/jobApplication';
 
 const jobs = [
   {
@@ -26,13 +28,25 @@ export const ApplicationForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const job = jobs.find(j => j.id === parseInt(id));
-  
+
   const [formData, setFormData] = useState({
     position: job?.title || '',
     email: '',
     contact: '',
     fullName: '',
     file: null
+  });
+
+  const mutation = useMutation({
+    mutationFn: submitJobApplication,
+    onSuccess: () => {
+      alert('Application submitted successfully!');
+      navigate('/');
+    },
+    onError: (error) => {
+      console.error('Submission error:', error);
+      alert('Failed to submit application. Please try again.');
+    }
   });
 
   const handleChange = (e) => {
@@ -44,46 +58,24 @@ export const ApplicationForm = () => {
     setFormData(prev => ({ ...prev, file: e.target.files[0] }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  const handleSubmit = async (e) => {
-  e.preventDefault();
+    const allowedTypes = [
+      "application/pdf",
+      "application/msword"
+    ];
 
-   const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
-  const file = formData.file;
+    const file = formData.file;
 
-  if (!allowedTypes.includes(file.type)) {
-    alert("Only PDF, DOC, and DOCX files are allowed!");
-    return;
-  }
-
-  const formDataToSend = new FormData();
-  formDataToSend.append('position', formData.position);
-  formDataToSend.append('email', formData.email);
-  formDataToSend.append('contact', formData.contact);
-  formDataToSend.append('fullName', formData.fullName);
-  formDataToSend.append('file', formData.file);
-
-  try {
-    const response = await fetch('http://localhost:8080/api/applications/submit', {
-      method: 'POST',
-      body: formDataToSend,
-      // Content-Type: "application/json" (let browser set it)
-      // Remove "credentials: 'include'" (not needed for public endpoints)
-    });
-
-    if (response.ok) {
-      alert('Application submitted successfully!');
-      navigate('/');
-    } else {
-      const errorText = await response.text();
-      console.error('Submission error:', errorText);
-      alert(`Failed to submit: ${errorText}`);
+    if (!file || !allowedTypes.includes(file.type)) {
+      alert("Only PDF, DOC, and DOCX files are allowed!");
+      return;
     }
-  } catch (error) {
-    console.error('Network error:', error);
-    alert(`Error: ${error.message}`);
-  }
-};
+
+    mutation.mutate(formData);
+  };
+
 
 
   return (

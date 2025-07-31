@@ -1,9 +1,59 @@
-import React, { useState} from 'react';
-import { Button } from '@/components/ui/button';
-import { FiArrowLeft, FiBriefcase, FiHome } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
 
-const HrPage = () => {
+import { Button } from '@/components/ui/button';
+
+import { useNavigate } from 'react-router-dom';
+import Notification from './Notification';
+import { Bell } from 'lucide-react';
+import { fetchNotifications, markNotificationAsRead } from '../Api/notification';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+
+const HrPage = ({ user }) => {
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+  const {
+    data: notifications = [],
+    error,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ['notifications', user?.id],
+    queryFn: () => fetchNotifications(user.id),
+    enabled: !!(isNotificationOpen && user?.id), // Only run when open
+  });
+
+  const markAsReadMutation = useMutation({
+    mutationFn: markNotificationAsRead,
+    onMutate: async (id) => {
+      // Optimistic update
+      await queryClient.cancelQueries(['notifications', user.id]);
+      const previous = queryClient.getQueryData(['notifications', user.id]);
+
+      queryClient.setQueryData(['notifications', user.id], (old = []) =>
+        old.map(n => n.id === id ? { ...n, isRead: true } : n)
+      );
+
+      return { previous };
+    },
+    onError: (err, id, context) => {
+      queryClient.setQueryData(['notifications', user.id], context.previous);
+      console.error('Failed to mark as read:', err);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(['notifications', user.id]);
+    },
+  });
+
+  const handleMarkAsRead = (id) => {
+    markAsReadMutation.mutate(id);
+  };
+
+  const handleCloseNotification = (id) => {
+    queryClient.setQueryData(['notifications', user.id], (old = []) =>
+      old.filter(n => n.id !== id)
+    );
+  };
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
@@ -35,6 +85,48 @@ const HrPage = () => {
           <a href="#" className="hover:underline">Reports</a>
           <a href="#" className="hover:underline">Files</a>
         </nav>
+            {/* Notification Bell */}
+      <div className="relative">
+        <button 
+          onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+          className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 hover:bg-purple-200 transition-colors relative"
+        >
+          <Bell className="w-4 h-4" />
+          {notifications.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+              {notifications.length}
+            </span>
+          )}
+        </button>
+        
+        {/* Notification Dropdown */}
+        {isNotificationOpen && (
+          <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-50 max-h-96 overflow-y-auto">
+            <div className="px-4 py-2 text-sm font-medium text-gray-700 border-b">
+              Notifications
+            </div>
+            
+            {notifications.length > 0 ? (
+              notifications.map(notification => (
+                <Notification
+                  key={notification.id}
+                  title={notification.title}
+                  message={notification.message}
+                  timestamp={notification.timestamp}
+                  isRead={notification.isRead}
+                  onClose={() => handleCloseNotification(notification.id)}
+                  onMarkAsRead={handleMarkAsRead}
+                  className="m-2"
+                />
+              ))
+            ) : (
+              <div className="px-4 py-4 text-sm text-gray-500 text-center">
+                No new notifications
+              </div>
+            )}
+          </div>
+        )}
+      </div>
         <div className="flex items-center gap-4">
           <input type="text" placeholder="Search..." className="rounded px-2 py-1 text-black border border-gray-300" />
           <div className="relative">
@@ -217,4 +309,3 @@ const HrPage = () => {
 };
 
 export default HrPage;
-

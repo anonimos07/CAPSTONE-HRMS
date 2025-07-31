@@ -1,8 +1,10 @@
 package com.capstone.HRMS.Controller;
 
 import com.capstone.HRMS.Entity.JobApplication;
+import com.capstone.HRMS.Entity.Notification;
 import com.capstone.HRMS.Entity.Users;
 import com.capstone.HRMS.Repository.JobApplicationRepo;
+import com.capstone.HRMS.Repository.NotificationRepo;
 import com.capstone.HRMS.Repository.UserRepo;
 import com.capstone.HRMS.Service.JobApplicationService;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +16,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/applications")
-@CrossOrigin(origins = "*") // Allow your frontend to connect
+@CrossOrigin(origins = "*")
 public class JobApplicationController {
 
     private final JobApplicationService jobApplicationService;
@@ -30,6 +33,9 @@ public class JobApplicationController {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private NotificationRepo notificationRepo;
 
     @PostMapping("/submit")
     public ResponseEntity<String> submitApplication(
@@ -67,17 +73,35 @@ public class JobApplicationController {
     }
 
 
-    @GetMapping("/application")
-    public ResponseEntity<?> getAllApplications(Authentication authentication) {
-        String username = authentication.getName();
-        Users currentUser = userRepo.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (!currentUser.getPosition().getTitle().equalsIgnoreCase("HR-Supervisor")) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: Not an HR-Supervisor");
-        }
-
-        List<JobApplication> applications = jobApplicationRepo.findAll();
-        return ResponseEntity.ok(applications);
-    }
+//    @GetMapping("/application")
+//    public ResponseEntity<?> getAllApplications(Authentication authentication) {
+//        String username = authentication.getName();
+//        Users currentUser = userRepo.findByUsername(username)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        if (!currentUser.getPosition().getTitle().equalsIgnoreCase("HR-Supervisor")) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: Not an HR-Supervisor");
+//        }
+//
+//        List<JobApplication> applications = jobApplicationRepo.findAll();
+//
+//        for (JobApplication app : applications) {
+//            // Check if a notification already exists for this job application and this user
+//            boolean notificationExists = notificationRepo.existsByRecipientAndJobApplication(currentUser, app);
+//
+//            if (!notificationExists) {
+//                Notification notification = new Notification();
+//                notification.setRecipient(currentUser);
+//                notification.setJobApplication(app);
+//                notification.setTitle("New Job Application Received");
+//                notification.setMessage("A new job application has been submitted for the positionyes: " + app.getPosition());
+//                notification.setTimestamp(LocalDateTime.now());
+//                notification.setRead(false);
+//
+//                notificationRepo.save(notification);
+//            }
+//        }
+//
+//        return ResponseEntity.ok(applications);
+//    }
 }
