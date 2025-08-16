@@ -1,0 +1,118 @@
+package com.capstone.HRMS.Controller;
+
+import com.capstone.HRMS.Entity.Notification;
+import com.capstone.HRMS.Entity.Users;
+import com.capstone.HRMS.Service.NotificationService;
+import com.capstone.HRMS.Service.UsersService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/notifications")
+@CrossOrigin(origins = "*")
+public class NotificationController {
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private UsersService usersService;
+
+    @GetMapping("/user")
+    public ResponseEntity<List<Notification>> getUserNotifications(Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            Users user = usersService.getUserByUsername(username);
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
+            List<Notification> notifications = notificationService.getNotificationsByUser(user);
+            return ResponseEntity.ok(notifications);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/user/unread")
+    public ResponseEntity<List<Notification>> getUnreadNotifications(Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            Users user = usersService.getUserByUsername(username);
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
+            List<Notification> notifications = notificationService.getUnreadNotificationsByUser(user);
+            return ResponseEntity.ok(notifications);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/user/unread/count")
+    public ResponseEntity<Long> getUnreadNotificationCount(Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            Users user = usersService.getUserByUsername(username);
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
+            Long count = notificationService.getUnreadNotificationCount(user);
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/{notificationId}/read")
+    public ResponseEntity<Notification> markAsRead(@PathVariable Long notificationId) {
+        try {
+            Notification notification = notificationService.markAsRead(notificationId);
+            if (notification == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(notification);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/user/read-all")
+    public ResponseEntity<String> markAllAsRead(Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            Users user = usersService.getUserByUsername(username);
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
+            notificationService.markAllAsRead(user);
+            return ResponseEntity.ok("All notifications marked as read");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DeleteMapping("/{notificationId}")
+    public ResponseEntity<String> deleteNotification(@PathVariable Long notificationId) {
+        try {
+            notificationService.deleteNotification(notificationId);
+            return ResponseEntity.ok("Notification deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Notification>> getAllNotifications() {
+        try {
+            List<Notification> notifications = notificationService.getAllNotifications();
+            return ResponseEntity.ok(notifications);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+}

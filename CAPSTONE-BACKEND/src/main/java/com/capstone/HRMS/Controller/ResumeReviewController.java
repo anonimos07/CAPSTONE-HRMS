@@ -76,7 +76,6 @@ public class ResumeReviewController {
 
             String text = pdfStripper.getText(document);
 
-            // Clean up the extracted text
             return text.replaceAll("\\s+", " ").trim();
 
         } catch (Exception e) {

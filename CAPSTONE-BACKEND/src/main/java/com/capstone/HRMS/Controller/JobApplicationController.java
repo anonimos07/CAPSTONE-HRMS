@@ -2,7 +2,6 @@ package com.capstone.HRMS.Controller;
 
 import com.capstone.HRMS.Entity.JobApplication;
 import com.capstone.HRMS.Entity.Users;
-import com.capstone.HRMS.Repository.JobApplicationRepo;
 import com.capstone.HRMS.Repository.UserRepo;
 import com.capstone.HRMS.Service.JobApplicationService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,8 +23,6 @@ public class JobApplicationController {
 
     private final JobApplicationService jobApplicationService;
 
-    @Autowired
-    private JobApplicationRepo jobApplicationRepo;
 
     @Autowired
     private UserRepo userRepo;
@@ -49,20 +45,12 @@ public class JobApplicationController {
         }
 
         try {
-            // Create and save the job application
-            JobApplication jobApplication = new JobApplication();
-            jobApplication.setPosition(position);
-            jobApplication.setEmail(email);
-            jobApplication.setContact(contact);
-            jobApplication.setFullName(fullName);
-            jobApplication.setFile(file.getBytes()); // convert uploaded file to byte[]
-
-            jobApplicationRepo.save(jobApplication);
-
+            // Use the service to submit the application
+            jobApplicationService.submitApplication(position, email, contact, fullName, file);
             return ResponseEntity.ok("Application submitted successfully!");
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process the file.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process the application: " + e.getMessage());
         }
     }
 
@@ -77,7 +65,57 @@ public class JobApplicationController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: Not an HR-Supervisor");
         }
 
-        List<JobApplication> applications = jobApplicationRepo.findAll();
+        List<JobApplication> applications = jobApplicationService.getAllApplications();
         return ResponseEntity.ok(applications);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getApplicationById(@PathVariable Long id, Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            Users currentUser = userRepo.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            if (currentUser.getRole() != com.capstone.HRMS.Entity.Role.HR && 
+                currentUser.getRole() != com.capstone.HRMS.Entity.Role.ADMIN) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: HR role required");
+            }
+
+            return jobApplicationService.getApplicationById(id)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<?> updateApplicationStatus(@PathVariable Long id, 
+                                                   @RequestBody java.util.Map<String, String> request,
+                                                   Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            Users currentUser = userRepo.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            if (currentUser.getRole() != com.capstone.HRMS.Entity.Role.HR && 
+                currentUser.getRole() != com.capstone.HRMS.Entity.Role.ADMIN) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: HR role required");
+            }
+
+            String statusStr = request.get("status");
+            String reviewNotes = request.getOrDefault("reviewNotes", "");
+            
+            com.capstone.HRMS.Entity.ApplicationStatus status = 
+                com.capstone.HRMS.Entity.ApplicationStatus.valueOf(statusStr.toUpperCase());
+
+            JobApplication updatedApplication = jobApplicationService.updateApplicationStatus(id, status, reviewNotes);
+            if (updatedApplication != null) {
+                return ResponseEntity.ok(updatedApplication);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
     }
 }
