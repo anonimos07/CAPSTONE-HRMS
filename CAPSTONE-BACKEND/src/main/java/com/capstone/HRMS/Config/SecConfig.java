@@ -47,7 +47,8 @@ public class SecConfig {
                                 "/admin/login",
                                 "/api/password/**",
                                 "/api/applications/submit",
-                                "api/notifications/all"
+                                "api/notifications/all",
+                                "api/timelog/time-in"
 
                         ).permitAll()
 

@@ -16,6 +16,7 @@ import {
   FiBook,
   FiHelpCircle
 } from 'react-icons/fi';
+import TimelogWidget from '../components/TimelogWidget';
 
 const EmployeePage = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -288,35 +289,9 @@ const EmployeePage = () => {
               </div>
             </div>
 
-            {/* My Time Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 w-full border border-purple-100">
-              <div className="flex items-center gap-2 mb-4 text-purple-700">
-                <FiClock className="w-5 h-5" />
-                <span className="font-semibold">My Time</span>
-              </div>
-              <div className="text-center text-gray-500 mb-3">Not Clocked In</div>
-              <div className="text-center text-2xl font-bold text-purple-700 mb-4">0h 00m Today</div>
-              <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold mb-3 transition-colors shadow hover:shadow-md">
-                Clock In
-              </button>
-              <div className="flex justify-between text-xs text-gray-500 mb-3">
-                <span>Today → 0h 00m</span>
-                <button className="text-purple-600 hover:underline">+ Add Time Entry</button>
-              </div>
-              <div className="flex justify-between text-xs text-gray-500">
-                <div>
-                  <div>This Week</div>
-                  <div className="font-bold">0h 00m</div>
-                </div>
-                <div>
-                  <div>Pay Period</div>
-                  <div className="font-bold">0h 00m</div>
-                </div>
-                <button className="bg-purple-100 hover:bg-purple-200 px-3 py-1 rounded text-purple-700 text-xs font-medium transition-colors">
-                  My Timesheet
-                </button>
-              </div>
-            </div>
+            {/* Timelog Widget */}
+            <TimelogWidget />
+
 
             {/* My Stuff Card */}
             <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-purple-100">

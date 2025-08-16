@@ -2,6 +2,7 @@ import React, { useState} from 'react';
 import { Button } from '@/components/ui/button';
 import { FiArrowLeft, FiBriefcase, FiHome } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import TimelogWidget from '../components/TimelogWidget';
 
 const HrPage = () => {
 
@@ -103,28 +104,8 @@ const HrPage = () => {
             </div>
           </div>
 
-          {/* My Time Card */}
-          <div className="bg-white rounded-xl shadow p-6 w-full mb-8">
-              <div className="flex items-center gap-2 mb-2">
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" className="text-purple-700">
-                  <circle cx="12" cy="12" r="10" stroke="#a020f0" strokeWidth="2" fill="none"/>
-                  <path d="M12 6v6l4 2" stroke="#a020f0" strokeWidth="2" fill="none"/>
-                </svg>
-                <span className="font-semibold text-purple-700">My Time</span>
-              </div>
-              <div className="text-center text-gray-500 mb-2">Not Clocked In</div>
-              <div className="text-center text-2xl font-bold text-purple-700 mb-2">Oh 00m Today</div>
-              <button className="w-full bg-purple-700 text-white py-2 rounded-lg font-semibold mb-2">Clock In</button>
-              <div className="flex justify-between text-xs text-gray-500 mb-2">
-                <span>Today → Oh 00m</span>
-                <button className="text-blue-600 hover:underline">+ Add Time Entry</button>
-              </div>
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>This Week<br /><span className="font-bold">Oh 00m</span></span>
-                <span>Pay Period<br /><span className="font-bold">Oh 00m</span></span>
-                <button className="bg-gray-200 px-2 py-1 rounded">My Timesheet</button>
-              </div>
-            </div>
+          {/* Timelog Widget */}
+          <TimelogWidget />
             
           {/* Company Links Card */}
           <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">

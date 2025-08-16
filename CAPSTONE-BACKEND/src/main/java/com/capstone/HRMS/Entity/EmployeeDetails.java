@@ -1,5 +1,6 @@
 package com.capstone.HRMS.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -29,6 +30,7 @@ public class EmployeeDetails {
 
     @OneToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private Users user;
 
 

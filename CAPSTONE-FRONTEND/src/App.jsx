@@ -13,6 +13,9 @@ import NotFound from './ErrorPages/NotFound';
 import Forbidden from './ErrorPages/Forbidden';
 import Unauthorized from './ErrorPages/Unauthorized';
 import ProtectedRoutes from './utils/ProtectedRoutes';
+import TimelogPage from './Pages/TimelogPage';
+import HRTimelogDashboard from './Pages/HRTimelogDashboard';
+import TestAuth from './components/TestAuth';
 
 
 const qry = new QueryClient({
@@ -44,7 +47,13 @@ function App() {
       <Route path="/apply/:id" element={<ApplicationForm />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/hr" element={<LoginHr />} />
-      <Route path="/hrpage" element={<HrPage />} />
+      
+      {/* Quick test redirects */}
+      <Route path="/test-employee" element={<EmployeePage />} />
+      <Route path="/test-hr" element={<HrPage />} />
+      <Route path="/test-timelog" element={<TimelogPage />} />
+      <Route path="/test-hr-dashboard" element={<HRTimelogDashboard />} />
+      <Route path="/test-auth" element={<TestAuth />} />
        
        
      
@@ -55,12 +64,14 @@ function App() {
        {/* ari ibutang route sa employee */}
       <Route path="/employeepage" element={<EmployeePage />} />
       <Route path="/employeeprofile" element={<EmployeeProfile />} />
+      <Route path="/timelog" element={<TimelogPage />} />
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["HR"]} />}>
       {/* ari ibutang route sa HR */}
       <Route path="/hrpage" element={<HrPage />} />
       <Route path="/Hrprofile" element={<HrProfile />} />
+      <Route path="/hr-timelog" element={<HRTimelogDashboard />} />
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["ADMIN"]} />}>
