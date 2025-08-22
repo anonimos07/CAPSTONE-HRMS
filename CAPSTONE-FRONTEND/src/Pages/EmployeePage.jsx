@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Routes, Route, Outlet } from 'react-router-dom';
 import { 
   FiHome, 
   FiBriefcase, 
@@ -17,6 +17,8 @@ import {
   FiHelpCircle
 } from 'react-icons/fi';
 import TimelogWidget from '../components/TimelogWidget';
+import Header from '../components/Header';
+import { useActiveAnnouncements } from '../Api';
 
 const EmployeePage = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -25,6 +27,7 @@ const EmployeePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
+  const { data: announcements = [], isLoading } = useActiveAnnouncements();
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -86,18 +89,6 @@ const EmployeePage = () => {
     'Training Materials'
   ];
 
-  const announcements = [
-    {
-      title: 'New Courses in BambooHR Learning (February 2024)',
-      meta: 'Announcement • Lisa Beckley • Company News • Feb 21st',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg'
-    },
-    {
-      title: 'New Software Solution',
-      meta: 'Announcement • Madalyn Walker • IT Updates • Feb 7th',
-      avatar: 'https://randomuser.me/api/portraits/women/45.jpg'
-    }
-  ];
 
   const whosOut = [
     {
@@ -139,139 +130,7 @@ const EmployeePage = () => {
 
       {/* Main content */}
       <div className="relative z-10">
-        {/* Header */}
-        <header className="bg-white/80 backdrop-blur-sm px-8 py-4 flex items-center justify-between shadow-sm border-b border-purple-100 sticky top-0 z-50">
-          {/* Logo and main nav */}
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-3">
-              <div className="bg-purple-100 rounded-xl w-14 h-14 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 32 32" className="w-8 h-8 text-purple-600">
-                  <rect x="7" y="12" width="18" height="12" rx="2" stroke="#a020f0" strokeWidth="2" fill="none" />
-                  <path d="M12 12V9a4 4 0 0 1 8 0v3" stroke="#a020f0" strokeWidth="2" fill="none" />
-                  <path d="M16 16v4" stroke="#a020f0" strokeWidth="2" fill="none" />
-                </svg>
-              </div>
-              <span className="text-2xl font-bold text-purple-700">TechStaffHub</span>
-            </div>
-
-            <nav className="flex gap-2">
-              {navItems.map((item, index) => (
-                <div key={index} className="relative" ref={dropdownRef}>
-                  {item.dropdown ? (
-                    <>
-                      <button
-                        onClick={() => setActiveNavDropdown(activeNavDropdown === index ? null : index)}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-purple-50 hover:text-purple-700 transition-colors"
-                      >
-                        {item.icon}
-                        <span>{item.label}</span>
-                        <FiChevronDown className={`w-4 h-4 transition-transform ${activeNavDropdown === index ? 'rotate-180' : ''}`} />
-                      </button>
-                      
-                      {activeNavDropdown === index && (
-                        <div className="absolute left-0 mt-1 w-48 bg-white rounded-lg shadow-lg py-1 z-50 border border-purple-100">
-                          {item.dropdown.map((subItem, subIndex) => (
-                            <a 
-                              key={subIndex} 
-                              href={subItem.href} 
-                              className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-purple-50"
-                            >
-                              {subItem.label}
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <a
-                      href={item.href}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-purple-50 hover:text-purple-700 transition-colors"
-                    >
-                      {item.icon}
-                      <span>{item.label}</span>
-                    </a>
-                  )}
-                </div>
-              ))}
-            </nav>
-          </div>
-
-          {/* Right side controls */}
-          <div className="flex items-center gap-4" ref={dropdownRef}>
-            {/* Search with dropdown */}
-            <div className="relative">
-              <div className="flex items-center">
-                <FiSearch className="absolute left-3 text-purple-400" />
-                <input 
-                  type="text" 
-                  placeholder="Search..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="rounded-lg px-4 pl-10 py-2 text-sm border border-purple-200 focus:border-purple-500 focus:ring-purple-500 bg-white/50 w-64"
-                  onFocus={() => setIsSearchDropdownOpen(true)}
-                />
-              </div>
-              
-              {isSearchDropdownOpen && (
-                <div className="absolute left-0 mt-1 w-64 bg-white rounded-lg shadow-lg py-2 z-50 border border-purple-100">
-                  {searchQuery ? (
-                    <div className="px-4 py-2 text-sm text-gray-500">Search results for "{searchQuery}"</div>
-                  ) : (
-                    <>
-                      <div className="px-4 py-2 text-xs text-gray-500 uppercase">Recent Searches</div>
-                      {recentSearches.map((search, index) => (
-                        <a 
-                          key={index} 
-                          href="#" 
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50"
-                        >
-                          {search}
-                        </a>
-                      ))}
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Notifications */}
-            <button className="p-2 rounded-full hover:bg-purple-100 text-gray-600 hover:text-purple-700 relative">
-              <FiBell className="w-5 h-5" />
-              <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
-
-            {/* Profile dropdown */}
-            <div className="relative">
-              <button 
-                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold hover:bg-purple-200 transition-colors"
-              >
-                JD
-              </button>
-              
-              {isProfileDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-1 z-50 border border-purple-100">
-                  <div className="px-4 py-3 border-b border-purple-100">
-                    <div className="font-medium text-gray-800">John Doe</div>
-                    <div className="text-xs text-gray-500">Software Developer</div>
-                  </div>
-                  <a href="/employeeprofile" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">
-                    <FiSettings className="w-4 h-4 mr-2" /> Profile
-                  </a>
-                  <a href="#" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">
-                    <FiSettings className="w-4 h-4 mr-2" /> Settings
-                  </a>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-red-600"
-                  >
-                    <FiLogOut className="w-4 h-4 mr-2" /> Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </header>
+        <Header userRole="EMPLOYEE" />
 
         {/* Main Content */}
         <main className="px-8 py-6 grid grid-cols-3 gap-6">
@@ -344,15 +203,26 @@ const EmployeePage = () => {
               
               {/* Announcements List */}
               <div className="flex flex-col gap-4">
-                {announcements.map((announcement, index) => (
-                  <div key={index} className="flex gap-3 items-start p-3 hover:bg-purple-50 rounded-lg transition-colors">
-                    <img src={announcement.avatar} alt="" className="w-10 h-10 rounded-full border border-purple-200" />
-                    <div>
-                      <div className="font-semibold text-gray-800">{announcement.title}</div>
-                      <div className="text-purple-600 text-xs mt-1">{announcement.meta}</div>
+                {isLoading ? (
+                  <div className="text-center py-4 text-gray-500">Loading announcements...</div>
+                ) : announcements.length > 0 ? (
+                  announcements.map((announcement) => (
+                    <div key={announcement.id} className="flex gap-3 items-start p-3 hover:bg-purple-50 rounded-lg transition-colors">
+                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold text-sm">
+                        {announcement.createdBy?.username?.charAt(0).toUpperCase() || 'A'}
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-800">{announcement.title}</div>
+                        <div className="text-gray-600 text-sm mt-1">{announcement.content}</div>
+                        <div className="text-purple-600 text-xs mt-1">
+                          {announcement.priority} • {announcement.createdBy?.username} • {new Date(announcement.createdAt).toLocaleDateString()}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <div className="text-center py-4 text-gray-500">No announcements available</div>
+                )}
               </div>
             </div>
 

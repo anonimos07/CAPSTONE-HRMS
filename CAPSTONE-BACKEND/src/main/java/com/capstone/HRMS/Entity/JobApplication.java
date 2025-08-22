@@ -1,6 +1,5 @@
 package com.capstone.HRMS.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +17,8 @@ public class JobApplication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long jobApplicationId;
 
-    @ManyToOne
-    @JoinColumn(name = "position_id")
-    @JsonIgnoreProperties({"users"})
-    private Position position;
+    @Column(nullable = false)
+    private String position;
 
     @Column(nullable = false)
     private String email;
@@ -55,7 +52,7 @@ public class JobApplication {
         submittedAt = LocalDateTime.now();
     }
 
-    public JobApplication(Position position, String email, String contact, String fullName, byte[] file, String fileName) {
+    public JobApplication(String position, String email, String contact, String fullName, byte[] file, String fileName) {
         this.position = position;
         this.email = email;
         this.contact = contact;

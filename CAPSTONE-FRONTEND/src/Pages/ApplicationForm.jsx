@@ -1,34 +1,21 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { FiUser, FiMail, FiPhone, FiBriefcase, FiArrowLeft } from 'react-icons/fi';
 import { ParentLayout } from '../Parent/ParentLayout';
-
-const jobs = [
-  {
-    id: 1,
-    title: "Frontend Developer",
-    department: "Engineering"
-  },
-  {
-    id: 2,
-    title: "HR Manager",
-    department: "Human Resources"
-  },
-  {
-    id: 3,
-    title: "UX Designer",
-    department: "Design"
-  }
-];
+import { useAllJobPositions } from '../Api/hooks/useJobPositions';
+import { useSubmitJobApplication } from '../Api';
 
 export const ApplicationForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const job = jobs.find(j => j.id === parseInt(id));
+  const { data: positions = [] } = useAllJobPositions();
+  const submitMutation = useSubmitJobApplication();
+  
+  const position = positions.find(p => p.id === parseInt(id));
   
   const [formData, setFormData] = useState({
-    position: job?.title || '',
+    position: position?.title || '',
     email: '',
     contact: '',
     fullName: '',
@@ -46,44 +33,27 @@ export const ApplicationForm = () => {
 
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-   const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
-  const file = formData.file;
+    const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+    const file = formData.file;
 
-  if (!allowedTypes.includes(file.type)) {
-    alert("Only PDF, DOC, and DOCX files are allowed!");
-    return;
-  }
-
-  const formDataToSend = new FormData();
-  formDataToSend.append('position', formData.position);
-  formDataToSend.append('email', formData.email);
-  formDataToSend.append('contact', formData.contact);
-  formDataToSend.append('fullName', formData.fullName);
-  formDataToSend.append('file', formData.file);
-
-  try {
-    const response = await fetch('http://localhost:8080/api/applications/submit', {
-      method: 'POST',
-      body: formDataToSend,
-      // Content-Type: "application/json" (let browser set it)
-      // Remove "credentials: 'include'" (not needed for public endpoints)
-    });
-
-    if (response.ok) {
-      alert('Application submitted successfully!');
-      navigate('/');
-    } else {
-      const errorText = await response.text();
-      console.error('Submission error:', errorText);
-      alert(`Failed to submit: ${errorText}`);
+    if (!allowedTypes.includes(file.type)) {
+      alert("Only PDF, DOC, and DOCX files are allowed!");
+      return;
     }
-  } catch (error) {
-    console.error('Network error:', error);
-    alert(`Error: ${error.message}`);
-  }
-};
+
+    submitMutation.mutate(formData, {
+      onSuccess: () => {
+        alert('Application submitted successfully!');
+        navigate('/');
+      },
+      onError: (error) => {
+        console.error('Submission error:', error);
+        alert(`Failed to submit application: ${error.message}`);
+      }
+    });
+  };
 
 
   return (
@@ -96,14 +66,14 @@ export const ApplicationForm = () => {
           </Link>
           
           <div className="bg-white p-8 rounded-lg shadow-md">
-            <h1 className="text-2xl font-bold text-purple-800 mb-6">Apply for {job?.title}</h1>
+            <h1 className="text-2xl font-bold text-purple-800 mb-6">Apply for {position?.title}</h1>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-purple-700 mb-2">Position</label>
                 <div className="flex items-center bg-purple-50 p-3 rounded-md">
                   <FiBriefcase className="text-purple-600 mr-2" />
-                  <span>{job?.title}</span>
+                  <span>{position?.title}</span>
                 </div>
               </div>
               
@@ -178,8 +148,12 @@ export const ApplicationForm = () => {
                 />
               </div>
               
-              <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 text-lg">
-                Submit Application
+              <Button 
+                type="submit" 
+                disabled={submitMutation.isPending}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 text-lg disabled:opacity-50"
+              >
+                {submitMutation.isPending ? 'Submitting...' : 'Submit Application'}
               </Button>
             </form>
           </div>

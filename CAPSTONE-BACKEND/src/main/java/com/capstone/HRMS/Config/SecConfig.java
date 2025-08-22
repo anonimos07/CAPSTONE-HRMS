@@ -52,10 +52,10 @@ public class SecConfig {
 
                         ).permitAll()
 
-                       .requestMatchers("/admin/**",
-                                                "/api/positions/add")
+                       .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
-                        .requestMatchers("/hr/**","/api/ai/review-resume-file").hasRole("HR")
+                        .requestMatchers("/hr/**","/api/ai/review-resume-file", "/api/positions/add", "/api/job-positions/**").hasRole("HR")
+                        .requestMatchers("/api/applications/application", "/api/applications/{id}", "/api/applications/{id}/status").hasRole("HR")
                         .requestMatchers("/employee/**").hasRole("EMPLOYEE")
 
                         .requestMatchers("/hr/available-hr-for-leave").hasAnyRole("EMPLOYEE", "HR")

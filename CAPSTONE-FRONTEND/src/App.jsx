@@ -16,6 +16,13 @@ import ProtectedRoutes from './utils/ProtectedRoutes';
 import TimelogPage from './Pages/TimelogPage';
 import HRTimelogDashboard from './Pages/HRTimelogDashboard';
 import TestAuth from './components/TestAuth';
+// New HR pages
+import Announcements from './Pages/HR/Announcements';
+import JobApplications from './Pages/HR/JobApplications';
+import ResumeReview from './Pages/HR/ResumeReview';
+import HRNotifications from './Pages/HR/Notifications';
+// New Employee pages
+import Notifications from './Pages/Employee/Notifications';
 
 
 const qry = new QueryClient({
@@ -61,17 +68,22 @@ function App() {
        
 
       <Route element={<ProtectedRoutes allowedRoles={["EMPLOYEE"]} />}>
-       {/* ari ibutang route sa employee */}
+       {/* Employee routes */}
       <Route path="/employeepage" element={<EmployeePage />} />
       <Route path="/employeeprofile" element={<EmployeeProfile />} />
       <Route path="/timelog" element={<TimelogPage />} />
+      <Route path="/employee/notifications" element={<Notifications />} />
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["HR"]} />}>
-      {/* ari ibutang route sa HR */}
+      {/* HR routes */}
       <Route path="/hrpage" element={<HrPage />} />
       <Route path="/Hrprofile" element={<HrProfile />} />
       <Route path="/hr-timelog" element={<HRTimelogDashboard />} />
+      <Route path="/hr/announcements" element={<Announcements />} />
+      <Route path="/hr/job-applications" element={<JobApplications />} />
+      <Route path="/hr/resume-review" element={<ResumeReview />} />
+      <Route path="/hr/notifications" element={<HRNotifications />} />
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["ADMIN"]} />}>

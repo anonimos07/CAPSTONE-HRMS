@@ -2,7 +2,6 @@ package com.capstone.HRMS.Service;
 
 import com.capstone.HRMS.Entity.*;
 import com.capstone.HRMS.Repository.JobApplicationRepo;
-import com.capstone.HRMS.Repository.PositionRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,22 +16,13 @@ public class JobApplicationService {
 
     private final JobApplicationRepo jobApplicationRepository;
     
-    @Autowired
-    private PositionRepo positionRepo;
     
     @Autowired
     private NotificationService notificationService;
 
     public JobApplication submitApplication(String positionTitle, String email, String contact,
                                             String fullName, MultipartFile file) throws Exception {
-        // Find the position by title
-        Optional<Position> positionOpt = positionRepo.findByTitle(positionTitle);
-        if (positionOpt.isEmpty()) {
-            throw new Exception("Position not found: " + positionTitle);
-        }
-        
-        Position position = positionOpt.get();
-        JobApplication application = new JobApplication(position, email, contact, fullName, 
+        JobApplication application = new JobApplication(positionTitle, email, contact, fullName, 
                                                        file.getBytes(), file.getOriginalFilename());
 
         JobApplication savedApplication = jobApplicationRepository.save(application);
