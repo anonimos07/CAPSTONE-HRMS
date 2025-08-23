@@ -6,6 +6,7 @@ import {
   useApplicationById, 
   useUpdateApplicationStatus
 } from '../../Api';
+import { downloadResume as downloadResumeAPI } from '../../Api/jobApplication';
 import { useAllJobPositions, useCreateJobPosition } from '../../Api/hooks/useJobPositions';
 
 const JobApplications = () => {
@@ -74,10 +75,13 @@ const JobApplications = () => {
     });
   };
 
-  const downloadResume = (application) => {
-    // This would typically download the resume file
-    // For now, we'll show an alert
-    alert(`Downloading resume for ${application.fullName}`);
+  const downloadResume = async (application) => {
+    try {
+      await downloadResumeAPI(application.jobApplicationId, application.fileName || `${application.fullName}_resume.pdf`);
+    } catch (error) {
+      console.error('Error downloading resume:', error);
+      alert('Failed to download resume. Please try again.');
+    }
   };
 
   return (

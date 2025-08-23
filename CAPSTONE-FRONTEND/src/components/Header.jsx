@@ -24,6 +24,7 @@ const Header = ({ userRole }) => {
         { path: '/hr/job-applications', label: 'Applications', icon: FileText },
         { path: '/hr/resume-review', label: 'Resume Review', icon: UserCheck },
         { path: '/hr/notifications', label: 'Notifications', icon: Bell },
+        { path: '/hrprofile', label: 'Profile', icon: User },
       ];
     } else {
       return [

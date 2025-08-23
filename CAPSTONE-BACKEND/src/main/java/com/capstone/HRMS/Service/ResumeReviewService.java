@@ -23,8 +23,25 @@ public class ResumeReviewService {
                 .build();
 
         MessageCreateParams params = MessageCreateParams.builder()
-                .maxTokens(500L)
-                .addUserMessage("Review this resume and provide detailed feedback: \n\n" + resumeText)
+                .maxTokens(700L)
+                .addUserMessage("Analyze this resume and provide a comprehensive summary focusing on the following details:\n\n" +
+                        "INCLUDE:\n" +
+                        "- Strengths and key qualifications\n" +
+                        "- Age (if mentioned)\n" +
+                        "- Work experience details\n" +
+                        "- Years of experience\n" +
+                        "- Summary of job descriptions and roles\n" +
+                        "- Comprehensive technical skills\n" +
+                        "- Project-based work and specific roles\n" +
+                        "- Personal information\n" +
+                        "- Education background\n\n" +
+                        "EXCLUDE:\n" +
+                        "- Format and organization comments\n" +
+                        "- Grammar error corrections\n\n" +
+                        "After the summary, provide a hiring recommendation section with:\n" +
+                        "- RECOMMENDATION: Should this applicant be hired? (YES/NO)\n" +
+                        "- REASONING: Short explanation of the decision based on strengths, experience, skills, or gaps\n\n" +
+                        "Resume text:\n\n" + resumeText)
                 .model(Model.CLAUDE_3_5_SONNET_20241022) // Fixed model name
                 .build();
 

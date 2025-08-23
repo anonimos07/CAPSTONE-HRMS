@@ -1,6 +1,8 @@
 package com.capstone.HRMS.Controller;
 
 import com.capstone.HRMS.Entity.Notification;
+import com.capstone.HRMS.Entity.NotificationType;
+import com.capstone.HRMS.Entity.Role;
 import com.capstone.HRMS.Entity.Users;
 import com.capstone.HRMS.Service.NotificationService;
 import com.capstone.HRMS.Service.UsersService;
@@ -11,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -113,6 +116,97 @@ public class NotificationController {
             return ResponseEntity.ok(notifications);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // Send notification to specific user (HR/Admin only)
+    @PostMapping("/send/{userId}")
+    public ResponseEntity<String> sendNotificationToUser(
+            @PathVariable Long userId,
+            @RequestBody Map<String, String> request,
+            Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            Users sender = usersService.getUserByUsername(username);
+            
+            // Check if sender has HR or ADMIN role
+            if (!sender.getRole().equals(Role.HR) && !sender.getRole().equals(Role.ADMIN)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+            }
+
+            Users recipient = usersService.getUserById(userId);
+            if (recipient == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            String title = request.get("title");
+            String message = request.get("message");
+
+            if (title == null || message == null) {
+                return ResponseEntity.badRequest().body("Title and message are required");
+            }
+
+            notificationService.createNotification(recipient, title, message, NotificationType.GENERAL);
+            return ResponseEntity.ok("Notification sent successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send notification");
+        }
+    }
+
+    // Send notification to all users (HR/Admin only)
+    @PostMapping("/send-all")
+    public ResponseEntity<String> sendNotificationToAll(
+            @RequestBody Map<String, String> request,
+            Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            Users sender = usersService.getUserByUsername(username);
+            
+            // Check if sender has HR or ADMIN role
+            if (!sender.getRole().equals(Role.HR) && !sender.getRole().equals(Role.ADMIN)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+            }
+
+            String title = request.get("title");
+            String message = request.get("message");
+
+            if (title == null || message == null) {
+                return ResponseEntity.badRequest().body("Title and message are required");
+            }
+
+            notificationService.notifyAllUsers(title, message, NotificationType.GENERAL);
+            return ResponseEntity.ok("Notification sent to all users successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send notification");
+        }
+    }
+
+    // Send notification to users by role (HR/Admin only)
+    @PostMapping("/send-role/{role}")
+    public ResponseEntity<String> sendNotificationToRole(
+            @PathVariable String role,
+            @RequestBody Map<String, String> request,
+            Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            Users sender = usersService.getUserByUsername(username);
+            
+            // Check if sender has HR or ADMIN role
+            if (!sender.getRole().equals(Role.HR) && !sender.getRole().equals(Role.ADMIN)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+            }
+
+            String title = request.get("title");
+            String message = request.get("message");
+
+            if (title == null || message == null) {
+                return ResponseEntity.badRequest().body("Title and message are required");
+            }
+
+            notificationService.notifyUsersByRole(Role.valueOf(role.toUpperCase()), title, message, NotificationType.GENERAL);
+            return ResponseEntity.ok("Notification sent to " + role + " users successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send notification");
         }
     }
 }

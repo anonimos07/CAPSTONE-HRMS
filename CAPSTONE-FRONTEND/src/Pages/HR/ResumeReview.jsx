@@ -117,12 +117,14 @@ const ResumeReview = () => {
                 onDragOver={handleDrag}
                 onDrop={handleDrop}
               >
-                <input
-                  type="file"
-                  accept=".pdf,.txt"
-                  onChange={handleFileSelect}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
+                {!selectedFile && (
+                  <input
+                    type="file"
+                    accept=".pdf,.txt"
+                    onChange={handleFileSelect}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                )}
 
                 {selectedFile ? (
                   <div className="flex flex-col items-center">

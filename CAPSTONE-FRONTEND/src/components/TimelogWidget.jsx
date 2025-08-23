@@ -16,6 +16,7 @@ const TimelogWidget = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showCamera, setShowCamera] = useState(false);
   const [cameraAction, setCameraAction] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const queryClient = useQueryClient();
 
   // Update time every second
@@ -30,7 +31,6 @@ const TimelogWidget = () => {
   const { data: statusData, isLoading: statusLoading } = useQuery({
     queryKey: ['timelog-status'],
     queryFn: getCurrentStatus,
-    refetchInterval: 5000, // Refetch every 5 seconds for debugging
     staleTime: 0, // Always consider data stale
     refetchOnWindowFocus: true, // Refetch when user returns to tab
   });
@@ -39,7 +39,6 @@ const TimelogWidget = () => {
   const { data: todayTimelog } = useQuery({
     queryKey: ['today-timelog'],
     queryFn: getTodayTimelog,
-    refetchInterval: 15000, // Refetch every 15 seconds
     staleTime: 0, // Always consider stale to catch HR adjustments immediately
     cacheTime: 1 * 60 * 1000, // 1 minute
     refetchOnWindowFocus: true, // Refetch when user returns to tab
@@ -48,94 +47,158 @@ const TimelogWidget = () => {
   // Clock in mutation
   const clockInMutation = useMutation({
     mutationFn: clockIn,
-    onSuccess: () => {
-      queryClient.invalidateQueries(['timelog-status']);
-      queryClient.invalidateQueries(['today-timelog']);
-      queryClient.invalidateQueries(['monthly-timelogs']);
-      queryClient.invalidateQueries(['total-hours']);
-      // Force immediate refetch
-      queryClient.refetchQueries(['timelog-status']);
-      queryClient.refetchQueries(['today-timelog']);
+    onMutate: () => {
+      setIsProcessing(true);
+    },
+    onSuccess: async () => {
+      // Invalidate and immediately refetch critical queries
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['timelog-status'] }),
+        queryClient.invalidateQueries({ queryKey: ['today-timelog'] }),
+        queryClient.refetchQueries({ queryKey: ['timelog-status'] }),
+        queryClient.refetchQueries({ queryKey: ['today-timelog'] })
+      ]);
+      
+      // Invalidate other related queries
+      queryClient.invalidateQueries({ 
+        predicate: (query) => query.queryKey[0] === 'monthly-timelogs' 
+      });
+      queryClient.invalidateQueries({ 
+        predicate: (query) => query.queryKey[0] === 'total-hours' 
+      });
+      
       toast.success('Successfully clocked in!');
       setShowCamera(false);
+      setCameraAction(null);
+      setIsProcessing(false);
     },
     onError: (error) => {
       toast.error(error.response?.data || 'Failed to clock in');
       setShowCamera(false);
+      setCameraAction(null);
+      setIsProcessing(false);
     },
   });
 
   // Clock out mutation
   const clockOutMutation = useMutation({
     mutationFn: clockOut,
-    onSuccess: () => {
-      queryClient.invalidateQueries(['timelog-status']);
-      queryClient.invalidateQueries(['today-timelog']);
-      queryClient.invalidateQueries(['monthly-timelogs']);
-      queryClient.invalidateQueries(['total-hours']);
-      // Force immediate refetch
-      queryClient.refetchQueries(['timelog-status']);
-      queryClient.refetchQueries(['today-timelog']);
+    onMutate: () => {
+      setIsProcessing(true);
+    },
+    onSuccess: async () => {
+      // Invalidate and immediately refetch critical queries
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['timelog-status'] }),
+        queryClient.invalidateQueries({ queryKey: ['today-timelog'] }),
+        queryClient.refetchQueries({ queryKey: ['timelog-status'] }),
+        queryClient.refetchQueries({ queryKey: ['today-timelog'] })
+      ]);
+      
+      // Invalidate other related queries
+      queryClient.invalidateQueries({ 
+        predicate: (query) => query.queryKey[0] === 'monthly-timelogs' 
+      });
+      queryClient.invalidateQueries({ 
+        predicate: (query) => query.queryKey[0] === 'total-hours' 
+      });
+      
       toast.success('Successfully clocked out!');
       setShowCamera(false);
+      setCameraAction(null);
+      setIsProcessing(false);
     },
     onError: (error) => {
       toast.error(error.response?.data || 'Failed to clock out');
       setShowCamera(false);
+      setCameraAction(null);
+      setIsProcessing(false);
     },
   });
 
   // Start break mutation
   const startBreakMutation = useMutation({
     mutationFn: startBreak,
-    onSuccess: () => {
-      queryClient.invalidateQueries(['timelog-status']);
-      queryClient.invalidateQueries(['today-timelog']);
-      queryClient.invalidateQueries(['monthly-timelogs']);
-      queryClient.invalidateQueries(['total-hours']);
-      // Force immediate refetch
-      queryClient.refetchQueries(['timelog-status']);
-      queryClient.refetchQueries(['today-timelog']);
+    onMutate: () => {
+      setIsProcessing(true);
+    },
+    onSuccess: async () => {
+      // Invalidate and immediately refetch critical queries
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['timelog-status'] }),
+        queryClient.invalidateQueries({ queryKey: ['today-timelog'] }),
+        queryClient.refetchQueries({ queryKey: ['timelog-status'] }),
+        queryClient.refetchQueries({ queryKey: ['today-timelog'] })
+      ]);
+      
+      // Invalidate other related queries
+      queryClient.invalidateQueries({ 
+        predicate: (query) => query.queryKey[0] === 'monthly-timelogs' 
+      });
+      queryClient.invalidateQueries({ 
+        predicate: (query) => query.queryKey[0] === 'total-hours' 
+      });
+      
       toast.success('Break started');
+      setIsProcessing(false);
     },
     onError: (error) => {
       toast.error(error.response?.data || 'Failed to start break');
+      setIsProcessing(false);
     },
   });
 
   // End break mutation
   const endBreakMutation = useMutation({
     mutationFn: endBreak,
-    onSuccess: () => {
-      queryClient.invalidateQueries(['timelog-status']);
-      queryClient.invalidateQueries(['today-timelog']);
-      queryClient.invalidateQueries(['monthly-timelogs']);
-      queryClient.invalidateQueries(['total-hours']);
-      // Force immediate refetch
-      queryClient.refetchQueries(['timelog-status']);
-      queryClient.refetchQueries(['today-timelog']);
+    onMutate: () => {
+      setIsProcessing(true);
+    },
+    onSuccess: async () => {
+      // Invalidate and immediately refetch critical queries
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['timelog-status'] }),
+        queryClient.invalidateQueries({ queryKey: ['today-timelog'] }),
+        queryClient.refetchQueries({ queryKey: ['timelog-status'] }),
+        queryClient.refetchQueries({ queryKey: ['today-timelog'] })
+      ]);
+      
+      // Invalidate other related queries
+      queryClient.invalidateQueries({ 
+        predicate: (query) => query.queryKey[0] === 'monthly-timelogs' 
+      });
+      queryClient.invalidateQueries({ 
+        predicate: (query) => query.queryKey[0] === 'total-hours' 
+      });
+      
       toast.success('Break ended');
+      setIsProcessing(false);
     },
     onError: (error) => {
       toast.error(error.response?.data || 'Failed to end break');
+      setIsProcessing(false);
     },
   });
 
   const handleClockIn = () => {
+    if (isProcessing || showCamera) return;
     setCameraAction('clockIn');
     setShowCamera(true);
   };
 
   const handleClockOut = () => {
+    if (isProcessing || showCamera) return;
     setCameraAction('clockOut');
     setShowCamera(true);
   };
 
   const handleStartBreak = () => {
+    if (isProcessing) return;
     startBreakMutation.mutate();
   };
 
   const handleEndBreak = () => {
+    if (isProcessing) return;
     endBreakMutation.mutate();
   };
 
@@ -148,6 +211,7 @@ const TimelogWidget = () => {
   };
 
   const handleCameraCancel = () => {
+    if (isProcessing) return;
     setShowCamera(false);
     setCameraAction(null);
   };
@@ -198,7 +262,7 @@ const TimelogWidget = () => {
   };
 
   const currentStatus = statusData?.status || 'CLOCKED_OUT';
-  const isLoading = statusLoading || clockInMutation.isPending || clockOutMutation.isPending;
+  const isLoading = statusLoading || isProcessing || clockInMutation.isPending || clockOutMutation.isPending || startBreakMutation.isPending || endBreakMutation.isPending;
 
   // Debug logging
   // console.log('Debug - Status Data:', statusData);
@@ -252,12 +316,12 @@ const TimelogWidget = () => {
           {currentStatus === 'CLOCKED_OUT' && (
             <button
               onClick={handleClockIn}
-              disabled={isLoading}
-              className="w-full flex items-center justify-center space-x-2 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-colors"
+              disabled={isLoading || showCamera}
+              className="w-full flex items-center justify-center space-x-2 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed transition-colors"
             >
               <LogIn className="h-5 w-5" />
               <Camera className="h-4 w-4" />
-              <span>Clock In</span>
+              <span>{isProcessing ? 'Processing...' : 'Clock In'}</span>
             </button>
           )}
 
@@ -265,20 +329,20 @@ const TimelogWidget = () => {
             <div className="space-y-2">
               <button
                 onClick={handleClockOut}
-                disabled={isLoading}
-                className="w-full flex items-center justify-center space-x-2 bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 disabled:bg-red-400 transition-colors"
+                disabled={isLoading || showCamera}
+                className="w-full flex items-center justify-center space-x-2 bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed transition-colors"
               >
                 <LogOut className="h-5 w-5" />
                 <Camera className="h-4 w-4" />
-                <span>Clock Out</span>
+                <span>{isProcessing ? 'Processing...' : 'Clock Out'}</span>
               </button>
               <button
                 onClick={handleStartBreak}
-                disabled={isLoading || startBreakMutation.isPending}
-                className="w-full flex items-center justify-center space-x-2 bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 disabled:bg-yellow-400 transition-colors"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center space-x-2 bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 disabled:bg-yellow-400 disabled:cursor-not-allowed transition-colors"
               >
                 <Pause className="h-4 w-4" />
-                <span>Start Break</span>
+                <span>{startBreakMutation.isPending ? 'Starting...' : 'Start Break'}</span>
               </button>
             </div>
           )}
@@ -287,20 +351,20 @@ const TimelogWidget = () => {
             <div className="space-y-2">
               <button
                 onClick={handleClockOut}
-                disabled={isLoading}
-                className="w-full flex items-center justify-center space-x-2 bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 disabled:bg-red-400 transition-colors"
+                disabled={isLoading || showCamera}
+                className="w-full flex items-center justify-center space-x-2 bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed transition-colors"
               >
                 <LogOut className="h-5 w-5" />
                 <Camera className="h-4 w-4" />
-                <span>Clock Out</span>
+                <span>{isProcessing ? 'Processing...' : 'Clock Out'}</span>
               </button>
               <button
                 onClick={handleEndBreak}
-                disabled={isLoading || endBreakMutation.isPending}
-                className="w-full flex items-center justify-center space-x-2 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-colors"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center space-x-2 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed transition-colors"
               >
                 <Play className="h-4 w-4" />
-                <span>End Break</span>
+                <span>{endBreakMutation.isPending ? 'Ending...' : 'End Break'}</span>
               </button>
             </div>
           )}

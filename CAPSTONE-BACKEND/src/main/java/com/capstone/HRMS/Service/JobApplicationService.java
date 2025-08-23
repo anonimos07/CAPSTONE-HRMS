@@ -4,6 +4,8 @@ import com.capstone.HRMS.Entity.*;
 import com.capstone.HRMS.Repository.JobApplicationRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,6 +53,17 @@ public class JobApplicationService {
             application.setStatus(status);
             application.setReviewNotes(reviewNotes);
             return jobApplicationRepository.save(application);
+        }
+        return null;
+    }
+    
+    public Resource downloadResume(Long id) {
+        Optional<JobApplication> applicationOpt = jobApplicationRepository.findById(id);
+        if (applicationOpt.isPresent()) {
+            JobApplication application = applicationOpt.get();
+            if (application.getFile() != null) {
+                return new ByteArrayResource(application.getFile());
+            }
         }
         return null;
     }

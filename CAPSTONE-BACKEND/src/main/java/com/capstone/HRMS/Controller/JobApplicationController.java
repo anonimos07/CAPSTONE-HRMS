@@ -6,7 +6,10 @@ import com.capstone.HRMS.Repository.UserRepo;
 import com.capstone.HRMS.Service.JobApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -116,6 +119,36 @@ public class JobApplicationController {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/download")
+    public ResponseEntity<Resource> downloadResume(@PathVariable Long id, Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            Users currentUser = userRepo.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            if (currentUser.getRole() != com.capstone.HRMS.Entity.Role.HR && 
+                currentUser.getRole() != com.capstone.HRMS.Entity.Role.ADMIN) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            Resource resource = jobApplicationService.downloadResume(id);
+            if (resource == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Get the application to determine the original filename
+            JobApplication application = jobApplicationService.getApplicationById(id).orElse(null);
+            String filename = application != null ? application.getFileName() : "resume.pdf";
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

@@ -60,6 +60,8 @@ public class SecConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/job-positions/**").hasRole("HR")
                         .requestMatchers(HttpMethod.DELETE, "/api/job-positions/**").hasRole("HR")
                         .requestMatchers("/api/applications/application", "/api/applications/{id}", "/api/applications/{id}/status").hasRole("HR")
+                        .requestMatchers("/api/timelog/**").hasAnyRole("EMPLOYEE", "HR", "ADMIN")
+                        .requestMatchers("/api/announcements/**").hasAnyRole("EMPLOYEE", "HR", "ADMIN")
                         .requestMatchers("/employee/**").hasRole("EMPLOYEE")
 
                         .requestMatchers("/hr/available-hr-for-leave").hasAnyRole("EMPLOYEE", "HR")

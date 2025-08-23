@@ -29,7 +29,7 @@ const CameraCapture = ({ onCapture, onCancel, isOpen }) => {
   const handleConfirm = () => {
     if (capturedImage) {
       onCapture(capturedImage);
-      setCapturedImage(null);
+      // Don't reset captured image here - let parent component handle cleanup
     }
   };
 
@@ -43,6 +43,14 @@ const CameraCapture = ({ onCapture, onCancel, isOpen }) => {
     setError(null);
     onCancel();
   };
+
+  // Reset state when modal closes
+  React.useEffect(() => {
+    if (!isOpen) {
+      setCapturedImage(null);
+      setError(null);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

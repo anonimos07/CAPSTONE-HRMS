@@ -48,3 +48,20 @@ export const updateApplicationStatus = async (id, statusData) => {
   const res = await API.put(`/${id}/status`, statusData);
   return res.data;
 };
+
+// Download resume file (HR/Admin only)
+export const downloadResume = async (id, filename) => {
+  const res = await API.get(`/${id}/download`, {
+    responseType: 'blob',
+  });
+  
+  // Create blob link to download
+  const url = window.URL.createObjectURL(new Blob([res.data]));
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', filename || 'resume.pdf');
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};

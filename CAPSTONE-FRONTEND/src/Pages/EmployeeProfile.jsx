@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchCurrentUserDetails, updateUserProfile } from '../Api/employee';
+import Header from '../components/Header';
 
 const EmployeeProfile = () => {
    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -92,57 +93,7 @@ const EmployeeProfile = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white px-8 py-4 flex items-center justify-between shadow">
-        <div className="flex items-center gap-3">
-          <div className="bg-purple-100 rounded-xl w-14 h-14 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 32 32" className="w-8 h-8 text-purple-600">
-              <rect x="7" y="12" width="18" height="12" rx="2" stroke="#a020f0" strokeWidth="2" fill="none" />
-              <path d="M12 12V9a4 4 0 0 1 8 0v3" stroke="#a020f0" strokeWidth="2" fill="none" />
-              <path d="M16 16v4" stroke="#a020f0" strokeWidth="2" fill="none" />
-            </svg>
-          </div>
-          <span className="text-3xl font-bold text-purple-700">TechStaffHub</span>
-        </div>
-        <nav className="flex gap-8 text-lg font-medium text-gray-700">
-          <a href="/hrpage" className="hover:underline">Home</a>
-          <a href="#" className="hover:underline">My Info</a>
-          <a href="#" className="hover:underline">People</a>
-          <a href="#" className="hover:underline">Hiring</a>
-          <a href="#" className="hover:underline">Reports</a>
-          <a href="#" className="hover:underline">Files</a>
-        </nav>
-        <div className="flex items-center gap-4">
-          <input type="text" placeholder="Search..." className="rounded px-2 py-1 text-black border border-gray-300" />
-          <div className="relative">
-            <button 
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold hover:bg-purple-200 transition-colors"
-            >
-              JD
-            </button>
-            {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">Profile</a>
-                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50">Settings</a>
-                <button
-                  onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-red-600"
-                >
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-        {/* Click outside to close dropdown */}
-        {isDropdownOpen && (
-          <div 
-            className="fixed inset-0 z-40" 
-            onClick={() => setIsDropdownOpen(false)}
-          />
-        )}
-      </header>
+      <Header userRole="EMPLOYEE" />
       <div className="min-h-screen bg-gray-100 flex">
         {/* Sidebar */}
         <aside className="w-1/5 bg-white flex flex-col items-center py-10 shadow-md min-h-screen">
