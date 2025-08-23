@@ -47,6 +47,7 @@ public class ResumeReviewController {
             return ResponseEntity.ok(review);
 
         } catch (Exception e) {
+            e.printStackTrace(); // Add stack trace for debugging
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error processing file: " + e.getMessage());
         }
