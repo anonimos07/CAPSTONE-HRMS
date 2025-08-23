@@ -27,7 +27,7 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class SecConfig {
-
+    //asd
     @Autowired
     private final UserDetailsService userDetailsService;
 
