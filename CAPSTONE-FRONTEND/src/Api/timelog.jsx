@@ -101,3 +101,32 @@ export const deleteTimelog = async (timelogId) => {
   const res = await API.delete(`/timelog/${timelogId}`);
   return res.data;
 };
+
+// HR-specific timelog management
+export const getAllTimelogsForHR = async (search, startDate, endDate) => {
+  const params = {};
+  if (search) params.search = search;
+  if (startDate) params.startDate = startDate;
+  if (endDate) params.endDate = endDate;
+  
+  const res = await API.get('/timelog/hr/all', { params });
+  return res.data;
+};
+
+export const downloadTimelogsCSV = async (search, startDate, endDate) => {
+  const params = {};
+  if (search) params.search = search;
+  if (startDate) params.startDate = startDate;
+  if (endDate) params.endDate = endDate;
+  
+  const res = await API.get('/timelog/hr/download-csv', { 
+    params,
+    responseType: 'blob'
+  });
+  return res.data;
+};
+
+export const getTimelogById = async (timelogId) => {
+  const res = await API.get(`/timelog/hr/${timelogId}`);
+  return res.data;
+};

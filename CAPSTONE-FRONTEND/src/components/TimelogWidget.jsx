@@ -32,13 +32,17 @@ const TimelogWidget = () => {
     queryFn: getCurrentStatus,
     refetchInterval: 5000, // Refetch every 5 seconds for debugging
     staleTime: 0, // Always consider data stale
+    refetchOnWindowFocus: true, // Refetch when user returns to tab
   });
 
   // Fetch today's timelog
   const { data: todayTimelog } = useQuery({
     queryKey: ['today-timelog'],
     queryFn: getTodayTimelog,
-    refetchInterval: 30000,
+    refetchInterval: 15000, // Refetch every 15 seconds
+    staleTime: 0, // Always consider stale to catch HR adjustments immediately
+    cacheTime: 1 * 60 * 1000, // 1 minute
+    refetchOnWindowFocus: true, // Refetch when user returns to tab
   });
 
   // Clock in mutation
@@ -47,6 +51,8 @@ const TimelogWidget = () => {
     onSuccess: () => {
       queryClient.invalidateQueries(['timelog-status']);
       queryClient.invalidateQueries(['today-timelog']);
+      queryClient.invalidateQueries(['monthly-timelogs']);
+      queryClient.invalidateQueries(['total-hours']);
       // Force immediate refetch
       queryClient.refetchQueries(['timelog-status']);
       queryClient.refetchQueries(['today-timelog']);
@@ -65,6 +71,8 @@ const TimelogWidget = () => {
     onSuccess: () => {
       queryClient.invalidateQueries(['timelog-status']);
       queryClient.invalidateQueries(['today-timelog']);
+      queryClient.invalidateQueries(['monthly-timelogs']);
+      queryClient.invalidateQueries(['total-hours']);
       // Force immediate refetch
       queryClient.refetchQueries(['timelog-status']);
       queryClient.refetchQueries(['today-timelog']);
@@ -83,6 +91,8 @@ const TimelogWidget = () => {
     onSuccess: () => {
       queryClient.invalidateQueries(['timelog-status']);
       queryClient.invalidateQueries(['today-timelog']);
+      queryClient.invalidateQueries(['monthly-timelogs']);
+      queryClient.invalidateQueries(['total-hours']);
       // Force immediate refetch
       queryClient.refetchQueries(['timelog-status']);
       queryClient.refetchQueries(['today-timelog']);
@@ -99,6 +109,8 @@ const TimelogWidget = () => {
     onSuccess: () => {
       queryClient.invalidateQueries(['timelog-status']);
       queryClient.invalidateQueries(['today-timelog']);
+      queryClient.invalidateQueries(['monthly-timelogs']);
+      queryClient.invalidateQueries(['total-hours']);
       // Force immediate refetch
       queryClient.refetchQueries(['timelog-status']);
       queryClient.refetchQueries(['today-timelog']);

@@ -245,7 +245,78 @@ public class TimelogService {
     }
 
     // Get timelog by ID
-    public Optional<Timelog> getTimelogById(Long id) {
-        return timelogRepository.findById(id);
+    public Timelog getTimelogById(Long id) {
+        return timelogRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Timelog not found with ID: " + id));
+    }
+
+    // Get all timelogs with search functionality (HR/Admin)
+    public List<Timelog> getAllTimelogsWithSearch(String search, LocalDateTime startDate, LocalDateTime endDate) {
+        if (search != null && !search.trim().isEmpty()) {
+            return timelogRepository.findTimelogsWithSearch(search.trim(), startDate, endDate);
+        } else if (startDate != null || endDate != null) {
+            return timelogRepository.findTimelogsByDateRange(startDate, endDate);
+        } else {
+            // If no search and no date filters, return all timelogs
+            return timelogRepository.findAllTimelogs();
+        }
+    }
+
+    // Generate CSV content for timelogs
+    public String generateTimelogsCSV(String search, LocalDateTime startDate, LocalDateTime endDate) {
+        List<Timelog> timelogs = getAllTimelogsWithSearch(search, startDate, endDate);
+        
+        StringBuilder csv = new StringBuilder();
+        // CSV Header
+        csv.append("ID,Employee Name,Username,Date,Time In,Time Out,Break Start,Break End,")
+           .append("Total Hours,Adjusted Time In,Adjusted Time Out,Adjusted Break Duration,")
+           .append("Adjustment Reason,Adjusted By,Adjustment Date,Status\n");
+        
+        // CSV Data
+        for (Timelog timelog : timelogs) {
+            csv.append(timelog.getId()).append(",")
+               .append(escapeCSV(getEmployeeName(timelog.getUser()))).append(",")
+               .append(escapeCSV(timelog.getUser().getUsername())).append(",")
+               .append(timelog.getLogDate() != null ? timelog.getLogDate().toLocalDate() : "").append(",")
+               .append(timelog.getTimeIn() != null ? timelog.getTimeIn() : "").append(",")
+               .append(timelog.getTimeOut() != null ? timelog.getTimeOut() : "").append(",")
+               .append(timelog.getBreakTimeStart() != null ? timelog.getBreakTimeStart() : "").append(",")
+               .append(timelog.getBreakTimeEnd() != null ? timelog.getBreakTimeEnd() : "").append(",")
+               .append(timelog.getTotalWorkedHours() != null ? timelog.getTotalWorkedHours() : "0").append(",")
+               .append(timelog.getAdjustedTimeIn() != null ? timelog.getAdjustedTimeIn() : "").append(",")
+               .append(timelog.getAdjustedTimeOut() != null ? timelog.getAdjustedTimeOut() : "").append(",")
+               .append(timelog.getAdjustedBreakDurationMinutes() != null ? timelog.getAdjustedBreakDurationMinutes() : "").append(",")
+               .append(escapeCSV(timelog.getAdjustmentReason())).append(",")
+               .append(timelog.getAdjustedBy() != null ? escapeCSV(timelog.getAdjustedBy().getUsername()) : "").append(",")
+               .append(timelog.getAdjustmentDate() != null ? timelog.getAdjustmentDate() : "").append(",")
+               .append(timelog.getStatus()).append("\n");
+        }
+        
+        return csv.toString();
+    }
+
+    // Helper method to get employee name
+    private String getEmployeeName(Users user) {
+        if (user.getEmployeeDetails() != null) {
+            String firstName = user.getEmployeeDetails().getFirstName();
+            String lastName = user.getEmployeeDetails().getLastName();
+            if (firstName != null && lastName != null) {
+                return firstName + " " + lastName;
+            } else if (firstName != null) {
+                return firstName;
+            } else if (lastName != null) {
+                return lastName;
+            }
+        }
+        return user.getUsername();
+    }
+
+    // Helper method to escape CSV values
+    private String escapeCSV(String value) {
+        if (value == null) return "";
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
     }
 }

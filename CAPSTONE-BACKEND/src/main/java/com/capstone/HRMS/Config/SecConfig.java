@@ -48,13 +48,17 @@ public class SecConfig {
                                 "/api/password/**",
                                 "/api/applications/submit",
                                 "api/notifications/all",
-                                "api/timelog/time-in"
+                                "api/timelog/time-in",
+                                "/api/job-positions"
 
                         ).permitAll()
 
                        .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
-                        .requestMatchers("/hr/**","/api/ai/review-resume-file", "/api/positions/add", "/api/job-positions/**").hasRole("HR")
+                        .requestMatchers("/hr/**","/api/ai/review-resume-file", "/api/positions/add").hasRole("HR")
+                        .requestMatchers(HttpMethod.POST, "/api/job-positions/**").hasRole("HR")
+                        .requestMatchers(HttpMethod.PUT, "/api/job-positions/**").hasRole("HR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/job-positions/**").hasRole("HR")
                         .requestMatchers("/api/applications/application", "/api/applications/{id}", "/api/applications/{id}/status").hasRole("HR")
                         .requestMatchers("/employee/**").hasRole("EMPLOYEE")
 

@@ -377,4 +377,84 @@ public class TimelogController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting timelog");
         }
     }
+
+    // Get all timelogs with search functionality (HR/Admin only)
+    @GetMapping("/hr/all")
+    public ResponseEntity<?> getAllTimelogsForHR(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            Users user = usersService.getUserByUsername(username);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+            }
+
+            // Check if user has HR or Admin role
+            if (!user.getRole().name().equals("HR") && !user.getRole().name().equals("ADMIN")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+            }
+
+            List<Timelog> timelogs = timelogService.getAllTimelogsWithSearch(search, startDate, endDate);
+            return ResponseEntity.ok(timelogs);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while getting timelogs");
+        }
+    }
+
+    // Download timelogs as CSV (HR/Admin only)
+    @GetMapping("/hr/download-csv")
+    public ResponseEntity<?> downloadTimelogsCSV(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            Users user = usersService.getUserByUsername(username);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+            }
+
+            // Check if user has HR or Admin role
+            if (!user.getRole().name().equals("HR") && !user.getRole().name().equals("ADMIN")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+            }
+
+            String csvContent = timelogService.generateTimelogsCSV(search, startDate, endDate);
+            
+            return ResponseEntity.ok()
+                    .header("Content-Type", "text/csv")
+                    .header("Content-Disposition", "attachment; filename=timelogs.csv")
+                    .body(csvContent);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while generating CSV");
+        }
+    }
+
+    // Get single timelog by ID (HR/Admin only)
+    @GetMapping("/hr/{timelogId}")
+    public ResponseEntity<?> getTimelogById(@PathVariable Long timelogId, Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            Users user = usersService.getUserByUsername(username);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+            }
+
+            // Check if user has HR or Admin role
+            if (!user.getRole().name().equals("HR") && !user.getRole().name().equals("ADMIN")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+            }
+
+            Timelog timelog = timelogService.getTimelogById(timelogId);
+            return ResponseEntity.ok(timelog);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while getting timelog");
+        }
+    }
 }

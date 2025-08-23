@@ -1,29 +1,24 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Calendar, Clock, Download, Filter, RefreshCw } from 'lucide-react';
-import TimelogWidget from '../components/TimelogWidget';
-import { getTimelogsByDateRange, getMonthlyTimelogs, getTotalWorkedHours } from '../Api/timelog';
+import { Calendar, Clock, RefreshCw } from 'lucide-react';
+import { getMonthlyTimelogs, getTotalWorkedHours } from '../Api/timelog';
 
-const TimelogPage = () => {
+const HrAttendanceSummary = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [dateRange, setDateRange] = useState({
-    start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-    end: new Date().toISOString().split('T')[0]
-  });
   const queryClient = useQueryClient();
 
-  // Fetch monthly timelogs
+  // Fetch monthly timelogs for HR user
   const { data: monthlyTimelogs, isLoading: monthlyLoading } = useQuery({
     queryKey: ['monthly-timelogs', selectedYear, selectedMonth],
     queryFn: () => getMonthlyTimelogs(selectedYear, selectedMonth),
-    staleTime: 0, // Always consider stale to catch HR adjustments immediately
+    staleTime: 0, // Always consider stale to catch adjustments immediately
     cacheTime: 1 * 60 * 1000, // 1 minute
     refetchOnWindowFocus: true, // Refetch when user returns to tab
     refetchInterval: 30 * 1000, // Refetch every 30 seconds
   });
 
-  // Fetch total hours for current month
+  // Fetch total hours for current month for HR user
   const { data: totalHoursData } = useQuery({
     queryKey: ['total-hours', selectedYear, selectedMonth],
     queryFn: () => {
@@ -31,7 +26,7 @@ const TimelogPage = () => {
       const endDate = new Date(selectedYear, selectedMonth, 0, 23, 59, 59).toISOString();
       return getTotalWorkedHours(startDate, endDate);
     },
-    staleTime: 0, // Always consider stale to catch HR adjustments immediately
+    staleTime: 0, // Always consider stale to catch adjustments immediately
     cacheTime: 1 * 60 * 1000, // 1 minute
     refetchOnWindowFocus: true, // Refetch when user returns to tab
     refetchInterval: 30 * 1000, // Refetch every 30 seconds
@@ -80,25 +75,22 @@ const TimelogPage = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Time Tracking</h1>
-          <p className="text-gray-600">Manage your work hours and attendance</p>
+          <h2 className="text-xl font-bold text-gray-900">My Attendance Summary</h2>
+          <p className="text-gray-600">Your personal work hours and attendance</p>
         </div>
         <button
           onClick={handleRefresh}
-          className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center space-x-2 bg-purple-600 text-white px-3 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm"
         >
           <RefreshCw className="h-4 w-4" />
           <span>Refresh</span>
         </button>
       </div>
 
-      {/* Timelog Widget */}
-      <TimelogWidget />
-
       {/* Monthly Summary */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Monthly Summary</h2>
+          <h3 className="text-lg font-semibold text-gray-900">Monthly Summary</h3>
           <div className="flex items-center space-x-4">
             <select
               value={selectedMonth}
@@ -146,7 +138,7 @@ const TimelogPage = () => {
           </div>
           <div className="bg-purple-50 p-4 rounded-lg">
             <div className="flex items-center space-x-2">
-              <Filter className="h-5 w-5 text-purple-600" />
+              <Clock className="h-5 w-5 text-purple-600" />
               <span className="text-sm font-medium text-purple-900">Avg Daily Hours</span>
             </div>
             <p className="text-2xl font-bold text-purple-900 mt-1">
@@ -161,7 +153,7 @@ const TimelogPage = () => {
       {/* Timelog History */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Timelog History</h2>
+          <h3 className="text-lg font-semibold text-gray-900">My Timelog History</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -237,4 +229,4 @@ const TimelogPage = () => {
   );
 };
 
-export default TimelogPage;
+export default HrAttendanceSummary;

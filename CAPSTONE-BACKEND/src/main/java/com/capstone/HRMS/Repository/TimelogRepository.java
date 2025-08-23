@@ -64,4 +64,23 @@ public interface TimelogRepository extends JpaRepository<Timelog, Long> {
     // Find timelogs by user and month
     @Query("SELECT t FROM Timelog t WHERE t.user = :user AND EXTRACT(YEAR FROM t.logDate) = :year AND EXTRACT(MONTH FROM t.logDate) = :month ORDER BY t.logDate DESC")
     List<Timelog> findTimelogsByUserAndMonth(@Param("user") Users user, @Param("year") int year, @Param("month") int month);
+
+    // Find timelogs with search functionality (by username or full name)
+    @Query("SELECT t FROM Timelog t WHERE " +
+           "(LOWER(t.user.username) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(CONCAT(COALESCE(t.user.employeeDetails.firstName, ''), ' ', COALESCE(t.user.employeeDetails.lastName, ''))) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "AND (CAST(:startDate AS timestamp) IS NULL OR t.logDate >= CAST(:startDate AS timestamp)) " +
+           "AND (CAST(:endDate AS timestamp) IS NULL OR t.logDate <= CAST(:endDate AS timestamp)) " +
+           "ORDER BY t.logDate DESC")
+    List<Timelog> findTimelogsWithSearch(@Param("search") String search, 
+                                       @Param("startDate") LocalDateTime startDate, 
+                                       @Param("endDate") LocalDateTime endDate);
+
+    // Find timelogs by date range only
+    @Query("SELECT t FROM Timelog t WHERE " +
+           "(CAST(:startDate AS timestamp) IS NULL OR t.logDate >= CAST(:startDate AS timestamp)) " +
+           "AND (CAST(:endDate AS timestamp) IS NULL OR t.logDate <= CAST(:endDate AS timestamp)) " +
+           "ORDER BY t.logDate DESC")
+    List<Timelog> findTimelogsByDateRange(@Param("startDate") LocalDateTime startDate, 
+                                        @Param("endDate") LocalDateTime endDate);
 }
