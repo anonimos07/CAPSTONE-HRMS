@@ -18,6 +18,9 @@ import {
 } from 'react-icons/fi';
 import TimelogWidget from '../components/TimelogWidget';
 import Header from '../components/Header';
+import LeaveRequestForm from '../components/LeaveRequestForm';
+import LeaveBalanceCard from '../components/LeaveBalanceCard';
+import LeaveRequestsList from '../components/LeaveRequestsList';
 import { useActiveAnnouncements } from '../Api';
 
 const EmployeePage = () => {
@@ -25,9 +28,14 @@ const EmployeePage = () => {
   const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState(false);
   const [activeNavDropdown, setActiveNavDropdown] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState('community');
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const { data: announcements = [], isLoading } = useActiveAnnouncements();
+
+  // Get current user ID from localStorage
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const employeeId = currentUser.userId;
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -176,54 +184,85 @@ const EmployeePage = () => {
 
           {/* Center/Right Column */}
           <section className="col-span-2 flex flex-col gap-6">
-            {/* Employee Community & What's Happening Tabs */}
+            {/* Employee Community & Leave Request Tabs */}
             <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-purple-100">
               <div className="flex gap-8 border-b border-purple-100 pb-3 mb-4">
-                <button className="font-semibold text-purple-700 border-b-2 border-purple-600 pb-1 px-1">
+                <button 
+                  onClick={() => setActiveTab('community')}
+                  className={`font-semibold pb-1 px-1 transition-colors ${
+                    activeTab === 'community' 
+                      ? 'text-purple-700 border-b-2 border-purple-600' 
+                      : 'text-gray-500 hover:text-purple-700'
+                  }`}
+                >
                   Employee Community
                 </button>
-                <button className="font-semibold text-gray-500 pb-1 px-1 hover:text-purple-700 transition-colors">
-                  What's Happening
+                <button 
+                  onClick={() => setActiveTab('leave')}
+                  className={`font-semibold pb-1 px-1 transition-colors ${
+                    activeTab === 'leave' 
+                      ? 'text-purple-700 border-b-2 border-purple-600' 
+                      : 'text-gray-500 hover:text-purple-700'
+                  }`}
+                >
+                  Leave Requests
                 </button>
               </div>
-              <div className="flex gap-2 mb-6">
-                <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow hover:shadow-md">
-                  <FiMessageSquare className="inline mr-2 w-4 h-4" />
-                  New Post
-                </button>
-                <select className="border border-purple-200 rounded-lg px-3 py-2 text-gray-700 text-sm bg-white/50 focus:border-purple-500 focus:ring-purple-500">
-                  <option>Announcements</option>
-                  <option>Discussions</option>
-                  <option>Questions</option>
-                </select>
-                <a href="#" className="ml-auto text-purple-600 hover:text-purple-800 text-sm font-medium hover:underline transition-colors">
-                  Visit Employee Community
-                </a>
-              </div>
-              
-              {/* Announcements List */}
-              <div className="flex flex-col gap-4">
-                {isLoading ? (
-                  <div className="text-center py-4 text-gray-500">Loading announcements...</div>
-                ) : announcements.length > 0 ? (
-                  announcements.map((announcement) => (
-                    <div key={announcement.id} className="flex gap-3 items-start p-3 hover:bg-purple-50 rounded-lg transition-colors">
-                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold text-sm">
-                        {announcement.createdBy?.username?.charAt(0).toUpperCase() || 'A'}
-                      </div>
-                      <div>
-                        <div className="font-semibold text-gray-800">{announcement.title}</div>
-                        <div className="text-gray-600 text-sm mt-1">{announcement.content}</div>
-                        <div className="text-purple-600 text-xs mt-1">
-                          {announcement.priority} • {announcement.createdBy?.username} • {new Date(announcement.createdAt).toLocaleDateString()}
+              {/* Tab Content */}
+              {activeTab === 'community' && (
+                <>
+                  <div className="flex gap-2 mb-6">
+                    <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow hover:shadow-md">
+                      <FiMessageSquare className="inline mr-2 w-4 h-4" />
+                      New Post
+                    </button>
+                    <select className="border border-purple-200 rounded-lg px-3 py-2 text-gray-700 text-sm bg-white/50 focus:border-purple-500 focus:ring-purple-500">
+                      <option>Announcements</option>
+                      <option>Discussions</option>
+                      <option>Questions</option>
+                    </select>
+                    <a href="#" className="ml-auto text-purple-600 hover:text-purple-800 text-sm font-medium hover:underline transition-colors">
+                      Visit Employee Community
+                    </a>
+                  </div>
+                  
+                  {/* Announcements List */}
+                  <div className="flex flex-col gap-4">
+                    {isLoading ? (
+                      <div className="text-center py-4 text-gray-500">Loading announcements...</div>
+                    ) : announcements.length > 0 ? (
+                      announcements.map((announcement) => (
+                        <div key={announcement.id} className="flex gap-3 items-start p-3 hover:bg-purple-50 rounded-lg transition-colors">
+                          <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold text-sm">
+                            {announcement.createdBy?.username?.charAt(0).toUpperCase() || 'A'}
+                          </div>
+                          <div>
+                            <div className="font-semibold text-gray-800">{announcement.title}</div>
+                            <div className="text-gray-600 text-sm mt-1">{announcement.content}</div>
+                            <div className="text-purple-600 text-xs mt-1">
+                              {announcement.priority} • {announcement.createdBy?.username} • {new Date(announcement.createdAt).toLocaleDateString()}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-4 text-gray-500">No announcements available</div>
-                )}
-              </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4 text-gray-500">No announcements available</div>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {activeTab === 'leave' && (
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-6">
+                    <LeaveRequestForm employeeId={employeeId} />
+                    <LeaveBalanceCard employeeId={employeeId} />
+                  </div>
+                  <div>
+                    <LeaveRequestsList employeeId={employeeId} />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Bottom Grid: Who's Out & Company Links */}

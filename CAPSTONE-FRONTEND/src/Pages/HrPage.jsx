@@ -5,14 +5,36 @@ import { useNavigate, Routes, Route, Outlet } from 'react-router-dom';
 import TimelogWidget from '../components/TimelogWidget';
 import TimelogManagement from '../components/TimelogManagement';
 import HrAttendanceSummary from '../components/HrAttendanceSummary';
+import HrLeaveManagement from '../components/HrLeaveManagement';
+import LeaveRequestForm from '../components/LeaveRequestForm';
+import LeaveBalanceCard from '../components/LeaveBalanceCard';
+import LeaveRequestsList from '../components/LeaveRequestsList';
 import Header from '../components/Header';
 import { useActiveAnnouncements } from '../Api';
+import { usePendingRequestsCount } from '../Api/hooks/useLeaveRequests';
 
 const HrPage = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
+  const [leaveTab, setLeaveTab] = useState('request'); // 'manage' or 'request'
   const navigate = useNavigate();
   const { data: announcements = [], isLoading } = useActiveAnnouncements();
+  const { data: pendingCount = 0 } = usePendingRequestsCount();
+
+  // Get current user ID from localStorage
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const employeeId = currentUser.userId;
+  
+  // Check if user can manage leave requests (HR-Manager or HR-Supervisor only)
+  const canManageLeaveRequests = () => {
+    const userPosition = localStorage.getItem('position');
+    return userPosition === 'HR-Manager' || userPosition === 'HR-Supervisor';
+  };
+
+  // Check if user can access leave management page (all HR users)
+  const canAccessLeaveManagement = () => {
+    return currentUser.role === 'HR';
+  };
 
   const handleLogout = () => {
     localStorage.clear();
@@ -114,6 +136,25 @@ const HrPage = () => {
               >
                 My Attendance
               </button>
+              <button
+                onClick={() => canAccessLeaveManagement() ? setActiveSection('leave') : null}
+                disabled={!canAccessLeaveManagement()}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors relative ${
+                  !canAccessLeaveManagement() 
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'
+                    : activeSection === 'leave' 
+                      ? 'bg-purple-600 text-white' 
+                      : 'text-gray-600 hover:bg-gray-100'
+                }`}
+                title={!canAccessLeaveManagement() ? 'Only HR users can access leave management' : ''}
+              >
+                Leave Management
+                {canManageLeaveRequests() && pendingCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {pendingCount}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
 
@@ -167,6 +208,25 @@ const HrPage = () => {
                     <div className="font-semibold">Timelog Management</div>
                     <div className="text-sm text-gray-600 text-center">View and manage employee attendance records.</div>
                   </button>
+                  <button 
+                    onClick={() => canAccessLeaveManagement() ? setActiveSection('leave') : null}
+                    disabled={!canAccessLeaveManagement()}
+                    className={`rounded-lg p-4 flex flex-col items-center transition-colors relative ${
+                      !canAccessLeaveManagement() 
+                        ? 'bg-gray-200 cursor-not-allowed opacity-50'
+                        : 'bg-gray-50 hover:bg-gray-100'
+                    }`}
+                    title={!canAccessLeaveManagement() ? 'Only HR users can access leave management' : ''}
+                  >
+                    <span className="text-3xl mb-2">🏖️</span>
+                    <div className="font-semibold">Leave Management</div>
+                    <div className="text-sm text-gray-600 text-center">File leave requests and manage approvals.</div>
+                    {canManageLeaveRequests() && pendingCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
+                        {pendingCount}
+                      </span>
+                    )}
+                  </button>
                 </div>
               </div>
             </>
@@ -180,6 +240,72 @@ const HrPage = () => {
           {/* HR Attendance Summary Section */}
           {activeSection === 'attendance' && (
             <HrAttendanceSummary />
+          )}
+
+          {/* Leave Management Section */}
+          {activeSection === 'leave' && (
+            <div className="space-y-6">
+              {/* Leave Management Tabs */}
+              <div className="bg-white rounded-lg shadow p-4">
+                <div className="flex gap-4 border-b border-gray-200 pb-3 mb-4">
+                  {canManageLeaveRequests() && (
+                    <button
+                      onClick={() => setLeaveTab('manage')}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                        leaveTab === 'manage' 
+                          ? 'bg-purple-600 text-white' 
+                          : 'text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      Manage Requests
+                      {pendingCount > 0 && (
+                        <span className="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 inline-flex items-center justify-center">
+                          {pendingCount}
+                        </span>
+                      )}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setLeaveTab('request')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      leaveTab === 'request' 
+                        ? 'bg-purple-600 text-white' 
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    My Leave Requests
+                  </button>
+                </div>
+
+                {/* Tab Content */}
+                {leaveTab === 'manage' && canManageLeaveRequests() && <HrLeaveManagement />}
+                
+                {leaveTab === 'manage' && !canManageLeaveRequests() && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                    <div className="flex items-center gap-3 text-yellow-800">
+                      <span className="text-2xl">⚠️</span>
+                      <div>
+                        <h4 className="font-semibold text-lg">Access Restricted</h4>
+                        <p className="text-sm mt-1">Only HR-Manager and HR-Supervisor positions can manage leave requests.</p>
+                        <p className="text-sm mt-1">You can still file your own leave requests using the "My Leave Requests" tab.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {leaveTab === 'request' && (
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-6">
+                      <LeaveRequestForm employeeId={employeeId} />
+                      <LeaveBalanceCard employeeId={employeeId} />
+                    </div>
+                    <div>
+                      <LeaveRequestsList employeeId={employeeId} />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           )}
 
           {/* Announcements section - only show on dashboard */}
