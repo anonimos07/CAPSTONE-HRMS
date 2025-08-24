@@ -53,18 +53,23 @@ const HrLeaveManagement = () => {
     };
 
     try {
+      // Get current user info for display
+      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const currentPosition = localStorage.getItem('position') || 'HR';
+      const userName = currentUser.username || 'HR User';
+
       if (actionType === 'approve') {
         await approveRequest.mutateAsync({
           requestId: selectedRequest.id,
           approvalData: actionData
         });
-        alert('Leave request approved successfully!');
+        alert(`Leave request approved successfully by ${userName} (${currentPosition})!`);
       } else {
         await rejectRequest.mutateAsync({
           requestId: selectedRequest.id,
           rejectionData: actionData
         });
-        alert('Leave request rejected successfully!');
+        alert(`Leave request rejected successfully by ${userName} (${currentPosition})!`);
       }
 
       // Reset state
@@ -103,7 +108,7 @@ const HrLeaveManagement = () => {
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex items-center gap-2 mb-6">
         <FiCalendar className="w-5 h-5 text-purple-600" />
-        <h3 className="text-lg font-semibold text-purple-700">Pending Leave Requests</h3>
+        <h3 className="text-lg font-semibold text-purple-700">All Leave Requests</h3>
         <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-sm font-medium">
           {pendingRequests.length}
         </span>
@@ -134,7 +139,7 @@ const HrLeaveManagement = () => {
                   </div>
                 </div>
                 <div className="text-xs text-gray-500">
-                  Submitted: {formatDate(request.createdAt)}
+                  Submitted by: {request.employee?.username || 'Unknown User'} on {formatDate(request.createdAt)}
                 </div>
               </div>
 
@@ -167,22 +172,42 @@ const HrLeaveManagement = () => {
                 </div>
               )}
 
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleAction(request, 'approve')}
-                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  <FiCheck className="w-4 h-4" />
-                  Approve
-                </button>
-                <button
-                  onClick={() => handleAction(request, 'reject')}
-                  className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  <FiX className="w-4 h-4" />
-                  Reject
-                </button>
-              </div>
+              {/* Show approval/rejection info if request is processed */}
+              {request.status !== 'PENDING' && request.approvedBy && (
+                <div className="mb-4">
+                  <div className="text-sm font-medium text-gray-700">
+                    {request.status === 'APPROVED' ? 'Approved by' : 'Rejected by'}
+                  </div>
+                  <div className="text-sm text-gray-600 bg-blue-50 p-2 rounded">
+                    {request.approvedBy.username || 'Unknown User'} 
+                    ({request.approvedBy.position?.title || 'HR'})
+                    {request.approvalComments && (
+                      <div className="mt-1 text-gray-600">
+                        <strong>Comments:</strong> {request.approvalComments}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {request.status === 'PENDING' && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleAction(request, 'approve')}
+                    className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    <FiCheck className="w-4 h-4" />
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleAction(request, 'reject')}
+                    className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    <FiX className="w-4 h-4" />
+                    Reject
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>

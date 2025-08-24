@@ -84,8 +84,12 @@ const LeaveRequestsList = ({ employeeId }) => {
                   </span>
                 </div>
                 <div className="text-xs text-gray-500">
-                  {formatDate(request.createdAt)}
+                  Submitted: {formatDate(request.createdAt)}
                 </div>
+              </div>
+              
+              <div className="text-xs text-gray-500 mb-2">
+                Submitted by: {request.employee?.username || 'Unknown User'}
               </div>
               
               <div className="text-sm text-gray-600 mb-2">
@@ -101,6 +105,12 @@ const LeaveRequestsList = ({ employeeId }) => {
               {request.approvalComments && (
                 <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
                   <strong>HR Comments:</strong> {request.approvalComments}
+                  {request.approvedBy && (
+                    <div className="text-xs text-gray-500 mt-1">
+                      - {request.approvedBy.username || 'Unknown User'} 
+                      ({request.approvedBy.position?.title || 'HR'})
+                    </div>
+                  )}
                 </div>
               )}
             </div>

@@ -62,7 +62,12 @@ const LeaveRequestForm = ({ employeeId, onSuccess }) => {
       await submitLeaveRequest.mutateAsync(formData);
       
       if (onSuccess) onSuccess();
-      alert('Leave request submitted successfully!');
+      
+      // Get current user name for display
+      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const userName = currentUser.username || 'User';
+      
+      alert(`Leave request submitted successfully by ${userName}!`);
       
       // Reset form
       setFormData({

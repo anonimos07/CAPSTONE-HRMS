@@ -1,6 +1,5 @@
 package com.capstone.HRMS.Entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +20,6 @@ public class LeaveRequest {
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
-    @JsonBackReference
     private Users employee;
 
     @Enumerated(EnumType.STRING)
@@ -43,7 +41,6 @@ public class LeaveRequest {
 
     @ManyToOne
     @JoinColumn(name = "approved_by")
-    @JsonBackReference
     private Users approvedBy;
 
     private String approvalComments;

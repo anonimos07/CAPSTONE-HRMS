@@ -89,10 +89,13 @@ public class LeaveRequestService {
         LeaveRequest savedRequest = leaveRequestRepository.save(request);
 
         // Notify employee
+        String approverName = approver.getEmployeeDetails().getFirstName() + " " + approver.getEmployeeDetails().getLastName();
+        String approverPosition = approver.getPosition() != null ? approver.getPosition().getTitle() : "HR";
+        
         notificationService.createNotification(
             request.getEmployee(),
             "Leave Request Approved",
-            "Your " + request.getLeaveType() + " leave request from " + request.getStartDate() + " to " + request.getEndDate() + " has been approved.",
+            "Your " + request.getLeaveType() + " leave request from " + request.getStartDate() + " to " + request.getEndDate() + " has been approved by " + approverName + " (" + approverPosition + ").",
             NotificationType.GENERAL,
             savedRequest.getId()
         );
@@ -120,10 +123,13 @@ public class LeaveRequestService {
         LeaveRequest savedRequest = leaveRequestRepository.save(request);
 
         // Notify employee
+        String approverName = approver.getEmployeeDetails().getFirstName() + " " + approver.getEmployeeDetails().getLastName();
+        String approverPosition = approver.getPosition() != null ? approver.getPosition().getTitle() : "HR";
+        
         notificationService.createNotification(
             request.getEmployee(),
             "Leave Request Rejected",
-            "Your " + request.getLeaveType() + " leave request from " + request.getStartDate() + " to " + request.getEndDate() + " has been rejected. Reason: " + comments,
+            "Your " + request.getLeaveType() + " leave request from " + request.getStartDate() + " to " + request.getEndDate() + " has been rejected by " + approverName + " (" + approverPosition + "). Reason: " + comments,
             NotificationType.GENERAL,
             savedRequest.getId()
         );
@@ -132,7 +138,7 @@ public class LeaveRequestService {
     }
 
     public List<LeaveRequest> getPendingRequestsForHR() {
-        return leaveRequestRepository.findPendingRequestsForHR(LeaveStatus.PENDING);
+        return leaveRequestRepository.findAllRequestsForHR();
     }
 
     public List<LeaveRequest> getEmployeeLeaveRequests(Users employee) {
