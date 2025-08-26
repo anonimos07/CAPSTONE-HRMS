@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL_POSITION 
+  baseURL: import.meta.env.VITE_API_BASE_URL_POSITION
 });
 
 API.interceptors.request.use((config) => {
@@ -12,6 +12,8 @@ API.interceptors.request.use((config) => {
   }
 
   return config;
+}, (error) => {
+  return Promise.reject(error);
 });
 
 // Create new position
@@ -22,6 +24,6 @@ export const createPosition = async (positionData) => {
 
 // Get all positions
 export const getAllPositions = async () => {
-  const res = await API.get('/');
+  const res = await API.get('/getPositions');
   return res.data;
 };

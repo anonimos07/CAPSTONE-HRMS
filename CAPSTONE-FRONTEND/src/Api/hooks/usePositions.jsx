@@ -4,7 +4,31 @@ import {
   getAllPositions,
 } from '../position';
 
-// Query hooks
+// Combined positions hook
+export const usePositions = () => {
+  const queryClient = useQueryClient();
+  
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['positions'],
+    queryFn: getAllPositions,
+  });
+
+  const createPositionMutation = useMutation({
+    mutationFn: createPosition,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['positions'] });
+    },
+  });
+
+  return {
+    data,
+    isLoading,
+    error,
+    createPositionMutation
+  };
+};
+
+// Individual hooks for backward compatibility
 export const useAllPositions = () => {
   return useQuery({
     queryKey: ['positions'],
@@ -12,7 +36,6 @@ export const useAllPositions = () => {
   });
 };
 
-// Mutation hooks
 export const useCreatePosition = () => {
   const queryClient = useQueryClient();
   

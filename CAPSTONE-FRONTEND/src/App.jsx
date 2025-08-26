@@ -23,7 +23,9 @@ import ResumeReview from './Pages/HR/ResumeReview';
 import HRNotifications from './Pages/HR/Notifications';
 // New Employee pages
 import Notifications from './Pages/Employee/Notifications';
-
+// Admin pages
+import AdminPage from './Pages/AdminPage';
+import AdminLogin from './Pages/AdminLogin';
 
 const qry = new QueryClient({
   defaultOptions: {
@@ -54,6 +56,7 @@ function App() {
       <Route path="/apply/:id" element={<ApplicationForm />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/hr" element={<LoginHr />} />
+      <Route path="/admin" element={<AdminLogin />} />
       
       {/* Quick test redirects */}
       <Route path="/test-employee" element={<EmployeePage />} />
@@ -87,7 +90,8 @@ function App() {
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["ADMIN"]} />}>
-      {/* ari ibutang route sa ADMIN */}
+      {/* Admin routes */}
+      <Route path="/adminpage" element={<AdminPage />} />
       </Route>
 
     </Routes>
