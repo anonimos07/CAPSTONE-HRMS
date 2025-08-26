@@ -268,7 +268,7 @@ public class TimelogService {
         
         StringBuilder csv = new StringBuilder();
         // CSV Header
-        csv.append("ID,Employee Name,Username,Date,Time In,Time Out,Break Start,Break End,")
+        csv.append("ID,Employee Name,Username,Date,Time In,Time Out,Break Start,Break End,Break Duration (mins),")
            .append("Total Hours,Adjusted Time In,Adjusted Time Out,Adjusted Break Duration,")
            .append("Adjustment Reason,Adjusted By,Adjustment Date,Status\n");
         
@@ -282,6 +282,7 @@ public class TimelogService {
                .append(timelog.getTimeOut() != null ? timelog.getTimeOut() : "").append(",")
                .append(timelog.getBreakTimeStart() != null ? timelog.getBreakTimeStart() : "").append(",")
                .append(timelog.getBreakTimeEnd() != null ? timelog.getBreakTimeEnd() : "").append(",")
+               .append(timelog.getBreakDurationMinutes() != null ? timelog.getBreakDurationMinutes() : "0").append(",")
                .append(timelog.getTotalWorkedHours() != null ? timelog.getTotalWorkedHours() : "0").append(",")
                .append(timelog.getAdjustedTimeIn() != null ? timelog.getAdjustedTimeIn() : "").append(",")
                .append(timelog.getAdjustedTimeOut() != null ? timelog.getAdjustedTimeOut() : "").append(",")

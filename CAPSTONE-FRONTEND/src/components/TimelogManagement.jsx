@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { FiSearch, FiDownload, FiEdit, FiCalendar, FiClock, FiUser, FiX } from 'react-icons/fi';
+import { FiSearch, FiDownload, FiEdit, FiCalendar, FiClock, FiUser, FiX, FiImage, FiEye } from 'react-icons/fi';
 import { useAllTimelogsForHR, useAdjustTimelog, useDownloadTimelogsCSV, useTimelogById } from '../Api/hooks/useTimelog';
 
 const TimelogManagement = () => {
@@ -9,6 +9,9 @@ const TimelogManagement = () => {
   const [endDate, setEndDate] = useState('');
   const [selectedTimelog, setSelectedTimelog] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [photoType, setPhotoType] = useState('');
 
   // Query hooks
   const { data: timelogs = [], isLoading, refetch } = useAllTimelogsForHR(search, startDate, endDate);
@@ -39,6 +42,35 @@ const TimelogManagement = () => {
   const formatDate = (date) => {
     if (!date) return 'N/A';
     return new Date(date).toLocaleDateString();
+  };
+
+  const formatBreakDuration = (minutes) => {
+    if (!minutes || minutes === 0) return '0m';
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (hours > 0) {
+      return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+    }
+    return `${mins}m`;
+  };
+
+  const handleViewPhoto = (photo, type, employeeName) => {
+    if (photo) {
+      setSelectedPhoto(photo);
+      setPhotoType(`${type} - ${employeeName}`);
+      setIsPhotoModalOpen(true);
+    }
+  };
+
+  const decryptPhoto = (encryptedPhoto) => {
+    // Since photos are stored as base64, we just need to format them properly
+    if (!encryptedPhoto) return null;
+    // Check if it already has data URL prefix
+    if (encryptedPhoto.startsWith('data:image/')) {
+      return encryptedPhoto;
+    }
+    // Add data URL prefix for base64 images
+    return `data:image/jpeg;base64,${encryptedPhoto}`;
   };
 
   const getEmployeeName = (user) => {
@@ -131,7 +163,13 @@ const TimelogManagement = () => {
                   Time Out
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Break Duration
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Total Hours
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Photos
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
@@ -188,7 +226,46 @@ const TimelogManagement = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <div className="flex items-center">
+                      <FiClock className="mr-2 text-gray-400" />
+                      {timelog.adjustedBreakDurationMinutes !== null ? (
+                        <div>
+                          <div className="line-through text-gray-400">{formatBreakDuration(timelog.breakDurationMinutes)}</div>
+                          <div className="text-blue-600 font-medium">{formatBreakDuration(timelog.adjustedBreakDurationMinutes)}</div>
+                        </div>
+                      ) : (
+                        formatBreakDuration(timelog.breakDurationMinutes)
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {timelog.totalWorkedHours ? `${timelog.totalWorkedHours.toFixed(2)}h` : '0.00h'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <div className="flex space-x-2">
+                      {timelog.timeInPhoto && (
+                        <Button
+                          onClick={() => handleViewPhoto(timelog.timeInPhoto, 'Time In', getEmployeeName(timelog.user))}
+                          variant="outline"
+                          size="sm"
+                          className="text-green-600 hover:text-green-700"
+                        >
+                          <FiImage className="mr-1" />
+                          In
+                        </Button>
+                      )}
+                      {timelog.timeOutPhoto && (
+                        <Button
+                          onClick={() => handleViewPhoto(timelog.timeOutPhoto, 'Time Out', getEmployeeName(timelog.user))}
+                          variant="outline"
+                          size="sm"
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <FiImage className="mr-1" />
+                          Out
+                        </Button>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {getStatusBadge(timelog.status)}
@@ -230,6 +307,20 @@ const TimelogManagement = () => {
             });
           }}
           isLoading={adjustTimelogMutation.isLoading}
+        />
+      )}
+
+      {/* Photo Verification Modal */}
+      {isPhotoModalOpen && selectedPhoto && (
+        <PhotoVerificationModal
+          photo={selectedPhoto}
+          photoType={photoType}
+          isOpen={isPhotoModalOpen}
+          onClose={() => {
+            setIsPhotoModalOpen(false);
+            setSelectedPhoto(null);
+            setPhotoType('');
+          }}
         />
       )}
     </div>
@@ -357,6 +448,86 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
             className="bg-purple-600 hover:bg-purple-700 text-white"
           >
             {isLoading ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Photo Verification Modal Component
+const PhotoVerificationModal = ({ photo, photoType, isOpen, onClose }) => {
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  const decryptedPhoto = React.useMemo(() => {
+    if (!photo) return null;
+    // Handle base64 encoded photos
+    if (photo.startsWith('data:image/')) {
+      return photo;
+    }
+    return `data:image/jpeg;base64,${photo}`;
+  }, [photo]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold flex items-center">
+            <FiEye className="mr-2" />
+            Identity Verification - {photoType}
+          </h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <FiX size={24} />
+          </button>
+        </div>
+
+        <div className="text-center">
+          {imageError ? (
+            <div className="bg-gray-100 rounded-lg p-8">
+              <FiImage className="mx-auto text-gray-400 mb-2" size={48} />
+              <p className="text-gray-500">Unable to load photo</p>
+            </div>
+          ) : (
+            <div className="relative">
+              {!isImageLoaded && (
+                <div className="bg-gray-100 rounded-lg p-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+                  <p className="text-gray-500 mt-2">Loading photo...</p>
+                </div>
+              )}
+              <img
+                src={decryptedPhoto}
+                alt={`${photoType} verification photo`}
+                className={`max-w-full h-auto rounded-lg shadow-lg ${!isImageLoaded ? 'hidden' : ''}`}
+                onLoad={() => setIsImageLoaded(true)}
+                onError={() => {
+                  setImageError(true);
+                  setIsImageLoaded(false);
+                }}
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="mt-6 bg-blue-50 rounded-lg p-4">
+          <h4 className="font-medium text-blue-900 mb-2">Verification Guidelines:</h4>
+          <ul className="text-sm text-blue-800 space-y-1">
+            <li>• Verify the employee's identity matches their profile</li>
+            <li>• Check for clear facial recognition</li>
+            <li>• Ensure the photo was taken at the appropriate time</li>
+            <li>• Look for any signs of tampering or irregularities</li>
+          </ul>
+        </div>
+
+        <div className="flex justify-end mt-6">
+          <Button
+            onClick={onClose}
+            className="bg-purple-600 hover:bg-purple-700 text-white"
+          >
+            Close
           </Button>
         </div>
       </div>
