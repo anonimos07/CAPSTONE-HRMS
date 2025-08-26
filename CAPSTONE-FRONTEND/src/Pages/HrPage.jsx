@@ -2,6 +2,7 @@ import React, { useState} from 'react';
 import { Button } from '@/components/ui/button';
 import { FiArrowLeft, FiBriefcase, FiHome } from 'react-icons/fi';
 import { useNavigate, Routes, Route, Outlet } from 'react-router-dom';
+import { Users, Plus, Building2, UserPlus } from 'lucide-react';
 import TimelogWidget from '../components/TimelogWidget';
 import TimelogManagement from '../components/TimelogManagement';
 import HrAttendanceSummary from '../components/HrAttendanceSummary';
@@ -12,14 +13,26 @@ import LeaveRequestsList from '../components/LeaveRequestsList';
 import Header from '../components/Header';
 import { useActiveAnnouncements } from '../Api';
 import { usePendingRequestsCount } from '../Api/hooks/useLeaveRequests';
+import { useAdmin } from '../Api/hooks/useAdmin';
+import { usePositions } from '../Api/hooks/usePositions';
+import { useQueryClient } from '@tanstack/react-query';
 
 const HrPage = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
   const [leaveTab, setLeaveTab] = useState('request'); // 'manage' or 'request'
+  const [managementTab, setManagementTab] = useState('users'); // 'users' or 'positions'
+  const [showCreateHRForm, setShowCreateHRForm] = useState(false);
+  const [showCreateEmployeeForm, setShowCreateEmployeeForm] = useState(false);
+  const [showCreatePositionForm, setShowCreatePositionForm] = useState(false);
+  
   const navigate = useNavigate();
   const { data: announcements = [], isLoading } = useActiveAnnouncements();
   const { data: pendingCount = 0 } = usePendingRequestsCount();
+  
+  const queryClient = useQueryClient();
+  const { createHRMutation, createEmployeeMutation } = useAdmin();
+  const { data: positions = [], createPositionMutation } = usePositions();
 
   // Get current user ID from localStorage
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -34,6 +47,54 @@ const HrPage = () => {
   // Check if user can access leave management page (all HR users)
   const canAccessLeaveManagement = () => {
     return currentUser.role === 'HR';
+  };
+
+  // Form states
+  const [hrForm, setHrForm] = useState({
+    username: '',
+    password: '',
+    position: { title: '' }
+  });
+
+  const [employeeForm, setEmployeeForm] = useState({
+    username: '',
+    password: '',
+    position: { title: '' }
+  });
+
+  const [positionForm, setPositionForm] = useState({
+    title: ''
+  });
+
+  const handleCreateHR = (e) => {
+    e.preventDefault();
+    createHRMutation.mutate(hrForm, {
+      onSuccess: () => {
+        setHrForm({ username: '', password: '', position: { title: '' } });
+        setShowCreateHRForm(false);
+      }
+    });
+  };
+
+  const handleCreateEmployee = (e) => {
+    e.preventDefault();
+    createEmployeeMutation.mutate(employeeForm, {
+      onSuccess: () => {
+        setEmployeeForm({ username: '', password: '', position: { title: '' } });
+        setShowCreateEmployeeForm(false);
+      }
+    });
+  };
+
+  const handleCreatePosition = (e) => {
+    e.preventDefault();
+    createPositionMutation.mutate(positionForm, {
+      onSuccess: () => {
+        setPositionForm({ title: '' });
+        setShowCreatePositionForm(false);
+        queryClient.invalidateQueries({ queryKey: ['positions'] });
+      }
+    });
   };
 
   const handleLogout = () => {
@@ -154,6 +215,16 @@ const HrPage = () => {
                     {pendingCount}
                   </span>
                 )}
+              </button>
+              <button
+                onClick={() => setActiveSection('management')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  activeSection === 'management' 
+                    ? 'bg-purple-600 text-white' 
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                User Management
               </button>
             </div>
           </div>
@@ -308,6 +379,133 @@ const HrPage = () => {
             </div>
           )}
 
+          {/* User Management Section */}
+          {activeSection === 'management' && (
+            <div className="space-y-6">
+              {/* Management Tabs */}
+              <div className="bg-white rounded-lg shadow p-4">
+                <div className="flex gap-4 border-b border-gray-200 pb-3 mb-4">
+                  <button
+                    onClick={() => setManagementTab('users')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      managementTab === 'users' 
+                        ? 'bg-purple-600 text-white' 
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    User Management
+                  </button>
+                  <button
+                    onClick={() => setManagementTab('positions')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      managementTab === 'positions' 
+                        ? 'bg-purple-600 text-white' 
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    Position Management
+                  </button>
+                </div>
+
+                {/* User Management Tab */}
+                {managementTab === 'users' && (
+                  <div className="space-y-6">
+                    <div className="flex justify-between items-center">
+                      <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
+                      <div className="flex space-x-3">
+                        <button
+                          onClick={() => setShowCreateHRForm(true)}
+                          className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                          <UserPlus className="h-4 w-4" />
+                          <span>Create HR</span>
+                        </button>
+                        <button
+                          onClick={() => setShowCreateEmployeeForm(true)}
+                          className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                          <UserPlus className="h-4 w-4" />
+                          <span>Create Employee</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">HR Staff Management</h3>
+                        <p className="text-gray-600 mb-4">Create and manage HR staff accounts with appropriate permissions.</p>
+                        <button
+                          onClick={() => setShowCreateHRForm(true)}
+                          className="w-full bg-blue-50 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors"
+                        >
+                          Create New HR Account
+                        </button>
+                      </div>
+
+                      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Employee Management</h3>
+                        <p className="text-gray-600 mb-4">Create and manage employee accounts for the organization.</p>
+                        <button
+                          onClick={() => setShowCreateEmployeeForm(true)}
+                          className="w-full bg-green-50 text-green-700 px-4 py-2 rounded-lg hover:bg-green-100 transition-colors"
+                        >
+                          Create New Employee Account
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Position Management Tab */}
+                {managementTab === 'positions' && (
+                  <div className="space-y-6">
+                    <div className="flex justify-between items-center">
+                      <h2 className="text-2xl font-bold text-gray-900">Position Management</h2>
+                      <button
+                        onClick={() => setShowCreatePositionForm(true)}
+                        className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                      >
+                        <Plus className="h-4 w-4" />
+                        <span>Add Position</span>
+                      </button>
+                    </div>
+
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                      <div className="p-6 border-b border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-900">Company Positions</h3>
+                      </div>
+                      <div className="p-6">
+                        {positions.length > 0 ? (
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {positions.map((position) => (
+                              <div key={position.positionId} className="p-4 border border-gray-200 rounded-lg">
+                                <div className="flex items-center space-x-2">
+                                  <Building2 className="h-5 w-5 text-gray-500" />
+                                  <span className="font-medium text-gray-900">{position.title}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-8">
+                            <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                            <p className="text-gray-500">No positions created yet</p>
+                            <button
+                              onClick={() => setShowCreatePositionForm(true)}
+                              className="mt-2 text-purple-600 hover:text-purple-700"
+                            >
+                              Create your first position
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Announcements section - only show on dashboard */}
           {activeSection === 'dashboard' && (
             <>
@@ -354,6 +552,170 @@ const HrPage = () => {
           )}
         </section>
       </main>
+
+      {/* Create HR Modal */}
+      {showCreateHRForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Create HR Account</h3>
+            <form onSubmit={handleCreateHR} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <input
+                  type="text"
+                  value={hrForm.username}
+                  onChange={(e) => setHrForm({ ...hrForm, username: e.target.value })}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input
+                  type="password"
+                  value={hrForm.password}
+                  onChange={(e) => setHrForm({ ...hrForm, password: e.target.value })}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Position Title</label>
+                <select
+                  value={hrForm.position.title}
+                  onChange={(e) => setHrForm({ ...hrForm, position: { title: e.target.value } })}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Select Position</option>
+                  {positions.map((position) => (
+                    <option key={position.positionId} value={position.title}>
+                      {position.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateHRForm(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={createHRMutation.isLoading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  {createHRMutation.isLoading ? 'Creating...' : 'Create HR'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Create Employee Modal */}
+      {showCreateEmployeeForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Create Employee Account</h3>
+            <form onSubmit={handleCreateEmployee} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <input
+                  type="text"
+                  value={employeeForm.username}
+                  onChange={(e) => setEmployeeForm({ ...employeeForm, username: e.target.value })}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input
+                  type="password"
+                  value={employeeForm.password}
+                  onChange={(e) => setEmployeeForm({ ...employeeForm, password: e.target.value })}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Position Title</label>
+                <select
+                  value={employeeForm.position.title}
+                  onChange={(e) => setEmployeeForm({ ...employeeForm, position: { title: e.target.value } })}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                >
+                  <option value="">Select Position</option>
+                  {positions.map((position) => (
+                    <option key={position.positionId} value={position.title}>
+                      {position.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateEmployeeForm(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={createEmployeeMutation.isLoading}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
+                >
+                  {createEmployeeMutation.isLoading ? 'Creating...' : 'Create Employee'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Create Position Modal */}
+      {showCreatePositionForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Add New Position</h3>
+            <form onSubmit={handleCreatePosition} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Position Title</label>
+                <input
+                  type="text"
+                  value={positionForm.title}
+                  onChange={(e) => setPositionForm({ title: e.target.value })}
+                  required
+                  placeholder="e.g., Software Engineer, HR Manager, Marketing Specialist"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+              </div>
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowCreatePositionForm(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={createPositionMutation.isLoading}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+                >
+                  {createPositionMutation.isLoading ? 'Adding...' : 'Add Position'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

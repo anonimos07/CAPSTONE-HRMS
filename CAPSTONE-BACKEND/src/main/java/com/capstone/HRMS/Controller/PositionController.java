@@ -25,8 +25,7 @@ public class PositionController {
     }
 
     @GetMapping("/getPositions")
-    public ResponseEntity<List<Position>> getAllPositions() {
+    public ResponseEntity<List<Position>> getPositions() {
         return ResponseEntity.ok(positionService.getAllPositions());
     }
 }
-
