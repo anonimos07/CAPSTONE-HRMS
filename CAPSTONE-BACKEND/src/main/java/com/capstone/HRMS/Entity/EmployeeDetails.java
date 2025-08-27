@@ -27,6 +27,10 @@ public class EmployeeDetails {
     public String department;
     @Nullable
     public String address;
+    
+    @Nullable
+    @Column(name = "profile_picture")
+    public String profilePicture;
 
     @OneToOne
     @JoinColumn(name = "user_id")

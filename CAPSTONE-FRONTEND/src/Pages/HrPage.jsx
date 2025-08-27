@@ -11,6 +11,8 @@ import LeaveRequestForm from '../components/LeaveRequestForm';
 import LeaveBalanceCard from '../components/LeaveBalanceCard';
 import LeaveRequestsList from '../components/LeaveRequestsList';
 import Header from '../components/Header';
+import UserList from '../components/UserList';
+import ViewUserProfileModal from '../components/ViewUserProfileModal';
 import { useActiveAnnouncements } from '../Api';
 import { usePendingRequestsCount } from '../Api/hooks/useLeaveRequests';
 import { useHr } from '../Api/hooks/useHr';
@@ -25,6 +27,9 @@ const HrPage = () => {
   const [showCreateHRForm, setShowCreateHRForm] = useState(false);
   const [showCreateEmployeeForm, setShowCreateEmployeeForm] = useState(false);
   const [showCreatePositionForm, setShowCreatePositionForm] = useState(false);
+  const [showViewProfileModal, setShowViewProfileModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUserRole, setSelectedUserRole] = useState(null);
   
   const navigate = useNavigate();
   const { data: announcements = [], isLoading } = useActiveAnnouncements();
@@ -95,6 +100,18 @@ const HrPage = () => {
         queryClient.invalidateQueries({ queryKey: ['positions'] });
       }
     });
+  };
+
+  const handleViewProfile = (userId, userRole) => {
+    setSelectedUserId(userId);
+    setSelectedUserRole(userRole);
+    setShowViewProfileModal(true);
+  };
+
+  const handleCloseProfileModal = () => {
+    setShowViewProfileModal(false);
+    setSelectedUserId(null);
+    setSelectedUserRole(null);
   };
 
   const handleLogout = () => {
@@ -430,6 +447,9 @@ const HrPage = () => {
                       </div>
                     </div>
 
+                    {/* User List Component */}
+                    <UserList onViewProfile={handleViewProfile} />
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">HR Staff Management</h3>
@@ -716,6 +736,14 @@ const HrPage = () => {
           </div>
         </div>
       )}
+
+      {/* View User Profile Modal */}
+      <ViewUserProfileModal
+        isOpen={showViewProfileModal}
+        onClose={handleCloseProfileModal}
+        userId={selectedUserId}
+        userRole={selectedUserRole}
+      />
     </div>
   );
 };

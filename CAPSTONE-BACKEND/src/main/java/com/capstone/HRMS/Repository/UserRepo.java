@@ -23,4 +23,6 @@ public interface UserRepo extends JpaRepository<Users, Long> {
     
     @Query("SELECT u FROM Users u WHERE u.position.title = :title")
     List<Users> findByPositionTitle(@Param("title") String title);
+    
+    List<Users> findByUsernameContainingIgnoreCase(String username);
 }

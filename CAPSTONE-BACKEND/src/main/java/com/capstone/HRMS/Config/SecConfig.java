@@ -52,7 +52,14 @@ public class SecConfig {
                                 "/api/applications/submit",
                                 "api/notifications/all",
                                 "api/timelog/time-in",
-                                "/api/job-positions"
+                                "/api/job-positions",
+                                "/default-profile.png",
+                                "/*.png",
+                                "/*.jpg",
+                                "/*.jpeg",
+                                "/*.gif",
+                                "/static/**",
+                                "/profile-pictures/**"
 
                         ).permitAll()
 
@@ -65,6 +72,7 @@ public class SecConfig {
                         .requestMatchers("/api/applications/application", "/api/applications/{id}", "/api/applications/{id}/status").hasRole("HR")
                         .requestMatchers("/api/timelog/**").hasAnyRole("EMPLOYEE", "HR", "ADMIN")
                         .requestMatchers("/api/announcements/**").hasAnyRole("EMPLOYEE", "HR", "ADMIN")
+                        .requestMatchers("/profile/**").hasAnyRole("EMPLOYEE", "HR", "ADMIN")
                         .requestMatchers("/employee/**").hasRole("EMPLOYEE")
 
                         .requestMatchers("/hr/available-hr-for-leave").hasAnyRole("EMPLOYEE", "HR")

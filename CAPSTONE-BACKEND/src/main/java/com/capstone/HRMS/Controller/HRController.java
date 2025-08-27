@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/hr")
@@ -119,6 +121,101 @@ public class HRController {
         String username = authentication.getName();
         employeeService.updateOwnProfile(username, updateData);
         return ResponseEntity.ok(Map.of("message", "Profile updated successfully"));
+    }
+
+    //Get all users for HR management
+    @GetMapping("/users")
+    public ResponseEntity<Map<String, Object>> getAllUsers(
+            @RequestParam(defaultValue = "") String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            List<Users> allUsers;
+            
+            if (search.isEmpty()) {
+                allUsers = userRepo.findAll();
+            } else {
+                allUsers = userRepo.findByUsernameContainingIgnoreCase(search);
+            }
+            
+            List<Map<String, Object>> userList = allUsers.stream()
+                .map(user -> {
+                    Map<String, Object> userInfo = new HashMap<>();
+                    userInfo.put("userId", user.getUserId());
+                    userInfo.put("username", user.getUsername());
+                    userInfo.put("role", user.getRole().name());
+                    userInfo.put("position", user.getPosition() != null ? user.getPosition().getTitle() : "No Position");
+                    
+                    // Add basic employee details if available
+                    if (user.getEmployeeDetails() != null) {
+                        EmployeeDetails details = user.getEmployeeDetails();
+                        userInfo.put("firstName", details.getFirstName());
+                        userInfo.put("lastName", details.getLastName());
+                        userInfo.put("email", details.getEmail());
+                    }
+                    
+                    return userInfo;
+                })
+                .collect(Collectors.toList());
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("users", userList);
+            response.put("totalUsers", userList.size());
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Error fetching users: " + e.getMessage()));
+        }
+    }
+
+    //Get specific user details for HR viewing
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<Map<String, Object>> getUserDetails(@PathVariable Long userId) {
+        try {
+            Optional<Users> userOpt = userRepo.findById(userId);
+            
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "User not found"));
+            }
+            
+            Users user = userOpt.get();
+            Map<String, Object> userDetails = new HashMap<>();
+            
+            // Basic user info
+            userDetails.put("userId", user.getUserId());
+            userDetails.put("username", user.getUsername());
+            userDetails.put("role", user.getRole().name());
+            userDetails.put("position", user.getPosition() != null ? user.getPosition().getTitle() : "No Position");
+            
+            // Employee details
+            if (user.getEmployeeDetails() != null) {
+                EmployeeDetails details = user.getEmployeeDetails();
+                userDetails.put("firstName", details.getFirstName() != null ? details.getFirstName() : "");
+                userDetails.put("lastName", details.getLastName() != null ? details.getLastName() : "");
+                userDetails.put("email", details.getEmail() != null ? details.getEmail() : "");
+                userDetails.put("contact", details.getContact() != null ? details.getContact() : "");
+                userDetails.put("department", details.getDepartment() != null ? details.getDepartment() : "");
+                userDetails.put("address", details.getAddress() != null ? details.getAddress() : "");
+                userDetails.put("profilePicture", details.getProfilePicture() != null ? details.getProfilePicture() : "");
+            } else {
+                userDetails.put("firstName", "");
+                userDetails.put("lastName", "");
+                userDetails.put("email", "");
+                userDetails.put("contact", "");
+                userDetails.put("department", "");
+                userDetails.put("address", "");
+                userDetails.put("profilePicture", "");
+            }
+            
+            return ResponseEntity.ok(userDetails);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Error fetching user details: " + e.getMessage()));
+        }
     }
 
     //testing

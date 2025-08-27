@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchCurrentUserDetails, updateUserProfile } from '../Api/hr';
 import Header from '../components/Header';
 import ChangePasswordForm from '../components/ChangePasswordForm';
+import ProfilePictureUpload from '../components/ProfilePictureUpload';
 
 const EmployeeProfile = () => {
    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -98,23 +99,10 @@ const EmployeeProfile = () => {
       <div className="min-h-screen bg-gray-100 flex">
         {/* Sidebar */}
         <aside className="w-1/5 bg-white flex flex-col items-center py-10 shadow-md min-h-screen">
-          <div className="w-20 h-20 bg-purple-200 rounded-full flex items-center justify-center mb-3">
-            <svg width="48" height="48" fill="none" viewBox="0 0 24 24">
-              <circle cx="12" cy="8" r="6" fill="#a020f0" />
-              <rect x="4" y="16" width="16" height="6" rx="3" fill="#a020f0" />
-            </svg>
+          {/* Profile Picture Section */}
+          <div className="mb-6">
+            <ProfilePictureUpload size="medium" />
           </div>
-          {/* Avatar Section */}
-          <div className="text-lg font-bold text-gray-800 mb-1">John Doe</div>
-          <div className="text-gray-400 mb-6">&bull;</div>
-          <nav className="w-full px-6">
-            <ul className="space-y-2">
-              <li className="text-gray-700 flex items-center gap-2 py-2 px-3 rounded hover:bg-gray-100 cursor-pointer"><span>👥</span>Employees</li>
-              <li className="text-gray-700 flex items-center gap-2 py-2 px-3 rounded hover:bg-gray-100 cursor-pointer"><span>🕒</span>Attendance</li>
-              <li className="text-gray-700 flex items-center gap-2 py-2 px-3 rounded hover:bg-gray-100 cursor-pointer"><span>📝</span>Leave</li>
-              <li className="text-gray-700 flex items-center gap-2 py-2 px-3 rounded hover:bg-gray-100 cursor-pointer"><span>📁</span>Project</li>
-            </ul>
-          </nav>
         </aside>
         {/* Main Content */}
         <main className="flex-1 p-10">    
