@@ -14,7 +14,10 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-
+export const createHR = async (userData) => {
+  const res = await API.post('/create-hr', userData);
+  return res.data;
+};
 
 export const createEmployee = async (userData) => {
   const res = await API.post('/create-employee', userData);

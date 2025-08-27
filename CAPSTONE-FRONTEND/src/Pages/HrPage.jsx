@@ -13,7 +13,7 @@ import LeaveRequestsList from '../components/LeaveRequestsList';
 import Header from '../components/Header';
 import { useActiveAnnouncements } from '../Api';
 import { usePendingRequestsCount } from '../Api/hooks/useLeaveRequests';
-import { useAdmin } from '../Api/hooks/useAdmin';
+import { useHr } from '../Api/hooks/useHr';
 import { usePositions } from '../Api/hooks/usePositions';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -31,7 +31,7 @@ const HrPage = () => {
   const { data: pendingCount = 0 } = usePendingRequestsCount();
   
   const queryClient = useQueryClient();
-  const { createHRMutation, createEmployeeMutation } = useAdmin();
+  const { createHRMutation, createEmployeeMutation } = useHr();
   const { data: positions = [], createPositionMutation } = usePositions();
 
   // Get current user ID from localStorage

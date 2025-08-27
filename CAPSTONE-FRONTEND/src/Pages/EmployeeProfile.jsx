@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchCurrentUserDetails, updateUserProfile } from '../Api/employee';
 import Header from '../components/Header';
+import ChangePasswordForm from '../components/ChangePasswordForm';
 
 const EmployeeProfile = () => {
    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -208,6 +209,11 @@ const EmployeeProfile = () => {
               </div>
             </div>
           </form>
+          
+          {/* Change Password Section */}
+          <div className="mt-8 max-w-5xl mx-auto">
+            <ChangePasswordForm />
+          </div>
         </main>
       </div>
     </div>

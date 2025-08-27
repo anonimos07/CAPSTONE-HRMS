@@ -26,6 +26,9 @@ import Notifications from './Pages/Employee/Notifications';
 // Admin pages
 import AdminPage from './Pages/AdminPage';
 import AdminLogin from './Pages/AdminLogin';
+// Password reset pages
+import ForgotPassword from './Pages/ForgotPassword';
+import ResetPassword from './Pages/ResetPassword';
 
 const qry = new QueryClient({
   defaultOptions: {
@@ -57,6 +60,8 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/hr" element={<LoginHr />} />
       <Route path="/admin" element={<AdminLogin />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       
       {/* Quick test redirects */}
       <Route path="/test-employee" element={<EmployeePage />} />
