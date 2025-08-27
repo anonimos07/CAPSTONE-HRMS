@@ -64,4 +64,19 @@ public class AdminService {
         return "failed";
     }
 
+    public void saveAdmin(Users admin) {
+        // Check if username already exists
+        if (userRepo.existsByUsername(admin.getUsername())) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        // Encode password and set role
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        admin.setRole(Role.ADMIN);
+        admin.setEnabled(true);
+        admin.setPosition(null); // Admins don't have positions
+        
+        userRepo.save(admin);
+    }
+
 }

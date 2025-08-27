@@ -42,6 +42,11 @@ public class AdminController {
         }
 
         Users dbAdmin = dbAdminOpt.get();
+        
+        // Check if account is disabled
+        if (!dbAdmin.isEnabled()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap("error", "Your account has been disabled"));
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("token", result);
@@ -68,6 +73,28 @@ public class AdminController {
     public ResponseEntity<String> createEmployee(@RequestBody Users employee) {
         employeeService.saveEmployee(employee);
         return ResponseEntity.ok("Employee created successfully by admin");
+    }
+
+    //cr8 admin
+    @PostMapping("/create-admin")
+    public ResponseEntity<Map<String, Object>> createAdmin(@RequestBody Users admin) {
+        try {
+            // Set role to ADMIN and no position required
+            admin.setRole(Role.ADMIN);
+            admin.setPosition(null);
+            
+            adminService.saveAdmin(admin);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Admin created successfully");
+            response.put("role", admin.getRole().name());
+            response.put("username", admin.getUsername());
+            response.put("userId", admin.getUserId());
+            
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", e.getMessage()));
+        }
     }
 
     //testing

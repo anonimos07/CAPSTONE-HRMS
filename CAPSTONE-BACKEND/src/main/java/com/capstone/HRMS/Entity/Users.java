@@ -22,6 +22,9 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "is_enabled", nullable = false)
+    private boolean isEnabled = true;
+
     @OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JsonManagedReference
     private EmployeeDetails employeeDetails;
@@ -39,5 +42,6 @@ public class Users {
         this.password = password;
         this.role = role;
         this.position = position;
+        this.isEnabled = true;
     }
 }

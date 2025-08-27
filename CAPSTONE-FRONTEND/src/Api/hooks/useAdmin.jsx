@@ -3,6 +3,7 @@ import {
   adminLogin,
   createHR,
   createEmployee,
+  createAdmin,
   testAdmin,
 } from '../admin';
 
@@ -28,6 +29,13 @@ export const useAdmin = () => {
     },
   });
 
+  const createAdminMutation = useMutation({
+    mutationFn: createAdmin,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+
   const testMutation = useMutation({
     mutationFn: testAdmin,
   });
@@ -36,6 +44,7 @@ export const useAdmin = () => {
     loginMutation,
     createHRMutation,
     createEmployeeMutation,
+    createAdminMutation,
     testMutation
   };
 };
@@ -63,6 +72,17 @@ export const useCreateEmployee = () => {
   
   return useMutation({
     mutationFn: createEmployee,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+};
+
+export const useCreateAdmin = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: createAdmin,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },

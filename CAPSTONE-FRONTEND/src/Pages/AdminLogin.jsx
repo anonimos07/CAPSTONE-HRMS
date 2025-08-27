@@ -38,7 +38,12 @@ const AdminLogin = () => {
         navigate('/adminpage');
       },
       onError: (error) => {
-        setError(error.response?.data?.message || 'Login failed. Please try again.');
+        const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Login failed. Please try again.';
+        if (errorMessage === "Your account has been disabled") {
+          setError("Your account has been disabled. Please contact your administrator.");
+        } else {
+          setError(errorMessage);
+        }
       }
     });
   };

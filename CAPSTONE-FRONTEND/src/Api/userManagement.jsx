@@ -41,3 +41,25 @@ export const getUserDetails = async (userId) => {
     throw error;
   }
 };
+
+// Disable user account
+export const disableUserAccount = async (userId) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/hr/users/${userId}/disable`, {}, createAuthHeaders());
+    return response.data;
+  } catch (error) {
+    console.error('Error disabling user account:', error);
+    throw error;
+  }
+};
+
+// Enable user account
+export const enableUserAccount = async (userId) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/hr/users/${userId}/enable`, {}, createAuthHeaders());
+    return response.data;
+  } catch (error) {
+    console.error('Error enabling user account:', error);
+    throw error;
+  }
+};

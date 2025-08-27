@@ -42,6 +42,11 @@ public class HRController {
         }
 
         Users dbHr = dbHrOpt.get();
+        
+        // Check if account is disabled
+        if (!dbHr.isEnabled()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap("error", "Your account has been disabled"));
+        }
         String positionTitle = null;
         if (dbHr.getPosition() != null) {
             positionTitle = dbHr.getPosition().getTitle();
@@ -145,6 +150,7 @@ public class HRController {
                     userInfo.put("username", user.getUsername());
                     userInfo.put("role", user.getRole().name());
                     userInfo.put("position", user.getPosition() != null ? user.getPosition().getTitle() : "No Position");
+                    userInfo.put("isEnabled", user.isEnabled());
                     
                     // Add basic employee details if available
                     if (user.getEmployeeDetails() != null) {
@@ -189,6 +195,7 @@ public class HRController {
             userDetails.put("username", user.getUsername());
             userDetails.put("role", user.getRole().name());
             userDetails.put("position", user.getPosition() != null ? user.getPosition().getTitle() : "No Position");
+            userDetails.put("isEnabled", user.isEnabled());
             
             // Employee details
             if (user.getEmployeeDetails() != null) {
@@ -215,6 +222,60 @@ public class HRController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("message", "Error fetching user details: " + e.getMessage()));
+        }
+    }
+
+    //Disable user account
+    @PutMapping("/users/{userId}/disable")
+    public ResponseEntity<Map<String, Object>> disableUserAccount(@PathVariable Long userId) {
+        try {
+            Optional<Users> userOpt = userRepo.findById(userId);
+            
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "User not found"));
+            }
+            
+            Users user = userOpt.get();
+            user.setEnabled(false);
+            userRepo.save(user);
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "User account disabled successfully",
+                "userId", userId,
+                "username", user.getUsername()
+            ));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Error disabling user account: " + e.getMessage()));
+        }
+    }
+
+    //Enable user account
+    @PutMapping("/users/{userId}/enable")
+    public ResponseEntity<Map<String, Object>> enableUserAccount(@PathVariable Long userId) {
+        try {
+            Optional<Users> userOpt = userRepo.findById(userId);
+            
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "User not found"));
+            }
+            
+            Users user = userOpt.get();
+            user.setEnabled(true);
+            userRepo.save(user);
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "User account enabled successfully",
+                "userId", userId,
+                "username", user.getUsername()
+            ));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Error enabling user account: " + e.getMessage()));
         }
     }
 

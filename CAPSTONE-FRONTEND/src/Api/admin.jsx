@@ -32,6 +32,12 @@ export const createEmployee = async (employeeData) => {
   return res.data;
 };
 
+// Create Admin
+export const createAdmin = async (adminData) => {
+  const res = await API.post('/create-admin', adminData);
+  return res.data;
+};
+
 // Test endpoint
 export const testAdmin = async () => {
   const res = await API.get('/');

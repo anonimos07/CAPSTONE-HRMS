@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Eye, Users } from 'lucide-react';
+import { Search, Eye, Users, UserX, UserCheck } from 'lucide-react';
 import { getAllUsers } from '../Api/userManagement';
+import DisableAccountModal from './DisableAccountModal';
 
 const UserList = ({ onViewProfile }) => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showDisableModal, setShowDisableModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   // Fetch users on component mount and when search term changes
   useEffect(() => {
@@ -44,6 +47,26 @@ const UserList = ({ onViewProfile }) => {
   const handleClearSearch = () => {
     setSearchTerm('');
     fetchUsers();
+  };
+
+  const handleDisableAccount = (user) => {
+    setSelectedUser(user);
+    setShowDisableModal(true);
+  };
+
+  const handleCloseDisableModal = () => {
+    setShowDisableModal(false);
+    setSelectedUser(null);
+  };
+
+  const handleAccountStatusChanged = (userId, newStatus) => {
+    setUsers(prevUsers => 
+      prevUsers.map(user => 
+        user.userId === userId 
+          ? { ...user, isEnabled: newStatus }
+          : user
+      )
+    );
   };
 
   return (
@@ -111,13 +134,28 @@ const UserList = ({ onViewProfile }) => {
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 font-semibold text-sm">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      user.isEnabled ? 'bg-blue-100' : 'bg-gray-100'
+                    }`}>
+                      <span className={`font-semibold text-sm ${
+                        user.isEnabled ? 'text-blue-600' : 'text-gray-500'
+                      }`}>
                         {user.username.charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">{user.username}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className={`font-medium ${
+                          user.isEnabled ? 'text-gray-900' : 'text-gray-500'
+                        }`}>
+                          {user.username}
+                        </h3>
+                        {!user.isEnabled && (
+                          <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
+                            Disabled
+                          </span>
+                        )}
+                      </div>
                       <div className="flex items-center gap-4 text-sm text-gray-500">
                         <span className="capitalize">{user.role.toLowerCase()}</span>
                         {user.firstName && user.lastName && (
@@ -128,18 +166,48 @@ const UserList = ({ onViewProfile }) => {
                     </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => onViewProfile(user.userId, user.role)}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <Eye size={16} />
-                  View Profile
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => onViewProfile(user.userId, user.role)}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    <Eye size={16} />
+                    View Profile
+                  </button>
+                  <button
+                    onClick={() => handleDisableAccount(user)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                      user.isEnabled 
+                        ? 'bg-red-600 text-white hover:bg-red-700' 
+                        : 'bg-green-600 text-white hover:bg-green-700'
+                    }`}
+                  >
+                    {user.isEnabled ? (
+                      <>
+                        <UserX size={16} />
+                        Disable
+                      </>
+                    ) : (
+                      <>
+                        <UserCheck size={16} />
+                        Enable
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             ))
           )}
         </div>
       )}
+
+      {/* Disable Account Modal */}
+      <DisableAccountModal
+        isOpen={showDisableModal}
+        onClose={handleCloseDisableModal}
+        user={selectedUser}
+        onAccountStatusChanged={handleAccountStatusChanged}
+      />
     </div>
   );
 };

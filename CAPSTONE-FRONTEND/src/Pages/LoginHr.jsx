@@ -48,7 +48,12 @@ const LoginHr = () => {
     },
     onError: (error) => {
       console.error("Login failed:", error)
-      alert("Invalid credentials")
+      const errorMessage = error.response?.data?.error || "Invalid credentials"
+      if (errorMessage === "Your account has been disabled") {
+        alert("Your account has been disabled. Please contact your administrator.")
+      } else {
+        alert(errorMessage)
+      }
     },
   })
 
