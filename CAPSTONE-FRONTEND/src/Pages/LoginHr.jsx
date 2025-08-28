@@ -69,7 +69,7 @@ const LoginHr = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Animated Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-purple-50">
+      <div className="absolute inset-0 bg-gradient-to-br from-pure-50 via-white to-purple-50">
         {/* Large decorative circles */}
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/30 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-300/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -118,9 +118,10 @@ const LoginHr = () => {
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
         <div className="w-full max-w-md">
           {/* Back Button */}
+          {/*Change color from purple to violet-red (#8b1e3f)*/}
           <button
             onClick={() => navigate("/")}
-            className="flex items-center text-purple-600 hover:text-purple-800 mb-6 transition-colors group"
+            className="flex items-center text-[#8b1e3f] hover:text-[#8b1e3f]/80 mb-6 transition-colors group"
           >
             <ArrowLeft className="h-5 w-5 mr-1 group-hover:-translate-x-1 transition-transform" />
             <span className="text-sm font-medium">Back to homepage</span>
@@ -129,28 +130,30 @@ const LoginHr = () => {
           <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
             <CardHeader className="text-center pb-8 pt-8">
               {/* Logo */}
-              <div className="mx-auto mb-4 p-3 bg-purple-100 rounded-full">
-                <BookOpen className="h-8 w-8 text-purple-600" />
+              <div className="mx-auto mb-4 p-3 bg-red-100 rounded-full"> 
+                <BookOpen className="h-8 w-8 text-[#8b1e3f]" /> {/*Change color from purple to violet-red (#8b1e3f)*/}
               </div>
 
-              <CardTitle className="text-2xl font-bold text-purple-800 mb-2">TechStaffHub</CardTitle>
-              <CardDescription className="text-purple-600 font-medium">HR Management Portal</CardDescription>
+              {/*Change color from purple to violet-red (#8b1e3f)*/}
+              <CardTitle className="text-2xl font-bold text-[#8b1e3f] mb-2">TechStaffHub</CardTitle>
+              <CardDescription className="text-[#8b1e3f] font-medium">HR Management Portal</CardDescription>
             </CardHeader>
-
+            
+            {/*Change color from purple to violet-red (#8b1e3f)*/}
             <CardContent className="px-8 pb-8">
               <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="space-y-2">
-                  <Label htmlFor="username" className="text-sm font-semibold text-purple-700">
+                  <Label htmlFor="username" className="text-sm font-semibold text-[#8b1e3f]">
                     Work Email
                   </Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#8b1e3f]/40" />
                     <Input
                       id="username"
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="pl-10 h-12 border-purple-200 focus:border-purple-500 focus:ring-purple-500 bg-white/50"
+                      className="pl-10 h-12 border-[#8b1e3f]/20 focus:border-[#8b1e3f]/50 focus:ring-[#8b1e3f]/50 bg-white/50"
                       placeholder="username.HR"
                       required
                     />
@@ -159,31 +162,31 @@ const LoginHr = () => {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="password" className="text-sm font-semibold text-purple-700">
+                    <Label htmlFor="password" className="text-sm font-semibold text-[#8b1e3f]">
                       Password
                     </Label>
                     <Link
                       to="/forgot-password"
-                      className="text-xs font-medium text-purple-600 hover:text-purple-800 transition-colors"
+                      className="text-xs font-medium text-[#8b1e3f] hover:text-[#8b1e3f]/80 transition-colors"
                     >
                       Forgot password?
                     </Link>
                   </div>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#8b1e3f]/40" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10 h-12 border-purple-200 focus:border-purple-500 focus:ring-purple-500 bg-white/50"
+                      className="pl-10 pr-10 h-12 border-[#8b1e3f]/20 focus:border-[#8b1e3f]/50 focus:ring-[#8b1e3f]/50 bg-white/50"
                       placeholder="••••••••"
                       required
                     />
                     <button
                       type="button"
                       onClick={togglePasswordVisibility}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-400 hover:text-purple-600 transition-colors"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8b1e3f]/40 hover:text-[#8b1e3f]/60 transition-colors"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -192,7 +195,7 @@ const LoginHr = () => {
 
                 <Button
                   type="submit"
-                  className="w-full h-12 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="w-full h-12 bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200"
                   disabled={loginMutation.isPending}
                 >
                   {loginMutation.isPending ? (
@@ -206,13 +209,13 @@ const LoginHr = () => {
                 </Button>
               </form>
 
-              <div className="mt-8 pt-6 border-t border-purple-100">
+              <div className="mt-8 pt-6 border-t border-[#8b1e3f]/10">
                 <p className="text-center text-sm text-gray-600">
                   Employee?{" "}
                   <a
                     href="/login"
                     onClick={handleEmployeeLogin}
-                    className="font-semibold text-purple-600 hover:text-purple-800 transition-colors underline underline-offset-2"
+                    className="font-semibold text-[#8b1e3f] hover:text-[#8b1e3f]/80 transition-colors underline underline-offset-2"
                   >
                     Sign as Employee
                   </a>
@@ -223,7 +226,7 @@ const LoginHr = () => {
 
           {/* Footer */}
           <div className="mt-8 text-center">
-            <p className="text-xs text-purple-400">HR Management Portal • Secure administrative access</p>
+            <p className="text-xs text-[#8b1e3f]/60">HR Management Portal • Secure administrative access</p> {/*Change color from purple to violet-red (#8b1e3f)*/}
           </div>
         </div>
       </div>

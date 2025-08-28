@@ -100,9 +100,10 @@ const ForgotPassword = () => {
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
         <div className="w-full max-w-md">
           {/* Back Button */}
+          {/*Change color from purple to violet-red (#8b1e3f)*/}
           <button
             onClick={() => navigate("/login")}
-            className="flex items-center text-purple-600 hover:text-purple-800 mb-6 transition-colors group"
+            className="flex items-center text-[#8b1e3f] hover:text-[#8b1e3f]/80 mb-6 transition-colors group"
           >
             <ArrowLeft className="h-5 w-5 mr-1 group-hover:-translate-x-1 transition-transform" />
             <span className="text-sm font-medium">Back to login</span>
@@ -110,11 +111,13 @@ const ForgotPassword = () => {
 
           <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
             <CardHeader className="text-center pb-8 pt-8">
-              <div className="mx-auto mb-4 p-3 bg-purple-100 rounded-full">
-                <BookOpen className="h-8 w-8 text-purple-600" />
+              <div className="mx-auto mb-4 p-3 bg-red-100 rounded-full">
+                <BookOpen className="h-8 w-8 text-[#8b1e3f]" /> {/*Change color from purple to violet-red (#8b1e3f)*/}
               </div>
-              <CardTitle className="text-2xl font-bold text-purple-800 mb-2">Forgot Password?</CardTitle>
-              <CardDescription className="text-purple-600 font-medium">
+
+              {/*Change color from purple to violet-red (#8b1e3f)*/}
+              <CardTitle className="text-2xl font-bold text-[#8b1e3f] mb-2">Forgot Password?</CardTitle>
+              <CardDescription className="text-[#8b1e3f] font-medium">
                 Enter your email or username to reset your password
               </CardDescription>
             </CardHeader>
@@ -122,17 +125,17 @@ const ForgotPassword = () => {
             <CardContent className="px-8 pb-8">
               <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="space-y-2">
-                  <Label htmlFor="identifier" className="text-sm font-semibold text-purple-700">
+                  <Label htmlFor="identifier" className="text-sm font-semibold text-[#8b1e3f]">
                     Email or Username
                   </Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#8b1e3f]/40" />
                     <Input
                       id="identifier"
                       type="text"
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
-                      className="pl-10 h-12 border-purple-200 focus:border-purple-500 focus:ring-purple-500 bg-white/50"
+                      className="pl-10 h-12 border-[#8b1e3f]/20 focus:border-[#8b1e3f]/50 focus:ring-[#8b1e3f]/50 bg-white/50"
                       placeholder="Enter your email or username"
                       required
                     />
@@ -141,7 +144,7 @@ const ForgotPassword = () => {
 
                 <Button
                   type="submit"
-                  className="w-full h-12 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="w-full h-12 bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200"
                   disabled={forgotPasswordMutation.isPending || !identifier.trim()}
                 >
                   {forgotPasswordMutation.isPending ? (
@@ -160,7 +163,7 @@ const ForgotPassword = () => {
                   Remember your password?{" "}
                   <Link
                     to="/login"
-                    className="font-semibold text-purple-600 hover:text-purple-800 transition-colors underline underline-offset-2"
+                    className="font-semibold text-[#8b1e3f] hover:text-[#8b1e3f]/80 transition-colors underline underline-offset-2"
                   >
                     Sign in here
                   </Link>
@@ -170,7 +173,7 @@ const ForgotPassword = () => {
           </Card>
 
           <div className="mt-8 text-center">
-            <p className="text-xs text-purple-400">Secure password reset • Your data is protected</p>
+            <p className="text-xs text-[#8b1e3f]/60">Secure password reset • Your data is protected</p>
           </div>
         </div>
       </div>
