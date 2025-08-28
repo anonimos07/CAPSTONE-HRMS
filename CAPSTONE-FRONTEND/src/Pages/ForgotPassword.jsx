@@ -41,8 +41,10 @@ const ForgotPassword = () => {
                 <div className="mx-auto mb-4 p-3 bg-green-100 rounded-full">
                   <CheckCircle className="h-8 w-8 text-green-600" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-purple-800 mb-2">Email Sent!</CardTitle>
-                <CardDescription className="text-purple-600 font-medium">
+
+                 {/*Change color from purple to violet-red (#8b1e3f)*/}
+                <CardTitle className="text-2xl font-bold text-[#8b1e3f] mb-2">Email Sent!</CardTitle> 
+                <CardDescription className="text-[#8b1e3f] font-medium">
                   Check your inbox for password reset instructions
                 </CardDescription>
               </CardHeader>
@@ -57,8 +59,8 @@ const ForgotPassword = () => {
                   </p>
                   <div className="pt-4">
                     <Button
-                      onClick={() => navigate("/login")}
-                      className="w-full h-12 bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+                      onClick={() => navigate("/login")} 
+                      className="w-full h-12 bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white font-semibold" //Change color from purple to violet-red (#8b1e3f)
                     >
                       Back to Login
                     </Button>
@@ -70,7 +72,7 @@ const ForgotPassword = () => {
                         setIsSubmitted(false)
                         setIdentifier("")
                       }}
-                      className="w-full h-12 border-purple-200 text-purple-600 hover:bg-purple-50"
+                      className="w-full h-12 border-[#8b1e3f] text-[#8b1e3f] hover:bg-[#8b1e3f]/70" //Change color from purple to violet-red (#8b1e3f)
                     >
                       Send Another Email
                     </Button>
@@ -100,10 +102,9 @@ const ForgotPassword = () => {
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
         <div className="w-full max-w-md">
           {/* Back Button */}
-          {/*Change color from purple to violet-red (#8b1e3f)*/}
           <button
             onClick={() => navigate("/login")}
-            className="flex items-center text-[#8b1e3f] hover:text-[#8b1e3f]/80 mb-6 transition-colors group"
+            className="flex items-center text-[#8b1e3f] hover:text-[#8b1e3f]/80 mb-6 transition-colors group" //Change color from purple to violet-red (#8b1e3f)
           >
             <ArrowLeft className="h-5 w-5 mr-1 group-hover:-translate-x-1 transition-transform" />
             <span className="text-sm font-medium">Back to login</span>
@@ -158,7 +159,7 @@ const ForgotPassword = () => {
                 </Button>
               </form>
 
-              <div className="mt-8 pt-6 border-t border-purple-100">
+              <div className="mt-8 pt-6 border-t border-[#8b1e3f]/10"> {/*Change color from purple to violet-red (#8b1e3f)*/}
                 <p className="text-center text-sm text-gray-600">
                   Remember your password?{" "}
                   <Link
