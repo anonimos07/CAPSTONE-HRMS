@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Eye, Users, UserX, UserCheck } from 'lucide-react';
+import { Search, Eye, Users, UserX, UserCheck, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getAllUsers } from '../Api/userManagement';
 import DisableAccountModal from './DisableAccountModal';
 
@@ -10,6 +10,8 @@ const UserList = ({ onViewProfile }) => {
   const [error, setError] = useState('');
   const [showDisableModal, setShowDisableModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(5);
 
   // Fetch users on component mount and when search term changes
   useEffect(() => {
@@ -32,6 +34,7 @@ const UserList = ({ onViewProfile }) => {
     try {
       const response = await getAllUsers(searchTerm);
       setUsers(response.users || []);
+      setCurrentPage(1); // Reset to first page when new search
     } catch (err) {
       setError('Failed to fetch users. Please try again.');
       console.error('Error fetching users:', err);
@@ -39,6 +42,12 @@ const UserList = ({ onViewProfile }) => {
       setLoading(false);
     }
   };
+
+  // Get current users for pagination
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(users.length / usersPerPage);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -67,6 +76,20 @@ const UserList = ({ onViewProfile }) => {
           : user
       )
     );
+  };
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   return (
@@ -122,12 +145,12 @@ const UserList = ({ onViewProfile }) => {
       {/* Users List */}
       {!loading && (
         <div className="space-y-3">
-          {users.length === 0 ? (
+          {currentUsers.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               {searchTerm ? 'No users found matching your search.' : 'No users available.'}
             </div>
           ) : (
-            users.map((user) => (
+            currentUsers.map((user) => (
               <div
                 key={user.userId}
                 className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
@@ -198,6 +221,54 @@ const UserList = ({ onViewProfile }) => {
               </div>
             ))
           )}
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {!loading && users.length > usersPerPage && (
+        <div className="flex items-center justify-between mt-6">
+          <div className="text-sm text-gray-500">
+            Showing {indexOfFirstUser + 1} to {Math.min(indexOfLastUser, users.length)} of {users.length} users
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className={`p-2 rounded-md ${
+                currentPage === 1 
+                  ? 'text-gray-400 cursor-not-allowed' 
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <ChevronLeft size={20} />
+            </button>
+            
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => paginate(page)}
+                className={`w-8 h-8 rounded-md text-sm ${
+                  currentPage === page
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+            
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className={`p-2 rounded-md ${
+                currentPage === totalPages
+                  ? 'text-gray-400 cursor-not-allowed'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
         </div>
       )}
 
