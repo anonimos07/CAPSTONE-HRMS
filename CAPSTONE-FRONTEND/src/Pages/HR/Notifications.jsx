@@ -1,9 +1,7 @@
-"use client"
-
 import { useState } from "react"
 import Header from "../../components/Header"
 import { useAllNotifications, useSendNotification } from "../../Api"
-import { Bell, Send, User, AlertCircle, CheckCircle, X, ChevronLeft, ChevronRight } from "lucide-react"
+import { Bell, Send, User, AlertCircle, CheckCircle, X, ChevronLeft, ChevronRight, Filter } from "lucide-react"
 
 const Notifications = () => {
   const { data: notifications = [], isLoading } = useAllNotifications()
@@ -17,11 +15,23 @@ const Notifications = () => {
     userId: "",
   })
   const [currentPage, setCurrentPage] = useState(1)
+  const [toast, setToast] = useState({ show: false, message: "", type: "" })
+  const [filters, setFilters] = useState({
+    sortOrder: "desc", // 'asc' or 'desc'
+    type: "all", // 'all', 'ANNOUNCEMENT', 'JOB_APPLICATION'
+    month: "all" // 'all', '1', '2', ... '12'
+  })
+  
   const notificationsPerPage = 5
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleFilterChange = (filterName, value) => {
+    setFilters(prev => ({ ...prev, [filterName]: value }))
+    setCurrentPage(1) // Reset to first page when filters change
   }
 
   const handleSendNotification = (e) => {
@@ -35,13 +45,15 @@ const Notifications = () => {
 
     sendMutation.mutate(notificationData, {
       onSuccess: () => {
-        alert("Notification sent successfully!")
+        setToast({ show: true, message: "Notification sent successfully!", type: "success" })
+        setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
         setFormData({ title: "", message: "", recipient: "all", userId: "" })
         setShowSendForm(false)
       },
       onError: (error) => {
         console.error("Error sending notification:", error)
-        alert("Failed to send notification")
+        setToast({ show: true, message: "Failed to send notification", type: "error" })
+        setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
       },
     })
   }
@@ -56,18 +68,43 @@ const Notifications = () => {
         return <Bell className="w-5 h-5 text-[#8b1e3f]" />
       case "JOB_APPLICATION":
         return <User className="w-5 h-5 text-green-500" />
-      case "SYSTEM":
-        return <AlertCircle className="w-5 h-5 text-orange-500" />
       default:
         return <Bell className="w-5 h-5 text-gray-500" />
     }
   }
 
+  // Filter and sort notifications
+  const filteredNotifications = notifications
+    .filter(notification => {
+      // Filter by type
+      if (filters.type !== "all" && notification.type !== filters.type) {
+        return false
+      }
+      
+      // Filter by month
+      if (filters.month !== "all") {
+        const notificationMonth = new Date(notification.createdAt).getMonth() + 1
+        if (notificationMonth !== parseInt(filters.month)) {
+          return false
+        }
+      }
+      
+      return true
+    })
+    .sort((a, b) => {
+      // Sort by date
+      if (filters.sortOrder === "asc") {
+        return new Date(a.createdAt) - new Date(b.createdAt)
+      } else {
+        return new Date(b.createdAt) - new Date(a.createdAt)
+      }
+    })
+
   // Calculate pagination
-  const totalPages = Math.ceil(notifications.length / notificationsPerPage)
+  const totalPages = Math.ceil(filteredNotifications.length / notificationsPerPage)
   const indexOfLastNotification = currentPage * notificationsPerPage
   const indexOfFirstNotification = indexOfLastNotification - notificationsPerPage
-  const currentNotifications = notifications.slice(
+  const currentNotifications = filteredNotifications.slice(
     indexOfFirstNotification,
     indexOfLastNotification
   )
@@ -86,9 +123,35 @@ const Notifications = () => {
     }
   }
 
+  // Get month names for filter
+  const monthOptions = [
+    { value: "all", label: "All Months" },
+    { value: "1", label: "January" },
+    { value: "2", label: "February" },
+    { value: "3", label: "March" },
+    { value: "4", label: "April" },
+    { value: "5", label: "May" },
+    { value: "6", label: "June" },
+    { value: "7", label: "July" },
+    { value: "8", label: "August" },
+    { value: "9", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" }
+  ]
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header userRole="HR" />
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className={`fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 ${
+          toast.type === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
+        }`}>
+          {toast.message}
+        </div>
+      )}
 
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
@@ -100,6 +163,59 @@ const Notifications = () => {
             <Send className="w-4 h-4" />
             Send Notification
           </button>
+        </div>
+
+        {/* Filter Section */}
+        <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+          <div className="flex items-center gap-4 mb-4">
+            <Filter className="w-5 h-5 text-gray-600" />
+            <h3 className="text-lg font-semibold text-gray-800">Filter Notifications</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Sort Order Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Sort Order</label>
+              <select
+                value={filters.sortOrder}
+                onChange={(e) => handleFilterChange("sortOrder", e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent"
+              >
+                <option value="desc">Newest First</option>
+                <option value="asc">Oldest First</option>
+              </select>
+            </div>
+
+            {/* Type Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Notification Type</label>
+              <select
+                value={filters.type}
+                onChange={(e) => handleFilterChange("type", e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent"
+              >
+                <option value="all">All Types</option>
+                <option value="ANNOUNCEMENT">Announcement</option>
+                <option value="JOB_APPLICATION">Job Application</option>
+              </select>
+            </div>
+
+            {/* Month Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Month</label>
+              <select
+                value={filters.month}
+                onChange={(e) => handleFilterChange("month", e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent"
+              >
+                {monthOptions.map(month => (
+                  <option key={month.value} value={month.value}>
+                    {month.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
 
         {showSendForm && (
@@ -189,7 +305,7 @@ const Notifications = () => {
           <div className="p-6 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
               <Bell className="w-5 h-5" />
-              All System Notifications
+              All System Notifications ({filteredNotifications.length})
             </h2>
           </div>
 
@@ -198,10 +314,10 @@ const Notifications = () => {
               <div className="flex justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8b1e3f]"></div>
               </div>
-            ) : notifications.length === 0 ? (
+            ) : filteredNotifications.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <Bell className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>No notifications found</p>
+                <p>No notifications found matching your filters</p>
               </div>
             ) : (
               <>
@@ -237,7 +353,7 @@ const Notifications = () => {
                 {totalPages > 1 && (
                   <div className="flex justify-between items-center mt-6">
                     <div className="text-sm text-gray-500">
-                      Showing {indexOfFirstNotification + 1} to {Math.min(indexOfLastNotification, notifications.length)} of {notifications.length} notifications
+                      Showing {indexOfFirstNotification + 1} to {Math.min(indexOfLastNotification, filteredNotifications.length)} of {filteredNotifications.length} notifications
                     </div>
                     <div className="flex items-center space-x-2">
                       <button

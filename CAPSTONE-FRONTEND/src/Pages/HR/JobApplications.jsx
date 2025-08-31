@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { Eye, Download, User, Calendar, FileText, Filter, Plus, Briefcase, Mail, Phone, Clock, X } from "lucide-react"
 import Header from "../../components/Header"
@@ -15,6 +13,7 @@ const JobApplications = () => {
   const [showJobPostModal, setShowJobPostModal] = useState(false)
   const [jobPostData, setJobPostData] = useState({ title: "", description: "", requirements: "", department: "" })
   const [activeTab, setActiveTab] = useState("applications") // 'applications' or 'positions'
+  const [toast, setToast] = useState({ show: false, message: "", type: "" })
 
   const { data: applications = [], isLoading: applicationsLoading } = useAllApplications()
   const { data: positions = [], isLoading: positionsLoading } = useAllJobPositions()
@@ -69,11 +68,13 @@ const JobApplications = () => {
       onSuccess: () => {
         setShowJobPostModal(false)
         setJobPostData({ title: "", description: "", requirements: "", department: "" })
-        alert("Job position posted successfully!")
+        setToast({ show: true, message: "Job position posted successfully!", type: "success" })
+        setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
       },
       onError: (error) => {
         console.error("Error posting job:", error)
-        alert("Failed to post job position")
+        setToast({ show: true, message: "Failed to post job position", type: "error" })
+        setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
       },
     })
   }
@@ -86,13 +87,23 @@ const JobApplications = () => {
       )
     } catch (error) {
       console.error("Error downloading resume:", error)
-      alert("Failed to download resume. Please try again.")
+      setToast({ show: true, message: "Failed to download resume. Please try again.", type: "error" })
+      setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
     }
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header userRole="HR" />
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className={`fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 ${
+          toast.type === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
+        }`}>
+          {toast.message}
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -353,82 +364,80 @@ const JobApplications = () => {
 
         {/* Job Post Modal */}
         {showJobPostModal && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-70 overflow-y-auto h-full w-full z-50 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="relative bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-md mx-auto">
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-xl font-semibold text-gray-900">Post New Job Position</h3>
-                  <button
-                    onClick={() => setShowJobPostModal(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    <X size={20} />
-                  </button>
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white/95 backdrop-blur-sm rounded-lg p-6 w-full max-w-md shadow-2xl border border-red-100">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-[#8b1e3f]">Post New Job Position</h3>
+                <button
+                  onClick={() => setShowJobPostModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#8b1e3f] mb-1">Job Title</label>
+                  <input
+                    type="text"
+                    value={jobPostData.title}
+                    onChange={(e) => setJobPostData({ ...jobPostData, title: e.target.value })}
+                    className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent bg-white/80"
+                    placeholder="e.g. Senior Software Developer"
+                  />
                 </div>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
-                    <input
-                      type="text"
-                      value={jobPostData.title}
-                      onChange={(e) => setJobPostData({ ...jobPostData, title: e.target.value })}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8b1e3f] focus:border-[#8b1e3f]"
-                      placeholder="e.g. Senior Software Developer"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                    <input
-                      type="text"
-                      value={jobPostData.department}
-                      onChange={(e) => setJobPostData({ ...jobPostData, department: e.target.value })}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8b1e3f] focus:border-[#8b1e3f]"
-                      placeholder="e.g. Engineering"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                    <textarea
-                      value={jobPostData.description}
-                      onChange={(e) => setJobPostData({ ...jobPostData, description: e.target.value })}
-                      rows={3}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8b1e3f] focus:border-[#8b1e3f]"
-                      placeholder="Job description and responsibilities..."
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Requirements</label>
-                    <textarea
-                      value={jobPostData.requirements}
-                      onChange={(e) => setJobPostData({ ...jobPostData, requirements: e.target.value })}
-                      rows={3}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#8b1e3f] focus:border-[#8b1e3f]"
-                      placeholder="Required skills and qualifications..."
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#8b1e3f] mb-1">Department</label>
+                  <input
+                    type="text"
+                    value={jobPostData.department}
+                    onChange={(e) => setJobPostData({ ...jobPostData, department: e.target.value })}
+                    className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent bg-white/80"
+                    placeholder="e.g. Engineering"
+                  />
                 </div>
-                <div className="flex justify-end space-x-3 mt-6">
-                  <button
-                    onClick={() => setShowJobPostModal(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleJobPost}
-                    disabled={createPositionMutation.isPending || !jobPostData.title || !jobPostData.department}
-                    className="px-4 py-2 text-sm font-medium text-white bg-[#8b1e3f] rounded-lg hover:bg-[#7a1a37] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all duration-200"
-                  >
-                    {createPositionMutation.isPending ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        Posting...
-                      </>
-                    ) : (
-                      "Post Job"
-                    )}
-                  </button>
+                <div>
+                  <label className="block text-sm font-medium text-[#8b1e3f] mb-1">Description</label>
+                  <textarea
+                    value={jobPostData.description}
+                    onChange={(e) => setJobPostData({ ...jobPostData, description: e.target.value })}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent bg-white/80"
+                    placeholder="Job description and responsibilities..."
+                  />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#8b1e3f] mb-1">Requirements</label>
+                  <textarea
+                    value={jobPostData.requirements}
+                    onChange={(e) => setJobPostData({ ...jobPostData, requirements: e.target.value })}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent bg-white/80"
+                    placeholder="Required skills and qualifications..."
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  onClick={() => setShowJobPostModal(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleJobPost}
+                  disabled={createPositionMutation.isPending || !jobPostData.title || !jobPostData.department}
+                  className="px-4 py-2 bg-[#8b1e3f] text-white rounded-lg hover:bg-[#7a1a37] disabled:opacity-50 transition-all duration-200 shadow-lg flex items-center gap-2"
+                >
+                  {createPositionMutation.isPending ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Posting...
+                    </>
+                  ) : (
+                    "Post Job"
+                  )}
+                </button>
               </div>
             </div>
           </div>

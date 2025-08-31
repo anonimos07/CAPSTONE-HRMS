@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { FiSearch, FiDownload, FiEdit, FiCalendar, FiClock, FiUser, FiX, FiImage, FiEye } from 'react-icons/fi';
+import { FiSearch, FiDownload, FiEdit, FiCalendar, FiClock, FiUser, FiX, FiImage, FiEye, FiRefreshCw } from 'react-icons/fi';
 import { useAllTimelogsForHR, useAdjustTimelog, useDownloadTimelogsCSV, useTimelogById } from '../Api/hooks/useTimelog';
 
 const TimelogManagement = () => {
@@ -12,21 +12,44 @@ const TimelogManagement = () => {
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [photoType, setPhotoType] = useState('');
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   // Query hooks
   const { data: timelogs = [], isLoading, refetch } = useAllTimelogsForHR(search, startDate, endDate);
-  const { data: timelogDetails } = useTimelogById(selectedTimelog?.id);
   
   // Mutation hooks
   const adjustTimelogMutation = useAdjustTimelog();
   const downloadCSVMutation = useDownloadTimelogsCSV();
 
+  // Calculate pagination
+  const totalPages = Math.ceil(timelogs.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedTimelogs = timelogs.slice(startIndex, startIndex + itemsPerPage);
+
   const handleSearch = () => {
+    setCurrentPage(1); // Reset to first page when searching
+    refetch();
+  };
+
+  const handleRefresh = () => {
+    setSearch('');
+    setStartDate('');
+    setEndDate('');
+    setCurrentPage(1);
     refetch();
   };
 
   const handleDownloadCSV = () => {
-    downloadCSVMutation.mutate({ search, startDate, endDate });
+    if (isDownloading) return;
+    
+    setIsDownloading(true);
+    downloadCSVMutation.mutate({ search, startDate, endDate }, {
+      onSettled: () => {
+        setIsDownloading(false);
+      }
+    });
   };
 
   const handleEditTimelog = (timelog) => {
@@ -63,13 +86,10 @@ const TimelogManagement = () => {
   };
 
   const decryptPhoto = (encryptedPhoto) => {
-    // Since photos are stored as base64, we just need to format them properly
     if (!encryptedPhoto) return null;
-    // Check if it already has data URL prefix
     if (encryptedPhoto.startsWith('data:image/')) {
       return encryptedPhoto;
     }
-    // Add data URL prefix for base64 images
     return `data:image/jpeg;base64,${encryptedPhoto}`;
   };
 
@@ -93,18 +113,29 @@ const TimelogManagement = () => {
     );
   };
 
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Timelog Management</h2>
-        <Button
-          onClick={handleDownloadCSV}
-          disabled={downloadCSVMutation.isLoading}
-          className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/60 text-white"
-        >
-          <FiDownload className="mr-2" />
-          {downloadCSVMutation.isLoading ? 'Downloading...' : 'Download CSV'}
-        </Button>
+        <div className="flex space-x-2">
+          <Button
+            onClick={handleRefresh}
+            className="bg-gray-600 hover:bg-gray-700 text-white"
+          >
+            <FiRefreshCw className="mr-2" />
+            Refresh
+          </Button>
+          <Button
+            onClick={handleDownloadCSV}
+            disabled={isDownloading || downloadCSVMutation.isLoading}
+            className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/60 text-white"
+          >
+            <FiDownload className="mr-2" />
+            {isDownloading || downloadCSVMutation.isLoading ? 'Downloading...' : 'Download CSV'}
+          </Button>
+        </div>
       </div>
 
       {/* Search and Filters */}
@@ -140,6 +171,18 @@ const TimelogManagement = () => {
         </Button>
       </div>
 
+      {/* Results Count and Pagination Info */}
+      <div className="flex justify-between items-center mb-4">
+        <div className="text-sm text-gray-600">
+          Showing {paginatedTimelogs.length} of {timelogs.length} timelogs
+        </div>
+        {totalPages > 1 && (
+          <div className="text-sm text-gray-600">
+            Page {currentPage} of {totalPages}
+          </div>
+        )}
+      </div>
+
       {/* Timelog Table */}
       <div className="overflow-x-auto">
         {isLoading ? (
@@ -147,144 +190,181 @@ const TimelogManagement = () => {
         ) : timelogs.length === 0 ? (
           <div className="text-center py-8 text-gray-500">No timelogs found</div>
         ) : (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Employee
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Time In
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Time Out
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Break Duration
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total Hours
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Photos
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {timelogs.map((timelog) => (
-                <tr key={timelog.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <FiUser className="mr-2 text-gray-400" />
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {getEmployeeName(timelog.user)}
-                        </div>
-                        <div className="text-sm text-gray-500">{timelog.user?.username}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex items-center">
-                      <FiCalendar className="mr-2 text-gray-400" />
-                      {formatDate(timelog.logDate)}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex items-center">
-                      <FiClock className="mr-2 text-gray-400" />
-                      {timelog.adjustedTimeIn ? (
-                        <div>
-                          <div className="line-through text-gray-400">{formatDateTime(timelog.timeIn)}</div>
-                          <div className="text-blue-600 font-medium">{formatDateTime(timelog.adjustedTimeIn)}</div>
-                        </div>
-                      ) : (
-                        formatDateTime(timelog.timeIn)
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex items-center">
-                      <FiClock className="mr-2 text-gray-400" />
-                      {timelog.adjustedTimeOut ? (
-                        <div>
-                          <div className="line-through text-gray-400">{formatDateTime(timelog.timeOut)}</div>
-                          <div className="text-blue-600 font-medium">{formatDateTime(timelog.adjustedTimeOut)}</div>
-                        </div>
-                      ) : (
-                        formatDateTime(timelog.timeOut)
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex items-center">
-                      <FiClock className="mr-2 text-gray-400" />
-                      {timelog.adjustedBreakDurationMinutes !== null ? (
-                        <div>
-                          <div className="line-through text-gray-400">{formatBreakDuration(timelog.breakDurationMinutes)}</div>
-                          <div className="text-blue-600 font-medium">{formatBreakDuration(timelog.adjustedBreakDurationMinutes)}</div>
-                        </div>
-                      ) : (
-                        formatBreakDuration(timelog.breakDurationMinutes)
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {timelog.totalWorkedHours ? `${timelog.totalWorkedHours.toFixed(2)}h` : '0.00h'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex space-x-2">
-                      {timelog.timeInPhoto && (
-                        <Button
-                          onClick={() => handleViewPhoto(timelog.timeInPhoto, 'Time In', getEmployeeName(timelog.user))}
-                          variant="outline"
-                          size="sm"
-                          className="text-green-600 hover:text-green-700"
-                        >
-                          <FiImage className="mr-1" />
-                          In
-                        </Button>
-                      )}
-                      {timelog.timeOutPhoto && (
-                        <Button
-                          onClick={() => handleViewPhoto(timelog.timeOutPhoto, 'Time Out', getEmployeeName(timelog.user))}
-                          variant="outline"
-                          size="sm"
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <FiImage className="mr-1" />
-                          Out
-                        </Button>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {getStatusBadge(timelog.status)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <Button
-                      onClick={() => handleEditTimelog(timelog)}
-                      variant="outline"
-                      size="sm"
-                      className="text-[#8b1e3f] hover:text-[#8b1e3f]/60"
-                    >
-                      <FiEdit className="mr-1" />
-                      Edit
-                    </Button>
-                  </td>
+          <>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Employee
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Time In
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Time Out
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Break Duration
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Total Hours
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Photos
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {paginatedTimelogs.map((timelog) => (
+                  <tr key={timelog.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <FiUser className="mr-2 text-gray-400" />
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {getEmployeeName(timelog.user)}
+                          </div>
+                          <div className="text-sm text-gray-500">{timelog.user?.username}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div className="flex items-center">
+                        <FiCalendar className="mr-2 text-gray-400" />
+                        {formatDate(timelog.logDate)}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div className="flex items-center">
+                        <FiClock className="mr-2 text-gray-400" />
+                        {timelog.adjustedTimeIn ? (
+                          <div>
+                            <div className="line-through text-gray-400">{formatDateTime(timelog.timeIn)}</div>
+                            <div className="text-blue-600 font-medium">{formatDateTime(timelog.adjustedTimeIn)}</div>
+                          </div>
+                        ) : (
+                          formatDateTime(timelog.timeIn)
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div className="flex items-center">
+                        <FiClock className="mr-2 text-gray-400" />
+                        {timelog.adjustedTimeOut ? (
+                          <div>
+                            <div className="line-through text-gray-400">{formatDateTime(timelog.timeOut)}</div>
+                            <div className="text-blue-600 font-medium">{formatDateTime(timelog.adjustedTimeOut)}</div>
+                          </div>
+                        ) : (
+                          formatDateTime(timelog.timeOut)
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div className="flex items-center">
+                        <FiClock className="mr-2 text-gray-400" />
+                        {timelog.adjustedBreakDurationMinutes !== null ? (
+                          <div>
+                            <div className="line-through text-gray-400">{formatBreakDuration(timelog.breakDurationMinutes)}</div>
+                            <div className="text-blue-600 font-medium">{formatBreakDuration(timelog.adjustedBreakDurationMinutes)}</div>
+                          </div>
+                        ) : (
+                          formatBreakDuration(timelog.breakDurationMinutes)
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {timelog.totalWorkedHours ? `${timelog.totalWorkedHours.toFixed(2)}h` : '0.00h'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div className="flex space-x-2">
+                        {timelog.timeInPhoto && (
+                          <Button
+                            onClick={() => handleViewPhoto(timelog.timeInPhoto, 'Time In', getEmployeeName(timelog.user))}
+                            variant="outline"
+                            size="sm"
+                            className="text-green-600 hover:text-green-700"
+                          >
+                            <FiImage className="mr-1" />
+                            In
+                          </Button>
+                        )}
+                        {timelog.timeOutPhoto && (
+                          <Button
+                            onClick={() => handleViewPhoto(timelog.timeOutPhoto, 'Time Out', getEmployeeName(timelog.user))}
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <FiImage className="mr-1" />
+                            Out
+                          </Button>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {getStatusBadge(timelog.status)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <Button
+                        onClick={() => handleEditTimelog(timelog)}
+                        variant="outline"
+                        size="sm"
+                        className="text-[#8b1e3f] hover:text-[#8b1e3f]/60"
+                      >
+                        <FiEdit className="mr-1" />
+                        Edit
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center mt-6 space-x-2">
+                <Button
+                  onClick={() => paginate(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  variant="outline"
+                  size="sm"
+                >
+                  Previous
+                </Button>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                    key={page}
+                    onClick={() => paginate(page)}
+                    variant={currentPage === page ? "default" : "outline"}
+                    size="sm"
+                    className={currentPage === page ? "bg-[#8b1e3f] text-white" : ""}
+                  >
+                    {page}
+                  </Button>
+                ))}
+                
+                <Button
+                  onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  variant="outline"
+                  size="sm"
+                >
+                  Next
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -327,7 +407,7 @@ const TimelogManagement = () => {
   );
 };
 
-// Edit Timelog Modal Component
+// Edit Timelog Modal Component - UPDATED
 const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
   const [adjustedTimeIn, setAdjustedTimeIn] = useState('');
   const [adjustedTimeOut, setAdjustedTimeOut] = useState('');
@@ -364,10 +444,10 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white/95 backdrop-blur-sm rounded-lg p-6 w-full max-w-md shadow-2xl border border-red-100">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">Edit Timelog</h3>
+          <h3 className="text-lg font-semibold text-[#8b1e3f]">Edit Timelog</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
             <FiX size={20} />
           </button>
@@ -384,50 +464,50 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#8b1e3f] mb-1">
               Adjusted Time In
             </label>
             <input
               type="datetime-local"
               value={adjustedTimeIn ? new Date(adjustedTimeIn).toISOString().slice(0, 16) : ''}
               onChange={(e) => setAdjustedTimeIn(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f]/50 focus:border-transparent"
+              className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white/80"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#8b1e3f] mb-1">
               Adjusted Time Out
             </label>
             <input
               type="datetime-local"
               value={adjustedTimeOut ? new Date(adjustedTimeOut).toISOString().slice(0, 16) : ''}
               onChange={(e) => setAdjustedTimeOut(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f]/50 focus:border-transparent"
+              className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white/80"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#8b1e3f] mb-1">
               Adjusted Break Duration (minutes)
             </label>
             <input
               type="number"
               value={adjustedBreakDuration}
               onChange={(e) => setAdjustedBreakDuration(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f]/50 focus:border-transparent"
+              className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white/80"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#8b1e3f] mb-1">
               Adjustment Reason *
             </label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f]/50 focus:border-transparent"
+              className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white/80"
               rows="3"
               placeholder="Please provide a reason for this adjustment..."
             />
@@ -439,13 +519,14 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
             onClick={onClose}
             variant="outline"
             disabled={isLoading}
+            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
           >
             Cancel
           </Button>
           <Button
             onClick={handleSave}
             disabled={isLoading || !reason.trim()}
-            className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/60 text-white"
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-all duration-200 shadow-lg"
           >
             {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>
@@ -455,14 +536,13 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
   );
 };
 
-// Photo Verification Modal Component
+// Photo Verification Modal Component - UPDATED
 const PhotoVerificationModal = ({ photo, photoType, isOpen, onClose }) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const decryptedPhoto = React.useMemo(() => {
     if (!photo) return null;
-    // Handle base64 encoded photos
     if (photo.startsWith('data:image/')) {
       return photo;
     }
@@ -472,10 +552,10 @@ const PhotoVerificationModal = ({ photo, photoType, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white/95 backdrop-blur-sm rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-red-100">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold flex items-center">
+          <h3 className="text-lg font-semibold text-[#8b1e3f] flex items-center">
             <FiEye className="mr-2" />
             Identity Verification - {photoType}
           </h3>
@@ -525,7 +605,7 @@ const PhotoVerificationModal = ({ photo, photoType, isOpen, onClose }) => {
         <div className="flex justify-end mt-6">
           <Button
             onClick={onClose}
-            className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white"
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 shadow-lg"
           >
             Close
           </Button>

@@ -95,11 +95,13 @@ const ChangePasswordForm = () => {
                 className="pl-10 pr-10 h-12 border-[#8b1e3f]/30 focus:border-[#8b1e3f] focus:ring-[#8b1e3f]"
                 placeholder="Enter current password"
                 required
+                disabled={changePasswordMutation.isPending}
               />
               <button
                 type="button"
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8b1e3f]/40 hover:text-[#8b1e3f]"
+                disabled={changePasswordMutation.isPending}
               >
                 {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -120,11 +122,13 @@ const ChangePasswordForm = () => {
                 className="pl-10 pr-10 h-12 border-[#8b1e3f]/30 focus:border-[#8b1e3f] focus:ring-[#8b1e3f]"
                 placeholder="Enter new password"
                 required
+                disabled={changePasswordMutation.isPending}
               />
               <button
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8b1e3f]/40 hover:text-[#8b1e3f]"
+                disabled={changePasswordMutation.isPending}
               >
                 {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -150,11 +154,13 @@ const ChangePasswordForm = () => {
                 className="pl-10 pr-10 h-12 border-p[#8b1e3f]/30 focus:border-[#8b1e3f] focus:ring-[#8b1e3f]"
                 placeholder="Confirm new password"
                 required
+                disabled={changePasswordMutation.isPending}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8b1e3f]/40 hover:text-[#8b1e3f]"
+                disabled={changePasswordMutation.isPending}
               >
                 {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -167,7 +173,7 @@ const ChangePasswordForm = () => {
           <div className="pt-4">
             <Button
               type="submit"
-              className="w-full h-12 bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200"
+              className="w-full h-12 bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center"
               disabled={
                 changePasswordMutation.isPending || 
                 !currentPassword || 
@@ -178,10 +184,10 @@ const ChangePasswordForm = () => {
               }
             >
               {changePasswordMutation.isPending ? (
-                <div className="flex items-center">
+                <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                   Changing Password...
-                </div>
+                </>
               ) : (
                 "Change Password"
               )}

@@ -1,7 +1,5 @@
-"use client"
-
 import { useState } from "react"
-import { Plus, Edit2, Trash2, Eye, EyeOff } from "lucide-react"
+import { Plus, Edit2, Trash2, Eye, EyeOff, ChevronLeft, ChevronRight } from "lucide-react"
 import Header from "../../components/Header"
 import {
   useActiveAnnouncements,
@@ -21,6 +19,9 @@ const Announcements = () => {
     content: "",
     priority: "NORMAL",
   })
+  const [toast, setToast] = useState({ show: false, message: "", type: "" })
+  const [currentPage, setCurrentPage] = useState(1)
+  const announcementsPerPage = 5
 
   const { data: activeAnnouncements = [], isLoading: loadingActive } = useActiveAnnouncements()
   const { data: allAnnouncements = [], isLoading: loadingAll } = useAllAnnouncements()
@@ -31,6 +32,12 @@ const Announcements = () => {
 
   const announcements = viewMode === "active" ? activeAnnouncements : allAnnouncements
   const isLoading = viewMode === "active" ? loadingActive : loadingAll
+
+  // Pagination logic
+  const indexOfLastAnnouncement = currentPage * announcementsPerPage
+  const indexOfFirstAnnouncement = indexOfLastAnnouncement - announcementsPerPage
+  const currentAnnouncements = announcements.slice(indexOfFirstAnnouncement, indexOfLastAnnouncement)
+  const totalPages = Math.ceil(announcements.length / announcementsPerPage)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -43,6 +50,12 @@ const Announcements = () => {
             setEditingAnnouncement(null)
             setFormData({ title: "", content: "", priority: "NORMAL" })
             setShowCreateForm(false)
+            setToast({ show: true, message: "Announcement updated successfully!", type: "success" })
+            setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
+          },
+          onError: () => {
+            setToast({ show: true, message: "Failed to update announcement", type: "error" })
+            setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
           },
         },
       )
@@ -51,6 +64,12 @@ const Announcements = () => {
         onSuccess: () => {
           setFormData({ title: "", content: "", priority: "NORMAL" })
           setShowCreateForm(false)
+          setToast({ show: true, message: "Announcement created successfully!", type: "success" })
+          setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
+        },
+        onError: () => {
+          setToast({ show: true, message: "Failed to create announcement", type: "error" })
+          setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
         },
       })
     }
@@ -67,15 +86,29 @@ const Announcements = () => {
   }
 
   const handleDeactivate = (id) => {
-    if (window.confirm("Are you sure you want to deactivate this announcement?")) {
-      deactivateMutation.mutate(id)
-    }
+    deactivateMutation.mutate(id, {
+      onSuccess: () => {
+        setToast({ show: true, message: "Announcement deactivated successfully!", type: "success" })
+        setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
+      },
+      onError: () => {
+        setToast({ show: true, message: "Failed to deactivate announcement", type: "error" })
+        setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
+      },
+    })
   }
 
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this announcement? This action cannot be undone.")) {
-      deleteMutation.mutate(id)
-    }
+    deleteMutation.mutate(id, {
+      onSuccess: () => {
+        setToast({ show: true, message: "Announcement deleted successfully!", type: "success" })
+        setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
+      },
+      onError: () => {
+        setToast({ show: true, message: "Failed to delete announcement", type: "error" })
+        setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
+      },
+    })
   }
 
   const getPriorityColor = (priority) => {
@@ -93,9 +126,20 @@ const Announcements = () => {
     }
   }
 
+  const paginate = (pageNumber) => setCurrentPage(pageNumber)
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header userRole="HR" />
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className={`fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 ${
+          toast.type === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
+        }`}>
+          {toast.message}
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -121,7 +165,10 @@ const Announcements = () => {
         <div className="mb-6">
           <div className="flex space-x-4">
             <button
-              onClick={() => setViewMode("active")}
+              onClick={() => {
+                setViewMode("active")
+                setCurrentPage(1)
+              }}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 viewMode === "active" ? "bg-[#8b1e3f]/10 text-[#8b1e3f]" : "text-gray-600 hover:text-[#8b1e3f]"
               }`}
@@ -129,7 +176,10 @@ const Announcements = () => {
               Active Announcements ({activeAnnouncements.length})
             </button>
             <button
-              onClick={() => setViewMode("all")}
+              onClick={() => {
+                setViewMode("all")
+                setCurrentPage(1)
+              }}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 viewMode === "all" ? "bg-[#8b1e3f]/10 text-[#8b1e3f]" : "text-gray-600 hover:text-[#8b1e3f]"
               }`}
@@ -221,69 +271,108 @@ const Announcements = () => {
               No {viewMode === "active" ? "active" : ""} announcements found
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
-              {announcements.map((announcement) => (
-                <div key={announcement.id} className="p-6">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">{announcement.title}</h3>
-                        <span
-                          className={`px-2 py-1 text-xs font-medium rounded-full border ${getPriorityColor(announcement.priority)}`}
-                        >
-                          {announcement.priority}
-                        </span>
-                        {!announcement.active && (
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600 border border-gray-200">
-                            Inactive
+            <>
+              <div className="divide-y divide-gray-200">
+                {currentAnnouncements.map((announcement) => (
+                  <div key={announcement.id} className="p-6">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h3 className="text-lg font-semibold text-gray-900">{announcement.title}</h3>
+                          <span
+                            className={`px-2 py-1 text-xs font-medium rounded-full border ${getPriorityColor(announcement.priority)}`}
+                          >
+                            {announcement.priority}
                           </span>
-                        )}
+                          {!announcement.active && (
+                            <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+                              Inactive
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-gray-700 mb-3">{announcement.content}</p>
+                        <div className="text-sm text-gray-500">
+                          Created by {announcement.createdBy?.username} on{" "}
+                          {new Date(announcement.createdAt).toLocaleDateString()}
+                          {announcement.updatedAt !== announcement.createdAt && (
+                            <span> • Updated {new Date(announcement.updatedAt).toLocaleDateString()}</span>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-gray-700 mb-3">{announcement.content}</p>
-                      <div className="text-sm text-gray-500">
-                        Created by {announcement.createdBy?.username} on{" "}
-                        {new Date(announcement.createdAt).toLocaleDateString()}
-                        {announcement.updatedAt !== announcement.createdAt && (
-                          <span> • Updated {new Date(announcement.updatedAt).toLocaleDateString()}</span>
+                      <div className="flex space-x-2 ml-4">
+                        <button
+                          onClick={() => handleEdit(announcement)}
+                          className="p-2 text-[#8b1e3f] hover:bg-[#8b1e3f]/10 rounded-lg transition-colors"
+                          title="Edit"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        {announcement.active ? (
+                          <button
+                            onClick={() => handleDeactivate(announcement.id)}
+                            className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                            title="Deactivate"
+                          >
+                            <EyeOff size={16} />
+                          </button>
+                        ) : (
+                          <button
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="Active"
+                          >
+                            <Eye size={16} />
+                          </button>
                         )}
+                        <button
+                          onClick={() => handleDelete(announcement.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </div>
-                    </div>
-                    <div className="flex space-x-2 ml-4">
-                      <button
-                        onClick={() => handleEdit(announcement)}
-                        className="p-2 text-[#8b1e3f] hover:bg-[#8b1e3f]/10 rounded-lg transition-colors"
-                        title="Edit"
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      {announcement.active ? (
-                        <button
-                          onClick={() => handleDeactivate(announcement.id)}
-                          className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                          title="Deactivate"
-                        >
-                          <EyeOff size={16} />
-                        </button>
-                      ) : (
-                        <button
-                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                          title="Active"
-                        >
-                          <Eye size={16} />
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleDelete(announcement.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 size={16} />
-                      </button>
                     </div>
                   </div>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center py-4 border-t border-gray-200">
+                  <button
+                    onClick={() => paginate(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  
+                  <div className="flex space-x-1 mx-4">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => paginate(page)}
+                        className={`w-8 h-8 rounded-lg transition-colors ${
+                          currentPage === page
+                            ? "bg-[#8b1e3f] text-white"
+                            : "text-gray-600 hover:bg-gray-100"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => paginate(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </div>
       </div>

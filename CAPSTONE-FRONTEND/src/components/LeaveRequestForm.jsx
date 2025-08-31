@@ -9,6 +9,7 @@ const LeaveRequestForm = ({ employeeId, onSuccess }) => {
     endDate: '',
     reason: ''
   });
+  const [toast, setToast] = useState({ show: false, message: "", type: "" });
 
   const submitLeaveRequest = useSubmitLeaveRequest();
   const { data: leaveBalances = [], isLoading: balancesLoading, error: balancesError } = useLeaveBalance();
@@ -54,7 +55,8 @@ const LeaveRequestForm = ({ employeeId, onSuccess }) => {
     const availableBalance = getAvailableBalance();
 
     if (daysRequested > availableBalance) {
-      alert(`Insufficient leave balance. You have ${availableBalance} days available for ${formData.leaveType} leave.`);
+      setToast({ show: true, message: `Insufficient leave balance. You have ${availableBalance} days available for ${formData.leaveType} leave.`, type: "error" });
+      setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000);
       return;
     }
 
@@ -67,7 +69,8 @@ const LeaveRequestForm = ({ employeeId, onSuccess }) => {
       const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
       const userName = currentUser.username || 'User';
       
-      alert(`Leave request submitted successfully by ${userName}!`);
+      setToast({ show: true, message: `Leave request submitted successfully by ${userName}!`, type: "success" });
+      setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000);
       
       // Reset form
       setFormData({
@@ -77,12 +80,22 @@ const LeaveRequestForm = ({ employeeId, onSuccess }) => {
         reason: ''
       });
     } catch (error) {
-      alert('Error submitting leave request: ' + (error.response?.data || error.message));
+      setToast({ show: true, message: 'Error submitting leave request: ' + (error.response?.data || error.message), type: "error" });
+      setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000);
     }
   };
 
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-[#8b1e3f]/10">
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className={`fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 ${
+          toast.type === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
+        }`}>
+          {toast.message}
+        </div>
+      )}
+
       <div className="flex items-center gap-2 mb-4">
         <FiCalendar className="w-5 h-5 text-[#8b1e3f]" />
         <h3 className="text-lg font-semibold text-[#8b1e3f]">Request Leave</h3>

@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom"
-import { Plus, Building2, UserPlus } from "lucide-react"
+import { Plus, Building2, UserPlus} from "lucide-react"
 import TimelogWidget from "../components/TimelogWidget"
 import TimelogManagement from "../components/TimelogManagement"
 import HrAttendanceSummary from "../components/HrAttendanceSummary"
@@ -29,6 +29,10 @@ const HrPage = () => {
   const [showViewProfileModal, setShowViewProfileModal] = useState(false)
   const [selectedUserId, setSelectedUserId] = useState(null)
   const [selectedUserRole, setSelectedUserRole] = useState(null)
+
+  // Pagination states
+  const [manageRequestsPage, setManageRequestsPage] = useState(1)
+  const [myRequestsPage, setMyRequestsPage] = useState(1)
 
   const navigate = useNavigate()
   const { data: announcements = [], isLoading } = useActiveAnnouncements()
@@ -212,7 +216,7 @@ const HrPage = () => {
                     : "text-[#8b1e3f] hover:bg-red-50 hover:shadow-md"
                 }`}
               >
-                Dashboard
+                Overview
               </button>
               <button
                 onClick={() => setActiveSection("timelog")}
@@ -406,7 +410,13 @@ const HrPage = () => {
                 </div>
 
                 {/* Tab Content */}
-                {leaveTab === "manage" && canManageLeaveRequests() && <HrLeaveManagement />}
+                {leaveTab === "manage" && canManageLeaveRequests() && (
+                  <HrLeaveManagement 
+                    currentPage={manageRequestsPage}
+                    onPageChange={setManageRequestsPage}
+                    itemsPerPage={2}
+                  />
+                )}
 
                 {leaveTab === "manage" && !canManageLeaveRequests() && (
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
@@ -432,7 +442,12 @@ const HrPage = () => {
                       <LeaveBalanceCard employeeId={employeeId} />
                     </div>
                     <div>
-                      <LeaveRequestsList employeeId={employeeId} />
+                      <LeaveRequestsList 
+                        employeeId={employeeId} 
+                        currentPage={myRequestsPage}
+                        onPageChange={setMyRequestsPage}
+                        itemsPerPage={2}
+                      />
                     </div>
                   </div>
                 )}
@@ -611,7 +626,7 @@ const HrPage = () => {
                         <path d="M2 12h20" stroke="#fecaca" strokeWidth="2" />
                       </svg>
                       <span className="text-gray-500 text-center">No announcements available</span>
-                    </div>
+                      </div>
                   )}
                 </div>
               </div> */}

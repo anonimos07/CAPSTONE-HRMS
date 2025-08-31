@@ -90,8 +90,11 @@ const EmployeeProfile = () => {
   };
 
   if (isLoading) return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 flex items-center justify-center">
-      <p className="text-[#8b1e3f] text-lg">Loading...</p>
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50">
+      <Header userRole="HR" />
+      <div className="flex justify-center items-center py-20">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8b1e3f]"></div>
+      </div>
     </div>
   );
   
@@ -239,9 +242,16 @@ const EmployeeProfile = () => {
                   <Button
                     type="submit"
                     disabled={updateMutation.isLoading}
-                    className="w-40 h-12 bg-[#8b1e3f] hover:bg-[#8b1e3f]/90 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="w-40 h-12 bg-[#8b1e3f] hover:bg-[#8b1e3f]/90 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center"
                   >
-                    {updateMutation.isLoading ? 'Saving...' : 'Save Changes'}
+                    {updateMutation.isLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Saving...
+                      </>
+                    ) : (
+                      'Save Changes'
+                    )}
                   </Button>
                 </div>
               </div>
