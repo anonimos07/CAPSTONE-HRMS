@@ -39,10 +39,15 @@ const Header = ({ userRole }) => {
     <header className="bg-white shadow-lg border-b">
       <div className="w-full px-4">
         <div className="flex justify-between items-center py-6">
+        <div className="flex items-center space-x-2">
+        <div className="bg-[#8b1e3f]/10 p-2 rounded-lg">
+              <Briefcase className="w-6 h-6 text-[#8b1e3f]" />
+            </div>
           <div className="flex items-center">
             <h1 className="text-2xl font-bold" style={{ color: "#8b1e3f" }}>
             TechStaffHub
             </h1>
+            </div>
           </div>
 
           <nav className="hidden md:flex flex-1 justify-center space-x-6 mx-8">
