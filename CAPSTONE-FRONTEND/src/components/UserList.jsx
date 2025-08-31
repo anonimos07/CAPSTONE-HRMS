@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Eye, Users, UserX, UserCheck, ChevronLeft, ChevronRight, X, RefreshCw } from 'lucide-react';
-import { getAllUsers } from '../Api/userManagement';
+import { getAllUsers, disableUserAccount, enableUserAccount } from '../Api/userManagement';
 
 const UserList = ({ onViewProfile }) => {
   const [users, setUsers] = useState([]);
@@ -87,15 +87,33 @@ const UserList = ({ onViewProfile }) => {
     setProfileUser(null);
   };
 
-  const handleAccountStatusChanged = (userId, newStatus) => {
-    setUsers(prevUsers => 
-      prevUsers.map(user => 
-        user.userId === userId 
-          ? { ...user, isEnabled: newStatus }
-          : user
-      )
-    );
-    handleCloseStatusModal();
+  const handleAccountStatusChanged = async (userId, newStatus) => {
+    try {
+      // Call the appropriate API based on the new status
+      if (newStatus) {
+        await enableUserAccount(userId);
+      } else {
+        await disableUserAccount(userId);
+      }
+      
+      // Update local state only after successful API call
+      setUsers(prevUsers => 
+        prevUsers.map(user => 
+          user.userId === userId 
+            ? { ...user, isEnabled: newStatus }
+            : user
+        )
+      );
+      
+      handleCloseStatusModal();
+      
+      // Show success message
+      alert(`User account ${newStatus ? 'enabled' : 'disabled'} successfully!`);
+      
+    } catch (error) {
+      console.error('Error updating user status:', error);
+      alert(`Failed to ${newStatus ? 'enable' : 'disable'} user account. Please try again.`);
+    }
   };
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
