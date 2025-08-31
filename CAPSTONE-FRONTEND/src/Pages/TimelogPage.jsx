@@ -114,7 +114,7 @@ const TimelogPage = () => {
             </div>
             <button
               onClick={handleRefresh}
-              className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex items-center space-x-2 bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-red-800 transition-colors"
             >
               <RefreshCw className="h-4 w-4" />
               <span>Refresh</span>
@@ -154,30 +154,30 @@ const TimelogPage = () => {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="bg-red-50 p-4 rounded-lg">
                 <div className="flex items-center space-x-2">
-                  <Clock className="h-5 w-5 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-900">Total Hours</span>
+                  <Clock className="h-5 w-5 text-red-600" />
+                  <span className="text-sm font-medium text-red-900">Total Hours</span>
                 </div>
-                <p className="text-2xl font-bold text-blue-900 mt-1">
+                <p className="text-2xl font-bold text-red-900 mt-1">
                   {totalHoursData?.totalHours?.toFixed(1) || '0.0'}h
                 </p>
               </div>
-              <div className="bg-green-50 p-4 rounded-lg">
+              <div className="bg-red-50 p-4 rounded-lg">
                 <div className="flex items-center space-x-2">
-                  <Calendar className="h-5 w-5 text-green-600" />
-                  <span className="text-sm font-medium text-green-900">Days Worked</span>
+                  <Calendar className="h-5 w-5 text-red-600" />
+                  <span className="text-sm font-medium text-red-900">Days Worked</span>
                 </div>
-                <p className="text-2xl font-bold text-green-900 mt-1">
+                <p className="text-2xl font-bold text-red-900 mt-1">
                   {monthlyTimelogs?.filter(log => log.timeIn && log.timeOut).length || 0}
                 </p>
               </div>
-              <div className="bg-purple-50 p-4 rounded-lg">
+              <div className="bg-red-50 p-4 rounded-lg">
                 <div className="flex items-center space-x-2">
-                  <Filter className="h-5 w-5 text-purple-600" />
-                  <span className="text-sm font-medium text-purple-900">Avg Daily Hours</span>
+                  <Filter className="h-5 w-5 text-red-600" />
+                  <span className="text-sm font-medium text-red-900">Avg Daily Hours</span>
                 </div>
-                <p className="text-2xl font-bold text-purple-900 mt-1">
+                <p className="text-2xl font-bold text-red-900 mt-1">
                   {monthlyTimelogs?.length > 0 
                     ? ((totalHoursData?.totalHours || 0) / monthlyTimelogs.filter(log => log.timeIn && log.timeOut).length).toFixed(1)
                     : '0.0'}h

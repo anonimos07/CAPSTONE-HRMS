@@ -8,6 +8,9 @@ import {
   useMarkAllNotificationsAsRead,
   useDeleteNotification 
 } from '../../Api';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 const Notifications = () => {
   const { data: allNotifications = [], isLoading } = useUserNotifications();
@@ -25,9 +28,34 @@ const Notifications = () => {
   };
 
   const handleDelete = (notificationId) => {
-    if (window.confirm('Are you sure you want to delete this notification?')) {
-      deleteMutation.mutate(notificationId);
-    }
+    toast.info(
+      <div>
+        <div className="mb-2">Are you sure you want to delete this notification?</div>
+        <button
+          className="bg-[#8b1e3f] text-white px-3 py-1 rounded mr-2"
+          onClick={() => {
+            deleteMutation.mutate(notificationId);
+            toast.dismiss();
+          }}
+        >
+          Yes, Delete
+        </button>
+        <button
+          className="bg-gray-200 px-3 py-1 rounded"
+          onClick={() => toast.dismiss()}
+        >
+          Cancel
+        </button>
+      </div>,
+      {
+        position: "top-center",
+        autoClose: false,
+        closeOnClick: false,
+        draggable: false,
+        closeButton: false,
+        toastId: 'delete-confirm',
+      }
+    );
   };
 
   const getNotificationIcon = (type) => {
@@ -41,15 +69,16 @@ const Notifications = () => {
 
   const getNotificationColor = (type) => {
     switch (type) {
-      case 'ANNOUNCEMENT': return 'border-blue-200 bg-blue-50';
+      case 'ANNOUNCEMENT': return 'border-red-200 bg-red-50';
       case 'JOB_APPLICATION': return 'border-green-200 bg-green-50';
       case 'SYSTEM': return 'border-orange-200 bg-orange-50';
-      default: return 'border-gray-200 bg-gray-50';
+      default: return 'border-red-200 bg-red-50';
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <ToastContainer />
       <Header userRole="EMPLOYEE" />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -65,7 +94,7 @@ const Notifications = () => {
             <button
               onClick={handleMarkAllAsRead}
               disabled={markAllAsReadMutation.isPending}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
+              className="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
             >
               <CheckCheck size={20} />
               <span>Mark All Read</span>
@@ -77,8 +106,8 @@ const Notifications = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
             <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-full">
-                <Bell className="h-6 w-6 text-blue-600" />
+              <div className="p-3 bg-red-100 rounded-full">
+                <Bell className="h-6 w-6 text-red-600" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Notifications</p>
@@ -89,8 +118,8 @@ const Notifications = () => {
           
           <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
             <div className="flex items-center">
-              <div className="p-3 bg-orange-100 rounded-full">
-                <Bell className="h-6 w-6 text-orange-600" />
+              <div className="p-3 bg-red-100 rounded-full">
+                <Bell className="h-6 w-6 text-red-600" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Unread</p>
@@ -101,8 +130,8 @@ const Notifications = () => {
           
           <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
             <div className="flex items-center">
-              <div className="p-3 bg-green-100 rounded-full">
-                <Check className="h-6 w-6 text-green-600" />
+              <div className="p-3 bg-red-100 rounded-full">
+                <Check className="h-6 w-6 text-red-600" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Read</p>
@@ -130,7 +159,7 @@ const Notifications = () => {
                 <div
                   key={notification.id}
                   className={`p-6 transition-colors ${
-                    !notification.read ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                    !notification.read ? 'bg-red-50 border-l-4 border-l-red-500' : ''
                   }`}
                 >
                   <div className="flex justify-between items-start">

@@ -29,6 +29,8 @@ import AdminLogin from './Pages/AdminLogin';
 // Password reset pages
 import ForgotPassword from './Pages/ForgotPassword';
 import ResetPassword from './Pages/ResetPassword';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const qry = new QueryClient({
   defaultOptions: {
@@ -46,6 +48,7 @@ function App() {
   return (
 
 <QueryClientProvider client={qry}>
+    <ToastContainer />
   
     <Routes>
 
