@@ -73,14 +73,11 @@ const ViewUserProfileModal = ({ isOpen, onClose, userId, userRole }) => {
               <div className="flex items-center space-x-6">
                 <div className="relative">
                   <img
-                    src={userDetails.profilePicture ? 
-                      getProfilePictureFullUrl(userDetails.profilePicture) : 
-                      getProfilePictureFullUrl('default-profile.png')
-                    }
+                    src={getProfilePictureFullUrl(userDetails.profilePicture)}
                     alt="Profile"
                     className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
                     onError={(e) => {
-                      e.target.src = getProfilePictureFullUrl('default-profile.png');
+                      e.target.src = getProfilePictureFullUrl(null);
                     }}
                   />
                 </div>
