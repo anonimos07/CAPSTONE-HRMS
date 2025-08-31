@@ -192,7 +192,7 @@ const EmployeeProfile = () => {
 
                 <Button
                   type="submit"
-                  className="w-40 h-10 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="w-40 h-10 bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200"
                 >
                   Save Changes
                 </Button>

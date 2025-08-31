@@ -57,10 +57,10 @@ const LeaveRequestsList = ({ employeeId }) => {
   }
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-purple-100">
+    <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-[#8b1e3f]/10">
       <div className="flex items-center gap-2 mb-4">
-        <FiCalendar className="w-5 h-5 text-purple-600" />
-        <h3 className="text-lg font-semibold text-purple-700">My Leave Requests</h3>
+        <FiCalendar className="w-5 h-5 text-[#8b1e3f]" />
+        <h3 className="text-lg font-semibold text-[#8b1e3f]">My Leave Requests</h3>
       </div>
 
       {leaveRequests.length === 0 ? (
@@ -72,7 +72,7 @@ const LeaveRequestsList = ({ employeeId }) => {
       ) : (
         <div className="space-y-3 max-h-96 overflow-y-auto">
           {leaveRequests.map((request) => (
-            <div key={request.id} className="border border-purple-100 rounded-lg p-4 hover:bg-purple-50 transition-colors">
+            <div key={request.id} className="border border-[#8b1e3f]/10 rounded-lg p-4 hover:bg-[#8b1e3f]/10 transition-colors">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-gray-800">

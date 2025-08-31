@@ -80,7 +80,7 @@ const HrAttendanceSummary = () => {
         </div>
         <button
           onClick={handleRefresh}
-          className="flex items-center space-x-2 bg-purple-600 text-white px-3 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm"
+          className="flex items-center space-x-2 bg-[#8b1e3f] text-white px-3 py-2 rounded-lg hover:bg-[#8b1e3f]/70 transition-colors text-sm"
         >
           <RefreshCw className="h-4 w-4" />
           <span>Refresh</span>

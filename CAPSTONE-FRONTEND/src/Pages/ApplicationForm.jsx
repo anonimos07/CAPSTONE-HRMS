@@ -58,30 +58,30 @@ export const ApplicationForm = () => {
 
   return (
     <ParentLayout>
-      <div className="min-h-screen bg-purple-50 p-6">
+      <div className="min-h-screen bg-[#8b1e3f]/10 p-6">
         <div className="max-w-2xl mx-auto">
           {/* Added back button here */}
-          <Link to="/hiring" className="flex items-center text-purple-600 mb-6">
+          <Link to="/hiring" className="flex items-center text-[#8b1e3f] mb-6">
             <FiArrowLeft className="mr-2" /> Back to Open Positions
           </Link>
           
           <div className="bg-white p-8 rounded-lg shadow-md">
-            <h1 className="text-2xl font-bold text-purple-800 mb-6">Apply for {position?.title}</h1>
+            <h1 className="text-2xl font-bold text-[#8b1e3f] mb-6">Apply for {position?.title}</h1>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-purple-700 mb-2">Position</label>
-                <div className="flex items-center bg-purple-50 p-3 rounded-md">
-                  <FiBriefcase className="text-purple-600 mr-2" />
+                <label className="block text-[#8b1e3f] mb-2">Position</label>
+                <div className="flex items-center bg-[#8b1e3f]/10 p-3 rounded-md">
+                  <FiBriefcase className="text-[#8b1e3f] mr-2" />
                   <span>{position?.title}</span>
                 </div>
               </div>
               
               <div>
-                <label htmlFor="fullName" className="block text-purple-700 mb-2">Full Name</label>
+                <label htmlFor="fullName" className="block text-[#8b1e3f] mb-2">Full Name</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FiUser className="text-purple-600" />
+                    <FiUser className="text-[#8b1e3f]" />
                   </div>
                   <input
                     type="text"
@@ -89,17 +89,17 @@ export const ApplicationForm = () => {
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleChange}
-                    className="pl-10 w-full p-3 border border-purple-200 rounded-md focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    className="pl-10 w-full p-3 border border-[#8b1e3f]/20 rounded-md focus:ring-2 focus:ring-[#8b1e3f]/60 focus:border-transparent"
                     required
                   />
                 </div>
               </div>
               
               <div>
-                <label htmlFor="email" className="block text-purple-700 mb-2">Email</label>
+                <label htmlFor="email" className="block text-[#8b1e3f] mb-2">Email</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FiMail className="text-purple-600" />
+                    <FiMail className="text-[#8b1e3f]" />
                   </div>
                   <input
                     type="email"
@@ -107,17 +107,17 @@ export const ApplicationForm = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="pl-10 w-full p-3 border border-purple-200 rounded-md focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    className="pl-10 w-full p-3 border border-[#8b1e3f]/20 rounded-md focus:ring-2 focus:ring-[#8b1e3f]/60 focus:border-transparent"
                     required
                   />
                 </div>
               </div>
               
               <div>
-                <label htmlFor="contact" className="block text-purple-700 mb-2">Contact Number</label>
+                <label htmlFor="contact" className="block text-[#8b1e3f] mb-2">Contact Number</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FiPhone className="text-purple-600" />
+                    <FiPhone className="text-[#8b1e3f]" />
                   </div>
                   <input
                     type="tel"
@@ -125,25 +125,25 @@ export const ApplicationForm = () => {
                     name="contact"
                     value={formData.contact}
                     onChange={handleChange}
-                    className="pl-10 w-full p-3 border border-purple-200 rounded-md focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    className="pl-10 w-full p-3 border border-[#8b1e3f]/20 rounded-md focus:ring-2 focus:ring-[#8b1e3f]/60 focus:border-transparent"
                     required
                   />
                 </div>
               </div>
               
               <div>
-                <label htmlFor="file" className="block text-purple-700 mb-2">Resume/CV</label>
+                <label htmlFor="file" className="block text-[#8b1e3f] mb-2">Resume/CV</label>
                 <input
                   type="file"
                   id="file"
                   name="file"
                   onChange={handleFileChange}
-                  className="block w-full text-sm text-purple-700
+                  className="block w-full text-sm text-[#8b1e3f]
                     file:mr-4 file:py-2 file:px-4
                     file:rounded-md file:border-0
                     file:text-sm file:font-semibold
-                    file:bg-purple-100 file:text-purple-700
-                    hover:file:bg-purple-200"
+                    file:bg-[#8b1e3f]/20 file:text-[#8b1e3f]
+                    hover:file:bg-[#8b1e3f]/20"
                   required
                 />
               </div>
@@ -151,7 +151,7 @@ export const ApplicationForm = () => {
               <Button 
                 type="submit" 
                 disabled={submitMutation.isPending}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 text-lg disabled:opacity-50"
+                className="w-full bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white py-4 text-lg disabled:opacity-50"
               >
                 {submitMutation.isPending ? 'Submitting...' : 'Submit Application'}
               </Button>

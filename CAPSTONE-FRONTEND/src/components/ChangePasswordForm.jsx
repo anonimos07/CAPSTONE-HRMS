@@ -73,8 +73,8 @@ const ChangePasswordForm = () => {
   return (
     <Card className="w-full max-w-2xl">
       <CardHeader>
-        <CardTitle className="text-xl font-bold text-purple-800">Change Password</CardTitle>
-        <CardDescription className="text-purple-600">
+        <CardTitle className="text-xl font-bold text-[#8b1e3f]">Change Password</CardTitle>
+        <CardDescription className="text-[#8b1e3f]">
           Update your account password for enhanced security
         </CardDescription>
       </CardHeader>
@@ -82,24 +82,24 @@ const ChangePasswordForm = () => {
       <CardContent>
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="currentPassword" className="text-sm font-semibold text-purple-700">
+            <Label htmlFor="currentPassword" className="text-sm font-semibold text-[#8b1e3f]">
               Current Password
             </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#8b1e3f]/40" />
               <Input
                 id="currentPassword"
                 type={showCurrentPassword ? "text" : "password"}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="pl-10 pr-10 h-12 border-purple-200 focus:border-purple-500 focus:ring-purple-500"
+                className="pl-10 pr-10 h-12 border-[#8b1e3f]/30 focus:border-[#8b1e3f] focus:ring-[#8b1e3f]"
                 placeholder="Enter current password"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-400 hover:text-purple-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8b1e3f]/40 hover:text-[#8b1e3f]"
               >
                 {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -107,24 +107,24 @@ const ChangePasswordForm = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="newPassword" className="text-sm font-semibold text-purple-700">
+            <Label htmlFor="newPassword" className="text-sm font-semibold text-[#8b1e3f]">
               New Password
             </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#8b1e3f]/40" />
               <Input
                 id="newPassword"
                 type={showNewPassword ? "text" : "password"}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="pl-10 pr-10 h-12 border-purple-200 focus:border-purple-500 focus:ring-purple-500"
+                className="pl-10 pr-10 h-12 border-[#8b1e3f]/30 focus:border-[#8b1e3f] focus:ring-[#8b1e3f]"
                 placeholder="Enter new password"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-400 hover:text-purple-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8b1e3f]/40 hover:text-[#8b1e3f]"
               >
                 {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -137,24 +137,24 @@ const ChangePasswordForm = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-sm font-semibold text-purple-700">
+            <Label htmlFor="confirmPassword" className="text-sm font-semibold text-[#8b1e3f]">
               Confirm New Password
             </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#8b1e3f]/40" />
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="pl-10 pr-10 h-12 border-purple-200 focus:border-purple-500 focus:ring-purple-500"
+                className="pl-10 pr-10 h-12 border-p[#8b1e3f]/30 focus:border-[#8b1e3f] focus:ring-[#8b1e3f]"
                 placeholder="Confirm new password"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-400 hover:text-purple-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8b1e3f]/40 hover:text-[#8b1e3f]"
               >
                 {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -167,7 +167,7 @@ const ChangePasswordForm = () => {
           <div className="pt-4">
             <Button
               type="submit"
-              className="w-full h-12 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200"
+              className="w-full h-12 bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200"
               disabled={
                 changePasswordMutation.isPending || 
                 !currentPassword || 
@@ -189,9 +189,9 @@ const ChangePasswordForm = () => {
           </div>
         </form>
 
-        <div className="mt-6 p-4 bg-purple-50 rounded-lg">
-          <h4 className="text-sm font-semibold text-purple-800 mb-2">Password Requirements:</h4>
-          <ul className="text-xs text-purple-600 space-y-1">
+        <div className="mt-6 p-4 bg-[#8b1e3f]/10 rounded-lg">
+          <h4 className="text-sm font-semibold text-[#8b1e3f] mb-2">Password Requirements:</h4>
+          <ul className="text-xs text-[#8b1e3f] space-y-1">
             <li>• At least 8 characters long</li>
             <li>• Contains uppercase and lowercase letters</li>
             <li>• Contains at least one number</li>

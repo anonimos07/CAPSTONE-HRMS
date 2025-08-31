@@ -145,13 +145,13 @@ const EmployeePage = () => {
           {/* Left Column */}
           <section className="col-span-1 flex flex-col gap-6">
             {/* User Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 flex flex-col items-center border border-purple-100">
-              <div className="w-24 h-24 bg-purple-200 rounded-full mb-4 flex items-center justify-center text-3xl font-bold text-purple-700">
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 flex flex-col items-center border border-[#8b1e3f]/10">
+              <div className="w-24 h-24 bg-[#8b1e3f]/20 rounded-full mb-4 flex items-center justify-center text-3xl font-bold text-[#8b1e3f]">
                 JD
               </div>
-              <div className="text-xl font-bold text-purple-800 mb-1">John Doe</div>
-              <div className="text-sm text-purple-600 mb-4">Software Developer</div>
-              <div className="w-full border-t border-purple-100 pt-4 text-center">
+              <div className="text-xl font-bold text-[#8b1e3f] mb-1">John Doe</div>
+              <div className="text-sm text-[#8b1e3f] mb-4">Software Developer</div>
+              <div className="w-full border-t border-[#8b1e3f]/10 pt-4 text-center">
                 <div className="text-xs text-gray-500">Last active: 2 hours ago</div>
               </div>
             </div>
@@ -161,17 +161,17 @@ const EmployeePage = () => {
 
 
             {/* My Stuff Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-purple-100">
-              <div className="font-semibold text-purple-700 mb-3">My Stuff</div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-[#8b1e3f]/10">
+              <div className="font-semibold text-[#8b1e3f] mb-3">My Stuff</div>
               <div className="font-medium text-gray-800 mb-1">Training</div>
               <div className="text-xs text-gray-500">2 active trainings, 6 past due or expired</div>
             </div>
 
             {/* Celebrations Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-purple-100">
-              <div className="font-semibold text-purple-700 mb-3">Celebrations</div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-[#8b1e3f]/10">
+              <div className="font-semibold text-[#8b1e3f] mb-3">Celebrations</div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold">
+                <div className="w-10 h-10 bg-[#8b1e3f]/10 rounded-full flex items-center justify-center text-[#8b1e3f] font-bold">
                   JD
                 </div>
                 <div>
@@ -185,14 +185,14 @@ const EmployeePage = () => {
           {/* Center/Right Column */}
           <section className="col-span-2 flex flex-col gap-6">
             {/* Employee Community & Leave Request Tabs */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-purple-100">
-              <div className="flex gap-8 border-b border-purple-100 pb-3 mb-4">
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-[#8b1e3f]/10">
+              <div className="flex gap-8 border-b border-[#8b1e3f]/10 pb-3 mb-4">
                 <button 
                   onClick={() => setActiveTab('community')}
                   className={`font-semibold pb-1 px-1 transition-colors ${
                     activeTab === 'community' 
-                      ? 'text-purple-700 border-b-2 border-purple-600' 
-                      : 'text-gray-500 hover:text-purple-700'
+                      ? 'text-[#8b1e3f] border-b-2 border-[#8b1e3f]/60' 
+                      : 'text-gray-500 hover:text-[#8b1e3f]/70'
                   }`}
                 >
                   Employee Community
@@ -201,8 +201,8 @@ const EmployeePage = () => {
                   onClick={() => setActiveTab('leave')}
                   className={`font-semibold pb-1 px-1 transition-colors ${
                     activeTab === 'leave' 
-                      ? 'text-purple-700 border-b-2 border-purple-600' 
-                      : 'text-gray-500 hover:text-purple-700'
+                      ? 'text-[#8b1e3f] border-b-2 border-[#8b1e3f]/60' 
+                      : 'text-gray-500 hover:text-[#8b1e3f]/70'
                   }`}
                 >
                   Leave Requests
@@ -212,16 +212,16 @@ const EmployeePage = () => {
               {activeTab === 'community' && (
                 <>
                   <div className="flex gap-2 mb-6">
-                    <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow hover:shadow-md">
+                    <button className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow hover:shadow-md">
                       <FiMessageSquare className="inline mr-2 w-4 h-4" />
                       New Post
                     </button>
-                    <select className="border border-purple-200 rounded-lg px-3 py-2 text-gray-700 text-sm bg-white/50 focus:border-purple-500 focus:ring-purple-500">
+                    <select className="border border-[#8b1e3f] rounded-lg px-3 py-2 text-gray-700 text-sm bg-white/50 focus:border-[#8b1e3f] focus:ring-[#8b1e3f]/60">
                       <option>Announcements</option>
                       <option>Discussions</option>
                       <option>Questions</option>
                     </select>
-                    <a href="#" className="ml-auto text-purple-600 hover:text-purple-800 text-sm font-medium hover:underline transition-colors">
+                    <a href="#" className="ml-auto text-[#8b1e3f] hover:text-[#8b1e3f]/60 text-sm font-medium hover:underline transition-colors">
                       Visit Employee Community
                     </a>
                   </div>
@@ -232,14 +232,14 @@ const EmployeePage = () => {
                       <div className="text-center py-4 text-gray-500">Loading announcements...</div>
                     ) : announcements.length > 0 ? (
                       announcements.map((announcement) => (
-                        <div key={announcement.id} className="flex gap-3 items-start p-3 hover:bg-purple-50 rounded-lg transition-colors">
-                          <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold text-sm">
+                        <div key={announcement.id} className="flex gap-3 items-start p-3 hover:bg-[#8b1e3f]/20 rounded-lg transition-colors">
+                          <div className="w-10 h-10 bg-[#8b1e3f]/20 rounded-full flex items-center justify-center text-[#8b1e3f] font-bold text-sm">
                             {announcement.createdBy?.username?.charAt(0).toUpperCase() || 'A'}
                           </div>
                           <div>
                             <div className="font-semibold text-gray-800">{announcement.title}</div>
                             <div className="text-gray-600 text-sm mt-1">{announcement.content}</div>
-                            <div className="text-purple-600 text-xs mt-1">
+                            <div className="text-[#8b1e3f] text-xs mt-1">
                               {announcement.priority} • {announcement.createdBy?.username} • {new Date(announcement.createdAt).toLocaleDateString()}
                             </div>
                           </div>
@@ -267,14 +267,14 @@ const EmployeePage = () => {
 
             {/* Bottom Grid: Who's Out & Company Links */}
             <div className="grid grid-cols-2 gap-6">
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-purple-100">
-                <div className="font-semibold text-purple-700 mb-3 flex items-center gap-2">
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-[#8b1e3f]/10">
+                <div className="font-semibold text-[#8b1e3f] mb-3 flex items-center gap-2">
                   <FiCalendar className="w-4 h-4" /> Who's Out
                 </div>
                 <div className="text-sm text-gray-500 mb-2">Today ({whosOut.length})</div>
                 {whosOut.map((person, index) => (
-                  <div key={index} className="flex items-center gap-3 p-2 hover:bg-purple-50 rounded-lg transition-colors">
-                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 text-xs font-bold">
+                  <div key={index} className="flex items-center gap-3 p-2 hover:bg-[#8b1e3f]/20 rounded-lg transition-colors">
+                    <div className="w-8 h-8 bg-[#8b1e3f]/20 rounded-full flex items-center justify-center text-[#8b1e3f] text-xs font-bold">
                       {person.initials}
                     </div>
                     <div>
@@ -286,13 +286,13 @@ const EmployeePage = () => {
               </div>
               
               <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-purple-100">
-                <div className="font-semibold text-purple-700 mb-3">Company Links</div>
+                <div className="font-semibold text-[#8b1e3f] mb-3">Company Links</div>
                 <div className="grid grid-cols-2 gap-3">
                   {companyLinks.map((link, index) => (
                     <a 
                       key={index} 
                       href="#" 
-                      className="flex items-center gap-2 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg text-purple-700 text-sm font-medium transition-colors"
+                      className="flex items-center gap-2 p-3 bg-[#8b1e3f]/10 hover:bg-[#8b1e3f]/25 rounded-lg text-[#8b1e3f] text-sm font-medium transition-colors"
                     >
                       {link.icon}
                       {link.label}

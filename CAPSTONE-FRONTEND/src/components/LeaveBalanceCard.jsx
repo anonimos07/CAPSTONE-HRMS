@@ -44,10 +44,10 @@ const LeaveBalanceCard = ({ employeeId }) => {
   }
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-purple-100">
+    <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-[#8b1e3f]/10">
       <div className="flex items-center gap-2 mb-4">
-        <FiClock className="w-5 h-5 text-purple-600" />
-        <h3 className="text-lg font-semibold text-purple-700">Leave Balance</h3>
+        <FiClock className="w-5 h-5 text-[#8b1e3f]" />
+        <h3 className="text-lg font-semibold text-[#8b1e3f]">Leave Balance</h3>
       </div>
 
       {leaveBalances.length === 0 ? (
@@ -55,7 +55,7 @@ const LeaveBalanceCard = ({ employeeId }) => {
       ) : (
         <div className="space-y-3">
           {leaveBalances.map((balance) => (
-            <div key={balance.id} className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+            <div key={balance.id} className="flex items-center justify-between p-3 bg-[#8b1e3f]/10 rounded-lg">
               <div className="flex items-center gap-3">
                 <span className="text-lg">{getLeaveTypeIcon(balance.leaveType)}</span>
                 <div>
@@ -68,7 +68,7 @@ const LeaveBalanceCard = ({ employeeId }) => {
                 </div>
               </div>
               <div className="text-right">
-                <div className="font-bold text-purple-700">
+                <div className="font-bold text-[#8b1e3f]">
                   {balance.remainingDays}
                 </div>
                 <div className="text-xs text-gray-500">days left</div>

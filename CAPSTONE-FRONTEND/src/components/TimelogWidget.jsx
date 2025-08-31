@@ -274,8 +274,8 @@ const TimelogWidget = () => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
-            <div className="bg-purple-100 p-2 rounded-lg">
-              <Clock className="h-6 w-6 text-purple-600" />
+            <div className="bg-[#8b1e3f]/10 p-2 rounded-lg">
+              <Clock className="h-6 w-6 text-[#8b1e3f]" />
             </div>
             <div>
               <h2 className="text-lg font-semibold text-gray-900">Time Tracking</h2>

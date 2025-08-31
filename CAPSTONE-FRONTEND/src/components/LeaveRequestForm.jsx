@@ -82,10 +82,10 @@ const LeaveRequestForm = ({ employeeId, onSuccess }) => {
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-purple-100">
+    <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-[#8b1e3f]/10">
       <div className="flex items-center gap-2 mb-4">
-        <FiCalendar className="w-5 h-5 text-purple-600" />
-        <h3 className="text-lg font-semibold text-purple-700">Request Leave</h3>
+        <FiCalendar className="w-5 h-5 text-[#8b1e3f]" />
+        <h3 className="text-lg font-semibold text-[#8b1e3f]">Request Leave</h3>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -97,7 +97,7 @@ const LeaveRequestForm = ({ employeeId, onSuccess }) => {
             name="leaveType"
             value={formData.leaveType}
             onChange={handleInputChange}
-            className="w-full border border-purple-200 rounded-lg px-3 py-2 focus:border-purple-500 focus:ring-purple-500 bg-white/50"
+            className="w-full border border-[#8b1e3f] rounded-lg px-3 py-2 focus:border-[#8b1e3f]/50 focus:ring-[#8b1e3f]/50 bg-white/50"
             required
           >
             {leaveTypes.map(type => (
@@ -122,7 +122,7 @@ const LeaveRequestForm = ({ employeeId, onSuccess }) => {
               value={formData.startDate}
               onChange={handleInputChange}
               min={new Date().toISOString().split('T')[0]}
-              className="w-full border border-purple-200 rounded-lg px-3 py-2 focus:border-purple-500 focus:ring-purple-500 bg-white/50"
+              className="w-full border border-[#8b1e3f] rounded-lg px-3 py-2 focus:border-[#8b1e3f]/50 focus:ring-[#8b1e3f]/50 bg-white/50"
               required
             />
           </div>
@@ -136,15 +136,15 @@ const LeaveRequestForm = ({ employeeId, onSuccess }) => {
               value={formData.endDate}
               onChange={handleInputChange}
               min={formData.startDate || new Date().toISOString().split('T')[0]}
-              className="w-full border border-purple-200 rounded-lg px-3 py-2 focus:border-purple-500 focus:ring-purple-500 bg-white/50"
+              className="w-full border border-[#8b1e3f] rounded-lg px-3 py-2 focus:border-[#8b1e3f]/50 focus:ring-[#8b1e3f]/50 bg-white/50"
               required
             />
           </div>
         </div>
 
         {formData.startDate && formData.endDate && (
-          <div className="bg-purple-50 p-3 rounded-lg">
-            <div className="flex items-center gap-2 text-purple-700">
+          <div className="bg-[#8b1e3f]/10 p-3 rounded-lg">
+            <div className="flex items-center gap-2 text-[#8b1e3f]">
               <FiClock className="w-4 h-4" />
               <span className="text-sm font-medium">
                 Duration: {calculateDays()} day{calculateDays() !== 1 ? 's' : ''}
@@ -162,7 +162,7 @@ const LeaveRequestForm = ({ employeeId, onSuccess }) => {
             value={formData.reason}
             onChange={handleInputChange}
             rows={3}
-            className="w-full border border-purple-200 rounded-lg px-3 py-2 focus:border-purple-500 focus:ring-purple-500 bg-white/50"
+            className="w-full border border-[#8b1e3f] rounded-lg px-3 py-2 focus:border-[#8b1e3f]/50 focus:ring-[#8b1e3f]/50 bg-white/50"
             placeholder="Please provide a reason for your leave request..."
             required
           />
@@ -171,7 +171,7 @@ const LeaveRequestForm = ({ employeeId, onSuccess }) => {
         <button
           type="submit"
           disabled={submitLeaveRequest.isPending}
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full bg-[#8b1e3f] hover:bg-[#8b1e3f]/60 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {submitLeaveRequest.isPending ? (
             <>

@@ -100,7 +100,7 @@ const TimelogManagement = () => {
         <Button
           onClick={handleDownloadCSV}
           disabled={downloadCSVMutation.isLoading}
-          className="bg-purple-600 hover:bg-purple-700 text-white"
+          className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/60 text-white"
         >
           <FiDownload className="mr-2" />
           {downloadCSVMutation.isLoading ? 'Downloading...' : 'Download CSV'}
@@ -116,24 +116,24 @@ const TimelogManagement = () => {
             placeholder="Search by name or username..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent"
           />
         </div>
         <input
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent"
         />
         <input
           type="date"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent"
         />
         <Button
           onClick={handleSearch}
-          className="bg-purple-600 hover:bg-purple-700 text-white"
+          className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/60 text-white"
         >
           <FiSearch className="mr-2" />
           Search
@@ -275,7 +275,7 @@ const TimelogManagement = () => {
                       onClick={() => handleEditTimelog(timelog)}
                       variant="outline"
                       size="sm"
-                      className="text-purple-600 hover:text-purple-700"
+                      className="text-[#8b1e3f] hover:text-[#8b1e3f]/60"
                     >
                       <FiEdit className="mr-1" />
                       Edit
@@ -391,7 +391,7 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
               type="datetime-local"
               value={adjustedTimeIn ? new Date(adjustedTimeIn).toISOString().slice(0, 16) : ''}
               onChange={(e) => setAdjustedTimeIn(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f]/50 focus:border-transparent"
             />
           </div>
 
@@ -403,7 +403,7 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
               type="datetime-local"
               value={adjustedTimeOut ? new Date(adjustedTimeOut).toISOString().slice(0, 16) : ''}
               onChange={(e) => setAdjustedTimeOut(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f]/50 focus:border-transparent"
             />
           </div>
 
@@ -415,7 +415,7 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
               type="number"
               value={adjustedBreakDuration}
               onChange={(e) => setAdjustedBreakDuration(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f]/50 focus:border-transparent"
             />
           </div>
 
@@ -427,7 +427,7 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f]/50 focus:border-transparent"
               rows="3"
               placeholder="Please provide a reason for this adjustment..."
             />
@@ -445,7 +445,7 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
           <Button
             onClick={handleSave}
             disabled={isLoading || !reason.trim()}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/60 text-white"
           >
             {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>
@@ -525,7 +525,7 @@ const PhotoVerificationModal = ({ photo, photoType, isOpen, onClose }) => {
         <div className="flex justify-end mt-6">
           <Button
             onClick={onClose}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white"
           >
             Close
           </Button>

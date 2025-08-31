@@ -254,7 +254,7 @@ const TimelogPage = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <button
                             onClick={() => handleRequestEdit(timelog)}
-                            className="flex items-center space-x-1 text-purple-600 hover:text-purple-700 bg-purple-50 hover:bg-purple-100 px-3 py-1 rounded-lg transition-colors"
+                            className="flex items-center space-x-1 text-[#8b1e3f] hover:text-[#8b1e3f]/60 bg-[#8b1e3f]/10 hover:bg-[#8b1e3f]/10 px-3 py-1 rounded-lg transition-colors"
                           >
                             <Edit className="h-4 w-4" />
                             <span>Request Edit</span>
@@ -460,7 +460,7 @@ const TimelogEditRequestModal = ({ timelog, hrStaff, isOpen, onClose, onSubmit, 
             <button
               type="submit"
               disabled={isLoading || !reason.trim() || !assignedHrId}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 bg-[#8b1e3f] text-white rounded-lg hover:bg-[#8b1e3f]/60 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isLoading ? 'Submitting...' : 'Submit Request'}
             </button>
