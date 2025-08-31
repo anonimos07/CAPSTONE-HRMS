@@ -131,36 +131,7 @@ const HrPage = () => {
         {/* Left Sidebar */}
         <aside className="w-1/4">
           {/* User Card */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl mb-6 overflow-hidden border border-red-100">
-            <div className="bg-white px-6 pt-4 pb-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center">
-                  <span className="text-[#8b1e3f] font-semibold text-lg">JD</span>
-                </div>
-                <div>
-                  <div className="font-bold text-lg text-[#8b1e3f]">John Doe</div>
-                </div>
-              </div>
-              <Button className="w-full bg-[#8b1e3f] text-white py-3 rounded-lg font-semibold mb-4 hover:bg-[#8b1e3f]/90 transition-all duration-200 shadow-lg hover:shadow-xl">
-                Request Time off
-              </Button>
-
-              <div className="mb-0">
-                <div className="font-semibold text-[#8b1e3f] mb-2">Who's Out</div>
-                <div className="text-xs text-[#8b1e3f]/60 mb-1 uppercase tracking-wide">Today</div>
-                <div className="text-sm text-gray-600 mb-2">Nobody requested time off Today</div>
-                <div className="text-xs text-[#8b1e3f]/60 mb-1 uppercase tracking-wide">Tomorrow</div>
-                <div className="text-sm text-gray-600 mb-2">Nobody requested time off Tomorrow</div>
-                <div className="text-xs text-[#8b1e3f]/60 mb-1 uppercase tracking-wide">Friday, Aug 20</div>
-                <div className="text-sm text-gray-600 mb-2">Nobody requested time off for Friday</div>
-              </div>
-              <div className="border-t border-red-100 my-4"></div>
-              <div>
-                <div className="font-semibold text-[#8b1e3f] mb-1">Celebrations</div>
-                <div className="text-sm text-gray-500">Everyday is a good day to celebrate something.</div>
-              </div>
-            </div>
-          </div>
+      
 
           {/* Timelog Widget */}
           <TimelogWidget />
@@ -277,37 +248,22 @@ const HrPage = () => {
                 <button className="absolute top-4 right-4 text-gray-400 hover:text-[#8b1e3f] text-xl transition-colors">
                   ×
                 </button>
-                <div className="flex flex-col items-center gap-2 mb-2">
-                  <div className="p-3 bg-red-100 rounded-full mb-2">
-                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect x="8" y="8" width="32" height="28" rx="4" fill="#fff" stroke="#8b1e3f" strokeWidth="2" />
-                      <path d="M24 44L20 36H28L24 44Z" fill="#fff" stroke="#8b1e3f" strokeWidth="2" />
-                      <text x="16" y="28" fontFamily="Arial, sans-serif" fontWeight="bold" fontSize="18" fill="#8b1e3f">
-                        hi.
-                      </text>
-                    </svg>
-                  </div>
-                  <span className="text-3xl font-bold text-[#8b1e3f]">Welcome, John!</span>
-                </div>
+             
                 <div className="text-gray-700 mb-6 text-center max-w-2xl mx-auto">
                   You're looking at <span className="font-semibold text-[#8b1e3f]">TechStaffHub</span>, your new tool
                   for work. Here's a quick look at some of the things you can do with TechStaffHub.
                 </div>
                 <div className="grid grid-cols-3 gap-6">
-                  <div className="bg-gradient-to-br from-red-50 to-white rounded-lg p-6 flex flex-col items-center hover:shadow-lg transition-all duration-200 border border-red-100">
+                  <button
+                    onClick={() => setActiveSection("management")}
+                    className="bg-gradient-to-br from-red-50 to-white rounded-lg p-6 flex flex-col items-center hover:shadow-lg transition-all duration-200 border border-red-100 hover:border-[#8b1e3f]/30"
+                  >
                     <span className="text-4xl mb-3">🗓️</span>
-                    <div className="font-semibold text-[#8b1e3f] text-lg">Request Time Off</div>
+                    <div className="font-semibold text-[#8b1e3f] text-lg">User Management</div>
                     <div className="text-sm text-gray-600 text-center mt-2">
-                      Request time off and check your balances.
+                      Create and manage user accounts for your organization.
                     </div>
-                  </div>
-                  {/* <div className="bg-gradient-to-br from-red-50 to-white rounded-lg p-6 flex flex-col items-center hover:shadow-lg transition-all duration-200 border border-red-100">
-                    <span className="text-4xl mb-3">📇</span>
-                    <div className="font-semibold text-[#8b1e3f] text-lg">Company Directory</div>
-                    <div className="text-sm text-gray-600 text-center mt-2">
-                      Search for coworkers and their contact info.
-                    </div>
-                  </div> */}
+                  </button>
                   <a
                     href="/hr/job-applications"
                     className="bg-gradient-to-br from-red-50 to-white rounded-lg p-6 flex flex-col items-center hover:shadow-lg transition-all duration-200 border border-red-100 hover:border-[#8b1e3f]/30"
