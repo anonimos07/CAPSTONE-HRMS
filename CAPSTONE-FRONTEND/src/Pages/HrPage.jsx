@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom"
 import { Plus, Building2, UserPlus} from "lucide-react"
 import TimelogWidget from "../components/TimelogWidget"
+import PhilippineHolidaysCalendar from "../components/PhilippineHolidaysCalendar"
 import TimelogManagement from "../components/TimelogManagement"
 import HrAttendanceSummary from "../components/HrAttendanceSummary"
 import HrLeaveManagement from "../components/HrLeaveManagement"
@@ -135,6 +136,12 @@ const HrPage = () => {
 
           {/* Timelog Widget */}
           <TimelogWidget />
+
+          {/* Spacing */}
+          <div className="h-4"></div>
+
+          {/* Philippine Holidays Calendar */}
+          <PhilippineHolidaysCalendar />
 
           {/* Company Links Card
           <div className="bg-white/90 backdrop-blur-sm rounded-lg border border-red-100 p-4 mb-6 shadow-lg">

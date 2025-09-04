@@ -17,11 +17,14 @@ import {
   FiHelpCircle
 } from 'react-icons/fi';
 import TimelogWidget from '../components/TimelogWidget';
+import PhilippineHolidaysCalendar from '../components/PhilippineHolidaysCalendar';
 import Header from '../components/Header';
 import LeaveRequestForm from '../components/LeaveRequestForm';
 import LeaveBalanceCard from '../components/LeaveBalanceCard';
 import LeaveRequestsList from '../components/LeaveRequestsList';
 import { useActiveAnnouncements } from '../Api';
+
+
 
 const EmployeePage = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -149,6 +152,8 @@ const EmployeePage = () => {
             {/* Timelog Widget */}
             <TimelogWidget />
 
+            {/* Philippine Holidays Calendar */}
+            <PhilippineHolidaysCalendar />
 
           </section>
 
