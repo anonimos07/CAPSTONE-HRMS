@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, Check, Trash2, CheckCheck } from 'lucide-react';
+import { Bell, Check, Trash2, CheckCheck, Eye } from 'lucide-react';
 import Header from '../../components/Header';
 import { 
   useUserNotifications, 
@@ -128,7 +128,7 @@ const Notifications = () => {
             <div className="divide-y divide-gray-200">
               {allNotifications.map((notification) => (
                 <div
-                  key={notification.id}
+                  key={notification.notificationId}
                   className={`p-6 transition-colors ${
                     !notification.read ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
                   }`}
@@ -164,16 +164,16 @@ const Notifications = () => {
                     <div className="flex space-x-2 ml-4">
                       {!notification.read && (
                         <button
-                          onClick={() => handleMarkAsRead(notification.id)}
+                          onClick={() => handleMarkAsRead(notification.notificationId)}
                           disabled={markAsReadMutation.isPending}
                           className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50"
                           title="Mark as read"
                         >
-                          <Check size={16} />
+                          <Eye size={16} />
                         </button>
                       )}
                       <button
-                        onClick={() => handleDelete(notification.id)}
+                        onClick={() => handleDelete(notification.notificationId)}
                         disabled={deleteMutation.isPending}
                         className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50"
                         title="Delete"

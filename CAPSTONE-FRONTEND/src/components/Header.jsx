@@ -20,13 +20,11 @@ const Header = ({ userRole }) => {
         { path: "/hr/announcements", label: "Announcements", icon: Users },
         { path: "/hr/job-applications", label: "Applications", icon: FileText },
         { path: "/hr/resume-review", label: "Resume Review", icon: UserCheck },
-        { path: "/hr/notifications", label: "Notifications", icon: Bell },
         { path: "/hrprofile", label: "Profile", icon: User },
       ]
     } else {
       return [
         { path: "/employeepage", label: "Dashboard", icon: Home },
-        { path: "/employee/notifications", label: "Notifications", icon: Bell },
         { path: "/timelog", label: "Timelog", icon: Briefcase },
         { path: "/employeeprofile", label: "Profile", icon: User },
       ]
@@ -76,7 +74,7 @@ const Header = ({ userRole }) => {
                 >
                   <Icon size={16} />
                   <span>{item.label}</span>
-                  {item.label === "Notifications" && unreadCount > 0 && (
+                  {item.label === "Notifications" && unreadCount > 0 && userRole !== "HR" && (
                     <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center ml-1">
                       {unreadCount}
                     </span>
@@ -87,6 +85,39 @@ const Header = ({ userRole }) => {
           </nav>
 
           <div className="flex items-center space-x-4">
+            {userRole === "HR" && (
+              <Link
+                to="/hrpage"
+                onClick={() => {
+                  // Set active section to notifications when clicking the bell
+                  const event = new CustomEvent('setActiveSection', { detail: 'notifications' });
+                  window.dispatchEvent(event);
+                }}
+                className="relative p-2 text-gray-600 hover:text-[#8b1e3f] hover:bg-gray-50 rounded-md transition-colors"
+                title="Notifications"
+              >
+                <Bell size={20} />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                    {unreadCount}
+                  </span>
+                )}
+              </Link>
+            )}
+            {userRole === "EMPLOYEE" && (
+              <Link
+                to="/employee/notifications"
+                className="relative p-2 text-gray-600 hover:text-[#8b1e3f] hover:bg-gray-50 rounded-md transition-colors"
+                title="Notifications"
+              >
+                <Bell size={20} />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                    {unreadCount}
+                  </span>
+                )}
+              </Link>
+            )}
             <button
               onClick={handleLogout}
               className="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
@@ -125,7 +156,7 @@ const Header = ({ userRole }) => {
                 >
                   <Icon size={16} />
                   <span>{item.label}</span>
-                  {item.label === "Notifications" && unreadCount > 0 && (
+                  {item.label === "Notifications" && unreadCount > 0 && userRole !== "HR" && (
                     <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 ml-2">{unreadCount}</span>
                   )}
                 </Link>
