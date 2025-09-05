@@ -48,9 +48,14 @@ public class PasswordResetController {
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
         try {
+            System.out.println("Reset password request received: " + request);
             String token = request.get("token");
             String newPassword = request.get("newPassword");
             String confirmPassword = request.get("confirmPassword");
+            
+            System.out.println("Token: " + token);
+            System.out.println("NewPassword length: " + (newPassword != null ? newPassword.length() : "null"));
+            System.out.println("ConfirmPassword length: " + (confirmPassword != null ? confirmPassword.length() : "null"));
             
             if (token == null || token.trim().isEmpty()) {
                 return ResponseEntity.badRequest()
@@ -75,6 +80,8 @@ public class PasswordResetController {
             ));
             
         } catch (Exception e) {
+            System.out.println("Reset password error: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest()
                 .body(Map.of("success", false, "message", e.getMessage()));
         }
