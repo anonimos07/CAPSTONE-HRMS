@@ -56,7 +56,7 @@ const Notifications = () => {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Notifications</h1>
+            <h1 className="text-3xl font-bold text-[#8b1e3f]">Notifications</h1>
             <p className="text-gray-600 mt-2">
               Stay updated with company announcements and important messages
             </p>
@@ -65,7 +65,7 @@ const Notifications = () => {
             <button
               onClick={handleMarkAllAsRead}
               disabled={markAllAsReadMutation.isPending}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
+              className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/80 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
             >
               <CheckCheck size={20} />
               <span>Mark All Read</span>
@@ -77,8 +77,8 @@ const Notifications = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
             <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-full">
-                <Bell className="h-6 w-6 text-blue-600" />
+              <div className="p-3 bg-[#8b1e3f]/10 rounded-full">
+                <Bell className="h-6 w-6 text-[#8b1e3f]" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Notifications</p>
@@ -125,12 +125,12 @@ const Notifications = () => {
               <p className="text-gray-500">You'll see company announcements and updates here</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-gray-300">
               {allNotifications.map((notification) => (
                 <div
                   key={notification.notificationId}
                   className={`p-6 transition-colors ${
-                    !notification.read ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                    !notification.read ? 'bg-[#8b1e3f]/10 border-l-4 border-l-[#8b1e3f]/80' : ''
                   }`}
                 >
                   <div className="flex justify-between items-start">
@@ -146,7 +146,7 @@ const Notifications = () => {
                             {notification.title}
                           </h3>
                           {!notification.read && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#8b1e3f]/10 text-[#8b1e3f]">
                               New
                             </span>
                           )}
@@ -166,7 +166,7 @@ const Notifications = () => {
                         <button
                           onClick={() => handleMarkAsRead(notification.notificationId)}
                           disabled={markAsReadMutation.isPending}
-                          className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50"
+                          className="p-2 text-[#8b1e3f] hover:bg-[#8b1e3f]/20 rounded-lg transition-colors disabled:opacity-50"
                           title="Mark as read"
                         >
                           <Eye size={16} />
@@ -175,7 +175,7 @@ const Notifications = () => {
                       <button
                         onClick={() => handleDelete(notification.notificationId)}
                         disabled={deleteMutation.isPending}
-                        className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50"
+                        className="p-2 text-red-600 hover:bg-red-200 rounded-lg transition-colors disabled:opacity-50"
                         title="Delete"
                       >
                         <Trash2 size={16} />

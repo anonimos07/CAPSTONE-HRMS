@@ -182,12 +182,12 @@ const HrPage = () => {
 
   const getNotificationColor = (type) => {
     switch (type) {
-      case 'ANNOUNCEMENT': return 'bg-blue-100 text-blue-800'
+      case 'ANNOUNCEMENT': return 'bg-white text-[#8b1e3f]'
       case 'JOB_APPLICATION': return 'bg-green-100 text-green-800'
       case 'LEAVE_REQUEST': return 'bg-purple-100 text-purple-800'
       case 'TIMELOG_EDIT_REQUEST': return 'bg-orange-100 text-orange-800'
       case 'SYSTEM': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-red-100 text-red-800'
+      default: return 'bg-white text-red-800'
     }
   }
 
@@ -675,12 +675,12 @@ const HrPage = () => {
                     <p className="text-gray-500">You'll see HR-related notifications and updates here</p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-gray-200">
+                  <div className="divide-y divide-gray-300">
                     {visibleNotifications.map((notification) => (
                       <div
                         key={notification.notificationId}
                         className={`p-6 transition-colors ${
-                          !notification.read ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                          !notification.read ? 'bg-[#8b1e3f]/10 border-l-4 border-l-[#8b1e3f]/80' : ''
                         }`}
                       >
                         <div className="flex justify-between items-start">
@@ -696,7 +696,7 @@ const HrPage = () => {
                                   {notification.title}
                                 </h3>
                                 {!notification.read && (
-                                  <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                                  <span className="bg-[#8b1e3f] text-white text-xs px-2 py-1 rounded-full font-medium">
                                     NEW
                                   </span>
                                 )}
@@ -720,7 +720,7 @@ const HrPage = () => {
                               <button
                                 onClick={() => handleMarkAsRead(notification.notificationId)}
                                 disabled={markAsReadMutation.isPending}
-                                className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50"
+                                className="p-2 text-[#8b1e3f] hover:bg-[#8b1e3f]/20 rounded-lg transition-colors disabled:opacity-50"
                                 title="Mark as read"
                               >
                                 <Eye size={16} />
@@ -728,7 +728,7 @@ const HrPage = () => {
                             )}
                             <button
                               onClick={() => handleHideNotification(notification.notificationId)}
-                              className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                              className="p-2 text-red-600 hover:bg-red-200 rounded-lg transition-colors"
                               title="Hide notification (UI only)"
                             >
                               <Trash2 size={16} />
