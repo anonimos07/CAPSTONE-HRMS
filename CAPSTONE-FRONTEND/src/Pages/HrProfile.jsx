@@ -1,55 +1,55 @@
-import { Button } from '@/components/ui/button';
-import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchCurrentUserDetails, updateUserProfile } from '../Api/hr';
-import Header from '../components/Header';
-import ChangePasswordForm from '../components/ChangePasswordForm';
-import ProfilePictureUpload from '../components/ProfilePictureUpload';
+import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { fetchCurrentUserDetails, updateUserProfile } from "../Api/hr"
+import Header from "../components/Header"
+import ChangePasswordForm from "../components/ChangePasswordForm"
+import ProfilePictureUpload from "../components/ProfilePictureUpload"
 
 const EmployeeProfile = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const queryClient = useQueryClient();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const queryClient = useQueryClient()
 
   const handleLogout = () => {
-    setIsDropdownOpen(false);
-    localStorage.clear();
-  };
+    setIsDropdownOpen(false)
+    localStorage.clear()
+  }
 
   const initialFormState = {
-    firstName: '',
-    lastName: '',
-    contact: '',
-    department: '',
-    address: '',
-    email: '',
-  };
+    firstName: "",
+    lastName: "",
+    contact: "",
+    department: "",
+    address: "",
+    email: "",
+  }
 
-  const [form, setForm] = useState(initialFormState);
-  const [isEmptyDetails, setIsEmptyDetails] = useState(false);
+  const [form, setForm] = useState(initialFormState)
+  const [isEmptyDetails, setIsEmptyDetails] = useState(false)
 
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token")
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['employeeDetails'],
+    queryKey: ["employeeDetails"],
     queryFn: fetchCurrentUserDetails,
     enabled: !!token,
-  });
+  })
 
   // Process data with useEffect to ensure it runs every time data changes
   useEffect(() => {
     if (data && !isLoading) {
-      console.log('Processing data...');
-      
+      console.log("Processing data...")
+
       // Check if it's an empty details response
-      if (data.message === 'Employee details not yet created') {
-        console.log('Employee details not created yet');
-        setIsEmptyDetails(true);
-        return;
+      if (data.message === "Employee details not yet created") {
+        console.log("Employee details not created yet")
+        setIsEmptyDetails(true)
+        return
       }
-      
+
       // Try multiple possible response structures
-      let employeeData = data;
-  
+      const employeeData = data
+
       const newFormState = {
         firstName: employeeData.firstName,
         lastName: employeeData.lastName,
@@ -57,57 +57,59 @@ const EmployeeProfile = () => {
         department: employeeData.department,
         address: employeeData.address,
         email: employeeData.email,
-      };
-      
-      setForm(newFormState);
-      setIsEmptyDetails(false);
+      }
+
+      setForm(newFormState)
+      setIsEmptyDetails(false)
     }
-  }, [data, isLoading]);
+  }, [data, isLoading])
 
   // Mutation for update
   const updateMutation = useMutation({
     mutationFn: updateUserProfile,
     onSuccess: (responseData) => {
-      console.log('Update success:', responseData);
-      queryClient.invalidateQueries({ queryKey: ['employeeDetails'] });
-      alert('Profile updated successfully');
-      setIsEmptyDetails(false);
+      console.log("Update success:", responseData)
+      queryClient.invalidateQueries({ queryKey: ["employeeDetails"] })
+      alert("Profile updated successfully")
+      setIsEmptyDetails(false)
     },
     onError: (error) => {
-      console.error('Update error:', error);
-      alert('Failed to update profile');
+      console.error("Update error:", error)
+      alert("Failed to update profile")
     },
-  });
+  })
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Submitting form:', form);
-    updateMutation.mutate(form);
-  };
+    e.preventDefault()
+    console.log("Submitting form:", form)
+    updateMutation.mutate(form)
+  }
 
-  if (isLoading) return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50">
-      <Header userRole="HR" />
-      <div className="flex justify-center items-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8b1e3f]"></div>
+  if (isLoading)
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50">
+        <Header userRole="HR" />
+        <div className="flex justify-center items-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8b1e3f]"></div>
+        </div>
       </div>
-    </div>
-  );
-  
-  if (isError) return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 flex items-center justify-center">
-      <p className="text-red-600">Error loading profile data: {error?.message}</p>
-    </div>
-  );
+    )
+
+  if (isError)
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 flex items-center justify-center">
+        <p className="text-red-600">Error loading profile data: {error?.message}</p>
+      </div>
+    )
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50">
       <Header userRole="HR" />
-      
+
       <div className="flex px-8 py-8">
         {/* Sidebar */}
         <aside className="w-1/4 mr-8">
@@ -120,31 +122,51 @@ const EmployeeProfile = () => {
                   <div className="font-bold text-lg text-[#8b1e3f]">
                     {form.firstName} {form.lastName}
                   </div>
-                  <div className="text-sm text-gray-600">{form.department || 'No department assigned'}</div>
+                  <div className="text-sm text-gray-600">{form.department || "No department assigned"}</div>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-sm">
                   <svg className="w-4 h-4 text-[#8b1e3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
                   </svg>
-                  <span className="text-gray-600">{form.email || 'No email provided'}</span>
+                  <span className="text-gray-600">{form.email || "No email provided"}</span>
                 </div>
-                
+
                 <div className="flex items-center gap-3 text-sm">
                   <svg className="w-4 h-4 text-[#8b1e3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    />
                   </svg>
-                  <span className="text-gray-600">{form.contact || 'No contact number'}</span>
+                  <span className="text-gray-600">{form.contact || "No contact number"}</span>
                 </div>
-                
+
                 <div className="flex items-center gap-3 text-sm">
                   <svg className="w-4 h-4 text-[#8b1e3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
                   </svg>
-                  <span className="text-gray-600">{form.address || 'No address provided'}</span>
+                  <span className="text-gray-600">{form.address || "No address provided"}</span>
                 </div>
               </div>
             </div>
@@ -152,7 +174,7 @@ const EmployeeProfile = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1">    
+        <main className="flex-1">
           {/* Profile Form Card */}
           <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl p-8 border border-red-100 mb-8">
             <div className="flex items-center justify-between mb-6">
@@ -163,7 +185,7 @@ const EmployeeProfile = () => {
                 </div>
               )}
             </div>
-            
+
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -250,23 +272,23 @@ const EmployeeProfile = () => {
                         Saving...
                       </>
                     ) : (
-                      'Save Changes'
+                      "Save Changes"
                     )}
                   </Button>
                 </div>
               </div>
             </form>
           </div>
-          
+
           {/* Change Password Section */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl p-8 border border-red-100">
+          <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl p-8 border border-red-100 w-full max-w-full">
             <h2 className="text-2xl font-bold text-[#8b1e3f] mb-6">Security Settings</h2>
             <ChangePasswordForm />
           </div>
         </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default EmployeeProfile;
+export default EmployeeProfile

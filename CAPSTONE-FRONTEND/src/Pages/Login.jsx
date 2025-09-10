@@ -9,7 +9,6 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import EMPImage from "@/assets/EMP.jpg";
 
-
 const API_BASE_URL_EMPLOYEE = import.meta.env.VITE_API_BASE_URL_EMPLOYEE
 
 const LoginPage = () => {
@@ -20,13 +19,19 @@ const LoginPage = () => {
   const [isVisible, setIsVisible] = useState(false)
   const [isExiting, setIsExiting] = useState(false)
 
+  // 🔹 Toast State
+  const [toast, setToast] = useState({ show: false, message: "", type: "" })
+  const showToast = (message, type = "error") => {
+    setToast({ show: true, message, type })
+    setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
+  }
+
   useEffect(() => {
     setIsVisible(true)
   }, [])
 
   const handleHRLogin = (e) => {
     e.preventDefault()
-
     setIsExiting(true)
     setTimeout(() => {
       navigate("/hr")
@@ -54,9 +59,9 @@ const LoginPage = () => {
       console.error("Login failed:", error)
       const errorMessage = error.response?.data?.error || "Invalid credentials"
       if (errorMessage === "Your account has been disabled") {
-        alert("Your account has been disabled. Please contact your administrator.")
+        showToast("Your account has been disabled. Please contact your administrator.", "error")
       } else {
-        alert(errorMessage)
+        showToast(errorMessage, "error")
       }
     },
   })
@@ -72,6 +77,15 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      {/* 🔹 Toast Notification */}
+      {toast.show && (
+        <div className={`fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 ${
+          toast.type === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
+        }`}>
+          {toast.message}
+        </div>
+      )}
+
       {/* Left side - EMP.jpg background with diamond cuts */}
       <div className="absolute inset-0 flex">
         <div className="flex-1 relative">
