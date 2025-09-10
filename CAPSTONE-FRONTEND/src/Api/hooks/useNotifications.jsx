@@ -48,7 +48,10 @@ export const useMarkNotificationAsRead = () => {
   return useMutation({
     mutationFn: markNotificationAsRead,
     onSuccess: () => {
+      // Invalidate all notification-related queries
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      // Force refetch of unread count
+      queryClient.refetchQueries({ queryKey: ['notifications', 'unread', 'count'] });
     },
   });
 };
@@ -59,7 +62,10 @@ export const useMarkAllNotificationsAsRead = () => {
   return useMutation({
     mutationFn: markAllNotificationsAsRead,
     onSuccess: () => {
+      // Invalidate all notification-related queries
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      // Force refetch of unread count
+      queryClient.refetchQueries({ queryKey: ['notifications', 'unread', 'count'] });
     },
   });
 };
@@ -70,7 +76,10 @@ export const useDeleteNotification = () => {
   return useMutation({
     mutationFn: deleteNotification,
     onSuccess: () => {
+      // Invalidate all notification-related queries
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      // Force refetch of unread count
+      queryClient.refetchQueries({ queryKey: ['notifications', 'unread', 'count'] });
     },
   });
 };

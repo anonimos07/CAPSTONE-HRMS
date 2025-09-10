@@ -35,7 +35,6 @@ const HrPage = () => {
   const [showViewProfileModal, setShowViewProfileModal] = useState(false)
   const [selectedUserId, setSelectedUserId] = useState(null)
   const [selectedUserRole, setSelectedUserRole] = useState(null)
-  const [hiddenNotifications, setHiddenNotifications] = useState(new Set())
 
   // Pagination states
   const [manageRequestsPage, setManageRequestsPage] = useState(1)
@@ -151,22 +150,41 @@ const HrPage = () => {
 
   // Notification handlers
   const handleMarkAsRead = (notificationId) => {
-    markAsReadMutation.mutate(notificationId)
+    markAsReadMutation.mutate(notificationId, {
+      onSuccess: () => {
+        // Optionally show success feedback
+        console.log('Notification marked as read successfully');
+      },
+      onError: (error) => {
+        console.error('Failed to mark notification as read:', error);
+      }
+    })
   }
 
   const handleMarkAllAsRead = () => {
-    markAllAsReadMutation.mutate()
+    markAllAsReadMutation.mutate(undefined, {
+      onSuccess: () => {
+        console.log('All notifications marked as read successfully');
+      },
+      onError: (error) => {
+        console.error('Failed to mark all notifications as read:', error);
+      }
+    })
   }
 
-  const handleHideNotification = (notificationId) => {
-    setHiddenNotifications((prev) => new Set([...prev, notificationId]))
+  const handleDeleteNotification = (notificationId) => {
+    deleteMutation.mutate(notificationId, {
+      onSuccess: () => {
+        console.log('Notification deleted successfully');
+      },
+      onError: (error) => {
+        console.error('Failed to delete notification:', error);
+      }
+    })
   }
 
-  // Filter notifications to exclude hidden ones
-  const visibleNotifications = notifications.filter(
-    (notification) => !hiddenNotifications.has(notification.notificationId),
-  )
-
+  // Use notifications directly from API
+  const visibleNotifications = notifications || []
   const unreadCount = visibleNotifications.filter((notification) => !notification.read).length
 
   // Notification icon and color helpers
@@ -676,9 +694,9 @@ const HrPage = () => {
                                 </button>
                               )}
                               <button
-                                onClick={() => handleHideNotification(notification.notificationId)}
+                                onClick={() => handleDeleteNotification(notification.notificationId)}
                                 className="p-2 text-red-600 hover:bg-red-200 rounded-lg transition-colors"
-                                title="Hide notification (UI only)"
+                                title="Delete notification"
                               >
                                 <Trash2 size={16} />
                               </button>
