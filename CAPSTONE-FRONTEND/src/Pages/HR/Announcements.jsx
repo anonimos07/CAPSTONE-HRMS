@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Plus, Edit2, Trash2, Eye, EyeOff, ChevronLeft, ChevronRight } from "lucide-react"
+import { Plus, ChevronLeft, ChevronRight } from "lucide-react"
 import Header from "../../components/Header"
 import {
   useActiveAnnouncements,
@@ -294,42 +294,7 @@ const Announcements = () => {
                         <div className="text-sm text-gray-500">
                           Created by {announcement.createdBy?.username} on{" "}
                           {new Date(announcement.createdAt).toLocaleDateString()}
-                          {announcement.updatedAt !== announcement.createdAt && (
-                            <span> • Updated {new Date(announcement.updatedAt).toLocaleDateString()}</span>
-                          )}
                         </div>
-                      </div>
-                      <div className="flex space-x-2 ml-4">
-                        <button
-                          onClick={() => handleEdit(announcement)}
-                          className="p-2 text-[#8b1e3f] hover:bg-[#8b1e3f]/10 rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <Edit2 size={16} />
-                        </button>
-                        {announcement.active ? (
-                          <button
-                            onClick={() => handleDeactivate(announcement.id)}
-                            className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                            title="Deactivate"
-                          >
-                            <EyeOff size={16} />
-                          </button>
-                        ) : (
-                          <button
-                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                            title="Active"
-                          >
-                            <Eye size={16} />
-                          </button>
-                        )}
-                        <button
-                          onClick={() => handleDelete(announcement.id)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 size={16} />
-                        </button>
                       </div>
                     </div>
                   </div>

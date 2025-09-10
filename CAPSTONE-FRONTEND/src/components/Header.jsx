@@ -86,12 +86,15 @@ const Header = ({ userRole }) => {
 
           <div className="flex items-center space-x-4">
             {userRole === "HR" && (
-              <Link
-                to="/hrpage"
+              <button
                 onClick={() => {
-                  // Set active section to notifications when clicking the bell
-                  const event = new CustomEvent('setActiveSection', { detail: 'notifications' });
-                  window.dispatchEvent(event);
+                  // Navigate to hrpage and set active section to notifications
+                  navigate('/hrpage');
+                  // Dispatch event after a short delay to ensure the page is loaded
+                  setTimeout(() => {
+                    const event = new CustomEvent('setActiveSection', { detail: 'notifications' });
+                    window.dispatchEvent(event);
+                  }, 100);
                 }}
                 className="relative p-2 text-gray-600 hover:text-[#8b1e3f] hover:bg-gray-50 rounded-md transition-colors"
                 title="Notifications"
@@ -102,7 +105,7 @@ const Header = ({ userRole }) => {
                     {unreadCount}
                   </span>
                 )}
-              </Link>
+              </button>
             )}
             {userRole === "EMPLOYEE" && (
               <Link

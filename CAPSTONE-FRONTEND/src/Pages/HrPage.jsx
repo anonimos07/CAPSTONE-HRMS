@@ -339,6 +339,16 @@ const HrPage = () => {
                       </span>
                     )}
                   </button>
+                    <a
+                    href="/hr/notifications"
+                    className="bg-gradient-to-br from-red-50 to-white rounded-lg p-6 flex flex-col items-center hover:shadow-lg transition-all duration-200 border border-red-100 hover:border-[#8b1e3f]/30"
+                  >
+                    <span className="text-4xl mb-3">🔔</span>
+                    <div className="font-semibold text-[#8b1e3f] text-lg">Create Notifications</div>
+                    <div className="text-sm text-gray-600 text-center mt-2">
+                      Send notifications to employees and manage communications.
+                    </div>
+                  </a>
                 </div>
               </div>
             </>
