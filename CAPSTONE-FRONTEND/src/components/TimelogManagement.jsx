@@ -44,6 +44,7 @@ const TimelogManagement = () => {
   };
 
   const handleRefresh = () => {
+    console.log('Refresh clicked - clearing search params');
     setSearch('');
     setStartDate('');
     setEndDate('');

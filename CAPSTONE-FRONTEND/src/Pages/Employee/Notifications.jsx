@@ -130,7 +130,9 @@ const Notifications = () => {
                 <div
                   key={notification.notificationId}
                   className={`p-6 transition-colors ${
-                    !notification.read ? 'bg-[#8b1e3f]/10 border-l-4 border-l-[#8b1e3f]/80' : ''
+                    !notification.read 
+                      ? 'bg-[#8b1e3f]/10 border-l-4 border-l-[#8b1e3f]/80' 
+                      : 'bg-gray-50/50'
                   }`}
                 >
                   <div className="flex justify-between items-start">

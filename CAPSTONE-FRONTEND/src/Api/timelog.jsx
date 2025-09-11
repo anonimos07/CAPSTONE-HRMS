@@ -105,9 +105,10 @@ export const deleteTimelog = async (timelogId) => {
 // HR-specific timelog management
 export const getAllTimelogsForHR = async (search, startDate, endDate) => {
   const params = {};
-  if (search) params.search = search;
-  if (startDate) params.startDate = startDate;
-  if (endDate) params.endDate = endDate;
+  // Only add parameters if they have actual values (not empty strings)
+  if (search && search.trim()) params.search = search.trim();
+  if (startDate && startDate.trim()) params.startDate = startDate.trim();
+  if (endDate && endDate.trim()) params.endDate = endDate.trim();
   
   console.log('API call params:', params);
   console.log('URL will be:', '/timelog/hr/all?' + new URLSearchParams(params).toString());
@@ -119,9 +120,10 @@ export const getAllTimelogsForHR = async (search, startDate, endDate) => {
 
 export const downloadTimelogsCSV = async (search, startDate, endDate) => {
   const params = {};
-  if (search) params.search = search;
-  if (startDate) params.startDate = startDate;
-  if (endDate) params.endDate = endDate;
+  // Only add parameters if they have actual values (not empty strings)
+  if (search && search.trim()) params.search = search.trim();
+  if (startDate && startDate.trim()) params.startDate = startDate.trim();
+  if (endDate && endDate.trim()) params.endDate = endDate.trim();
   
   const res = await API.get('/timelog/hr/download-csv', { 
     params,
