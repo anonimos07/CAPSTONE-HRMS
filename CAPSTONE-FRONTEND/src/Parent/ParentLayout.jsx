@@ -89,7 +89,7 @@ export const ParentLayout = ({ children, scrollToRef }) => {
               <input 
                 type="email" 
                 placeholder="Your email" 
-                className="px-4 py-2 rounded-l-md w-full focus:outline-none text-white-800"
+                className="px-4 py-2 rounded-l-md w-full focus:outline-none text-white-800 border border-white/30 focus:border-white/60"
               />
               <button className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/50 px-4 py-2 rounded-r-md">
                 <FiArrowRight />

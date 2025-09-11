@@ -8,12 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.util.Base64;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class ProfilePictureService {
@@ -21,8 +17,8 @@ public class ProfilePictureService {
     @Autowired
     private UserRepo userRepo;
 
-    private final String uploadDir = "src/main/resources/static/profile-pictures/";
-    private final String defaultProfilePicture = "default-profile.png";
+    // Default SVG as Base64 data URL
+    private final String defaultProfilePicture = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNGM0Y0RjYiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjM3IiByPSIxOCIgZmlsbD0iIzlDQTNBRiIvPgogIDxwYXRoIGQ9Ik0yMCA4MEMyMCA2OS41MDY2IDI4LjUwNjYgNjEgMzkgNjFINjFDNzEuNDkzNCA2MSA4MCA2OS41MDY2IDgwIDgwVjEwMEgyMFY4MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+";
 
     public String uploadProfilePicture(String username, MultipartFile file) throws IOException {
         // Validate file
@@ -36,23 +32,15 @@ public class ProfilePictureService {
             throw new RuntimeException("File must be an image");
         }
 
-        // Create upload directory if it doesn't exist
-        Path uploadPath = Paths.get(uploadDir);
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
+        // Validate file size (max 5MB)
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new RuntimeException("File size must be less than 5MB");
         }
 
-        // Generate unique filename
-        String originalFilename = file.getOriginalFilename();
-        String fileExtension = "";
-        if (originalFilename != null && originalFilename.contains(".")) {
-            fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        }
-        String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
-
-        // Save file
-        Path filePath = uploadPath.resolve(uniqueFilename);
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        // Convert file to Base64
+        byte[] fileBytes = file.getBytes();
+        String base64Image = Base64.getEncoder().encodeToString(fileBytes);
+        String dataUrl = "data:" + contentType + ";base64," + base64Image;
 
         // Update user profile picture in database
         Optional<Users> userOpt = userRepo.findByUsername(username);
@@ -65,25 +53,13 @@ public class ProfilePictureService {
                 employeeDetails.setUser(user);
             }
             
-            // Delete old profile picture if it's not the default
-            if (employeeDetails.getProfilePicture() != null && 
-                !employeeDetails.getProfilePicture().equals(defaultProfilePicture)) {
-                try {
-                    Path oldFilePath = Paths.get(uploadDir + employeeDetails.getProfilePicture());
-                    Files.deleteIfExists(oldFilePath);
-                } catch (IOException e) {
-                    // Log error but don't fail the upload
-                    System.err.println("Failed to delete old profile picture: " + e.getMessage());
-                }
-            }
-            
-            employeeDetails.setProfilePicture("profile-pictures/" + uniqueFilename);
+            employeeDetails.setProfilePicture(dataUrl);
             userRepo.save(user);
         } else {
             throw new RuntimeException("User not found");
         }
 
-        return "profile-pictures/" + uniqueFilename;
+        return dataUrl;
     }
 
     public String getProfilePictureUrl(String username) {
@@ -106,18 +82,7 @@ public class ProfilePictureService {
             EmployeeDetails employeeDetails = user.getEmployeeDetails();
             
             if (employeeDetails != null) {
-                // Delete current profile picture if it's not the default
-                if (employeeDetails.getProfilePicture() != null && 
-                    !employeeDetails.getProfilePicture().equals(defaultProfilePicture)) {
-                    try {
-                        Path oldFilePath = Paths.get("src/main/resources/static/" + employeeDetails.getProfilePicture());
-                        Files.deleteIfExists(oldFilePath);
-                    } catch (IOException e) {
-                        System.err.println("Failed to delete profile picture: " + e.getMessage());
-                    }
-                }
-                
-                employeeDetails.setProfilePicture(null);
+                employeeDetails.setProfilePicture(defaultProfilePicture);
                 userRepo.save(user);
             }
         } else {

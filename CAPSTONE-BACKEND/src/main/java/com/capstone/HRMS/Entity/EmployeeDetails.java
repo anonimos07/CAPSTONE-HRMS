@@ -29,7 +29,7 @@ public class EmployeeDetails {
     public String address;
     
     @Nullable
-    @Column(name = "profile_picture")
+    @Column(name = "profile_picture", columnDefinition = "TEXT")
     public String profilePicture;
 
     @OneToOne

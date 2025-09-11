@@ -51,10 +51,10 @@ const LeaveRequestsList = ({ employeeId, currentPage, onPageChange, itemsPerPage
 
   if (isLoading) {
     return (
-      <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-purple-100">
+      <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-[#8b1e3f]/10">
         <div className="flex items-center gap-2 mb-4">
-          <FiCalendar className="w-5 h-5 text-purple-600" />
-          <h3 className="text-lg font-semibold text-purple-700">My Leave Requests</h3>
+          <FiCalendar className="w-5 h-5 text-[#8b1e3f]" />
+          <h3 className="text-lg font-semibold text-[#8b1e3f]">My Leave Requests</h3>
         </div>
         <div className="text-center py-4 text-gray-500">Loading requests...</div>
       </div>

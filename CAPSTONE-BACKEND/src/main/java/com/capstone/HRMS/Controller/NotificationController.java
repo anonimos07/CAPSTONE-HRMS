@@ -72,8 +72,14 @@ public class NotificationController {
     }
 
     @PutMapping("/{notificationId}/read")
-    public ResponseEntity<Notification> markAsRead(@PathVariable Long notificationId) {
+    public ResponseEntity<Notification> markAsRead(@PathVariable Long notificationId, Authentication authentication) {
         try {
+            String username = authentication.getName();
+            Users user = usersService.getUserByUsername(username);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            
             Notification notification = notificationService.markAsRead(notificationId);
             if (notification == null) {
                 return ResponseEntity.notFound().build();
@@ -100,8 +106,14 @@ public class NotificationController {
     }
 
     @DeleteMapping("/{notificationId}")
-    public ResponseEntity<String> deleteNotification(@PathVariable Long notificationId) {
+    public ResponseEntity<String> deleteNotification(@PathVariable Long notificationId, Authentication authentication) {
         try {
+            String username = authentication.getName();
+            Users user = usersService.getUserByUsername(username);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            
             notificationService.deleteNotification(notificationId);
             return ResponseEntity.ok("Notification deleted successfully");
         } catch (Exception e) {

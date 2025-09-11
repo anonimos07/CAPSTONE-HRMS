@@ -17,11 +17,14 @@ import {
   FiHelpCircle
 } from 'react-icons/fi';
 import TimelogWidget from '../components/TimelogWidget';
+import PhilippineHolidaysCalendar from '../components/PhilippineHolidaysCalendar';
 import Header from '../components/Header';
 import LeaveRequestForm from '../components/LeaveRequestForm';
 import LeaveBalanceCard from '../components/LeaveBalanceCard';
 import LeaveRequestsList from '../components/LeaveRequestsList';
 import { useActiveAnnouncements } from '../Api';
+
+
 
 const EmployeePage = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -145,41 +148,13 @@ const EmployeePage = () => {
           {/* Left Column */}
           <section className="col-span-1 flex flex-col gap-6">
             {/* User Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 flex flex-col items-center border border-[#8b1e3f]/10">
-              <div className="w-24 h-24 bg-[#8b1e3f]/20 rounded-full mb-4 flex items-center justify-center text-3xl font-bold text-[#8b1e3f]">
-                JD
-              </div>
-              <div className="text-xl font-bold text-[#8b1e3f] mb-1">John Doe</div>
-              <div className="text-sm text-[#8b1e3f] mb-4">Software Developer</div>
-              <div className="w-full border-t border-[#8b1e3f]/10 pt-4 text-center">
-                <div className="text-xs text-gray-500">Last active: 2 hours ago</div>
-              </div>
-            </div>
-
+          
             {/* Timelog Widget */}
             <TimelogWidget />
 
+            {/* Philippine Holidays Calendar */}
+            <PhilippineHolidaysCalendar />
 
-            {/* My Stuff Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-[#8b1e3f]/10">
-              <div className="font-semibold text-[#8b1e3f] mb-3">My Stuff</div>
-              <div className="font-medium text-gray-800 mb-1">Training</div>
-              <div className="text-xs text-gray-500">2 active trainings, 6 past due or expired</div>
-            </div>
-
-            {/* Celebrations Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-[#8b1e3f]/10">
-              <div className="font-semibold text-[#8b1e3f] mb-3">Celebrations</div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#8b1e3f]/10 rounded-full flex items-center justify-center text-[#8b1e3f] font-bold">
-                  JD
-                </div>
-                <div>
-                  <div className="text-gray-800">John Doe</div>
-                  <div className="text-xs text-gray-500">October 1 - Happy Birthday!</div>
-                </div>
-              </div>
-            </div>
           </section>
 
           {/* Center/Right Column */}
@@ -266,24 +241,8 @@ const EmployeePage = () => {
             </div>
 
             {/* Bottom Grid: Who's Out & Company Links */}
-            <div className="grid grid-cols-2 gap-6">
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-[#8b1e3f]/10">
-                <div className="font-semibold text-[#8b1e3f] mb-3 flex items-center gap-2">
-                  <FiCalendar className="w-4 h-4" /> Who's Out
-                </div>
-                <div className="text-sm text-gray-500 mb-2">Today ({whosOut.length})</div>
-                {whosOut.map((person, index) => (
-                  <div key={index} className="flex items-center gap-3 p-2 hover:bg-[#8b1e3f]/20 rounded-lg transition-colors">
-                    <div className="w-8 h-8 bg-[#8b1e3f]/20 rounded-full flex items-center justify-center text-[#8b1e3f] text-xs font-bold">
-                      {person.initials}
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-gray-800">{person.name}</div>
-                      <div className="text-xs text-gray-500">{person.type} • {person.date}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            {/* <div className="grid grid-cols-2 gap-6">
+             
               
               <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-purple-100">
                 <div className="font-semibold text-[#8b1e3f] mb-3">Company Links</div>
@@ -300,7 +259,7 @@ const EmployeePage = () => {
                   ))}
                 </div>
               </div>
-            </div>
+            </div> */}
           </section>
         </main>
       </div>

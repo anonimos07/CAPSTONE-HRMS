@@ -67,11 +67,13 @@ const ProfilePictureUpload = ({ size = 'large' }) => {
   };
 
   const getCurrentImageUrl = () => {
+
+    
     if (previewUrl) return previewUrl;
     if (profilePicture?.profilePictureUrl) {
       return getProfilePictureFullUrl(profilePicture.profilePictureUrl);
     }
-    return getProfilePictureFullUrl(null); // Returns default image
+    return getProfilePictureFullUrl(null); // Returns SVG default image
   };
 
   // Don't render if there's an authentication error

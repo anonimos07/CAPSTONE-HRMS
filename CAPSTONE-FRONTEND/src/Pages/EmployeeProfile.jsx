@@ -39,7 +39,8 @@ const EmployeeProfile = () => {
   useEffect(() => {
    
     if (data && !isLoading) {
-      console.log('Processing data...');
+      console.log('Processing data...', data);
+      console.log('Current token:', localStorage.getItem('token'));
       
       // Check if it's an empty details response
       if (data.message === 'Employee details not yet created') {

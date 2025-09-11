@@ -132,22 +132,7 @@ const Homepage = () => {
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-12">
-            <div className="space-y-6 bg-white p-8 rounded-xl shadow-sm">
-              <h3 className="text-xl font-semibold text-[#8b1e3f] flex items-center">
-                <FiBriefcase className="mr-2" /> For Businesses
-              </h3>
-              <ul className="space-y-4 text-[#8b1e3f]">
-                {businessBenefits.map((benefit, index) => (
-                  <li key={index} className="flex items-start">
-                    <FiCheckCircle className="text-[#8b1e3f] mr-3 mt-0.5 flex-shrink-0" />
-                    <span>{benefit}</span>
-                  </li>
-                ))}
-              </ul>
-              <Button className="w-full bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white py-6 text-lg">
-                Start Free Trial
-              </Button>
-            </div>
+        
             <div className="space-y-6 bg-white p-8 rounded-xl shadow-sm">
               <h3 className="text-xl font-semibold text-[#8b1e3f] flex items-center">
                 <FiUsers className="mr-2" /> For Employees

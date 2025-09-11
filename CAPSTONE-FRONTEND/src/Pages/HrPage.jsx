@@ -1,8 +1,8 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { Plus, Building2, UserPlus} from "lucide-react"
+import { Plus, Building2, UserPlus, Bell, Eye, Trash2 } from "lucide-react"
 import TimelogWidget from "../components/TimelogWidget"
+import PhilippineHolidaysCalendar from "../components/PhilippineHolidaysCalendar"
 import TimelogManagement from "../components/TimelogManagement"
 import HrAttendanceSummary from "../components/HrAttendanceSummary"
 import HrLeaveManagement from "../components/HrLeaveManagement"
@@ -17,6 +17,12 @@ import { usePendingRequestsCount } from "../Api/hooks/useLeaveRequests"
 import { useHr } from "../Api/hooks/useHr"
 import { usePositions } from "../Api/hooks/usePositions"
 import { useQueryClient } from "@tanstack/react-query"
+import {
+  useUserNotifications,
+  useMarkNotificationAsRead,
+  useMarkAllNotificationsAsRead,
+  useDeleteNotification,
+} from "../Api/hooks/useNotifications"
 
 const HrPage = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -33,6 +39,8 @@ const HrPage = () => {
   // Pagination states
   const [manageRequestsPage, setManageRequestsPage] = useState(1)
   const [myRequestsPage, setMyRequestsPage] = useState(1)
+  const [notificationsPage, setNotificationsPage] = useState(1)
+  const notificationsPerPage = 5
 
   const navigate = useNavigate()
   const { data: announcements = [], isLoading } = useActiveAnnouncements()
@@ -41,6 +49,12 @@ const HrPage = () => {
   const queryClient = useQueryClient()
   const { createHRMutation, createEmployeeMutation } = useHr()
   const { data: positions = [], createPositionMutation } = usePositions()
+
+  // Notification hooks
+  const { data: notifications = [], isLoading: notificationsLoading } = useUserNotifications()
+  const markAsReadMutation = useMarkNotificationAsRead()
+  const markAllAsReadMutation = useMarkAllNotificationsAsRead()
+  const deleteMutation = useDeleteNotification()
 
   // Get current user ID from localStorage
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}")
@@ -122,6 +136,138 @@ const HrPage = () => {
     navigate("/")
   }
 
+  // Listen for header bell click event
+  useEffect(() => {
+    const handleSetActiveSection = (event) => {
+      setActiveSection(event.detail)
+    }
+
+    window.addEventListener("setActiveSection", handleSetActiveSection)
+    return () => {
+      window.removeEventListener("setActiveSection", handleSetActiveSection)
+    }
+  }, [])
+
+  // Notification handlers
+  const handleMarkAsRead = (notificationId) => {
+    markAsReadMutation.mutate(notificationId, {
+      onSuccess: () => {
+        // Optionally show success feedback
+        console.log('Notification marked as read successfully');
+      },
+      onError: (error) => {
+        console.error('Failed to mark notification as read:', error);
+      }
+    })
+  }
+
+  const handleMarkAllAsRead = () => {
+    markAllAsReadMutation.mutate(undefined, {
+      onSuccess: () => {
+        console.log('All notifications marked as read successfully');
+      },
+      onError: (error) => {
+        console.error('Failed to mark all notifications as read:', error);
+      }
+    })
+  }
+
+  const handleDeleteNotification = (notificationId) => {
+    deleteMutation.mutate(notificationId, {
+      onSuccess: () => {
+        console.log('Notification deleted successfully');
+      },
+      onError: (error) => {
+        console.error('Failed to delete notification:', error);
+      }
+    })
+  }
+
+  // Use notifications directly from API
+  const visibleNotifications = notifications || []
+  const unreadCount = visibleNotifications.filter((notification) => !notification.read).length
+
+  // Notification icon and color helpers
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case "ANNOUNCEMENT":
+        return "📢"
+      case "JOB_APPLICATION":
+        return "📋"
+      case "LEAVE_REQUEST":
+        return "🏖️"
+      case "TIMELOG_EDIT_REQUEST":
+        return "⏰"
+      case "SYSTEM":
+        return "⚙️"
+      default:
+        return "📝"
+    }
+  }
+
+  const getNotificationColor = (type) => {
+    switch (type) {
+      case "ANNOUNCEMENT":
+        return "bg-white text-[#8b1e3f]"
+      case "JOB_APPLICATION":
+        return "bg-green-100 text-green-800"
+      case "LEAVE_REQUEST":
+        return "bg-purple-100 text-purple-800"
+      case "TIMELOG_EDIT_REQUEST":
+        return "bg-orange-100 text-orange-800"
+      case "SYSTEM":
+        return "bg-gray-100 text-gray-800"
+      default:
+        return "bg-white text-red-800"
+    }
+  }
+
+  // Pagination logic for notifications
+  const totalNotifications = visibleNotifications.length
+  const totalPages = Math.ceil(totalNotifications / notificationsPerPage)
+  const startIndex = (notificationsPage - 1) * notificationsPerPage
+  const endIndex = startIndex + notificationsPerPage
+  const paginatedNotifications = visibleNotifications.slice(startIndex, endIndex)
+
+  // Custom pagination function
+  const CustomPagination = ({ currentPage, totalPages, onPageChange }) => {
+    if (totalPages <= 1) return null
+
+    return (
+      <div className="flex items-center justify-center gap-2 mt-6">
+        <button
+          onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+          disabled={currentPage === 1}
+          className="px-3 py-2 text-sm font-medium text-[#8b1e3f] bg-white border border-red-200 rounded-lg hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          Previous
+        </button>
+
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          <button
+            key={page}
+            onClick={() => onPageChange(page)}
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+              page === currentPage
+                ? "bg-[#8b1e3f] text-white"
+                : "text-[#8b1e3f] bg-white border border-red-200 hover:bg-red-50"
+            }`}
+          >
+            {page}
+          </button>
+        ))}
+
+        <button
+          onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+          disabled={currentPage === totalPages}
+          className="px-3 py-2 text-sm font-medium text-[#8b1e3f] bg-white border border-red-200 rounded-lg hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          Next
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50">
       <Header userRole="HR" />
@@ -131,145 +277,19 @@ const HrPage = () => {
         {/* Left Sidebar */}
         <aside className="w-1/4">
           {/* User Card */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl mb-6 overflow-hidden border border-red-100">
-            <div className="bg-white px-6 pt-4 pb-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center">
-                  <span className="text-[#8b1e3f] font-semibold text-lg">JD</span>
-                </div>
-                <div>
-                  <div className="font-bold text-lg text-[#8b1e3f]">John Doe</div>
-                </div>
-              </div>
-              <Button className="w-full bg-[#8b1e3f] text-white py-3 rounded-lg font-semibold mb-4 hover:bg-[#8b1e3f]/90 transition-all duration-200 shadow-lg hover:shadow-xl">
-                Request Time off
-              </Button>
-
-              <div className="mb-0">
-                <div className="font-semibold text-[#8b1e3f] mb-2">Who's Out</div>
-                <div className="text-xs text-[#8b1e3f]/60 mb-1 uppercase tracking-wide">Today</div>
-                <div className="text-sm text-gray-600 mb-2">Nobody requested time off Today</div>
-                <div className="text-xs text-[#8b1e3f]/60 mb-1 uppercase tracking-wide">Tomorrow</div>
-                <div className="text-sm text-gray-600 mb-2">Nobody requested time off Tomorrow</div>
-                <div className="text-xs text-[#8b1e3f]/60 mb-1 uppercase tracking-wide">Friday, Aug 20</div>
-                <div className="text-sm text-gray-600 mb-2">Nobody requested time off for Friday</div>
-              </div>
-              <div className="border-t border-red-100 my-4"></div>
-              <div>
-                <div className="font-semibold text-[#8b1e3f] mb-1">Celebrations</div>
-                <div className="text-sm text-gray-500">Everyday is a good day to celebrate something.</div>
-              </div>
-            </div>
-          </div>
 
           {/* Timelog Widget */}
           <TimelogWidget />
 
-          {/* Company Links Card
-          <div className="bg-white/90 backdrop-blur-sm rounded-lg border border-red-100 p-4 mb-6 shadow-lg">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" className="inline-block text-[#8b1e3f]">
-                  <path
-                    d="M17 17a3 3 0 0 1-4.24 0l-2.76-2.76a3 3 0 0 1 0-4.24l1.06-1.06a3 3 0 0 1 4.24 0l2.76 2.76a3 3 0 0 1 0 4.24l-1.06 1.06z"
-                    stroke="#8b1e3f"
-                    strokeWidth="2"
-                    fill="none"
-                  />
-                  <path
-                    d="M7 7a3 3 0 0 1 4.24 0l2.76 2.76a3 3 0 0 1 0 4.24l-1.06 1.06a3 3 0 0 1-4.24 0L5.94 13.06a3 3 0 0 1 0-4.24L7 7z"
-                    stroke="#8b1e3f"
-                    strokeWidth="2"
-                    fill="none"
-                  />
-                </svg>
-                <span className="font-semibold text-[#8b1e3f]">COMPANY LINKS</span>
-              </div>
-              <a
-                href="#"
-                className="text-[#8b1e3f] text-sm hover:text-[#8b1e3f]/80 transition-colors underline underline-offset-2"
-              >
-                Manage
-              </a>
-            </div>
-            <div className="flex flex-col items-center justify-center py-6">
-              <svg width="48" height="48" fill="none" viewBox="0 0 24 24" className="mb-2 text-red-200">
-                <path d="M17 7a5 5 0 0 0-10 0v4a5 5 0 0 0 10 0V7z" stroke="#fecaca" strokeWidth="2" fill="none" />
-                <path d="M7 17a5 5 0 0 0 10 0v-4a5 5 0 0 0-10 0v4z" stroke="#fecaca" strokeWidth="2" fill="none" />
-              </svg>
-              <span className="text-gray-500 text-center">Your company hasn't added any Links yet.</span>
-            </div>
-          </div> */}
+          {/* Spacing */}
+          <div className="h-4"></div>
 
+          {/* Philippine Holidays Calendar */}
+          <PhilippineHolidaysCalendar />
         </aside>
 
         {/* Center Content */}
         <section className="flex-1">
-          {/* Navigation Bar */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl p-4 mb-6 border border-red-100">
-            <div className="flex space-x-4">
-              <button
-                onClick={() => setActiveSection("dashboard")}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                  activeSection === "dashboard"
-                    ? "bg-[#8b1e3f] text-white shadow-lg"
-                    : "text-[#8b1e3f] hover:bg-red-50 hover:shadow-md"
-                }`}
-              >
-                Overview
-              </button>
-              <button
-                onClick={() => setActiveSection("timelog")}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                  activeSection === "timelog"
-                    ? "bg-[#8b1e3f] text-white shadow-lg"
-                    : "text-[#8b1e3f] hover:bg-red-50 hover:shadow-md"
-                }`}
-              >
-                Timelog Management
-              </button>
-              <button
-                onClick={() => setActiveSection("attendance")}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                  activeSection === "attendance"
-                    ? "bg-[#8b1e3f] text-white shadow-lg"
-                    : "text-[#8b1e3f] hover:bg-red-50 hover:shadow-md"
-                }`}
-              >
-                My Attendance
-              </button>
-              <button
-                onClick={() => (canAccessLeaveManagement() ? setActiveSection("leave") : null)}
-                disabled={!canAccessLeaveManagement()}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 relative ${
-                  !canAccessLeaveManagement()
-                    ? "bg-gray-200 text-gray-500 cursor-not-allowed opacity-50"
-                    : activeSection === "leave"
-                      ? "bg-[#8b1e3f] text-white shadow-lg"
-                      : "text-[#8b1e3f] hover:bg-red-50 hover:shadow-md"
-                }`}
-                title={!canAccessLeaveManagement() ? "Only HR users can access leave management" : ""}
-              >
-                Leave Management
-                {canManageLeaveRequests() && pendingCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                    {pendingCount}
-                  </span>
-                )}
-              </button>
-              <button
-                onClick={() => setActiveSection("management")}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                  activeSection === "management"
-                    ? "bg-[#8b1e3f] text-white shadow-lg"
-                    : "text-[#8b1e3f] hover:bg-red-50 hover:shadow-md"
-                }`}
-              >
-                User Management
-              </button>
-            </div>
-          </div>
-
           {/* Dashboard Section */}
           {activeSection === "dashboard" && (
             <>
@@ -277,65 +297,34 @@ const HrPage = () => {
                 <button className="absolute top-4 right-4 text-gray-400 hover:text-[#8b1e3f] text-xl transition-colors">
                   ×
                 </button>
-                <div className="flex flex-col items-center gap-2 mb-2">
-                  <div className="p-3 bg-red-100 rounded-full mb-2">
-                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect x="8" y="8" width="32" height="28" rx="4" fill="#fff" stroke="#8b1e3f" strokeWidth="2" />
-                      <path d="M24 44L20 36H28L24 44Z" fill="#fff" stroke="#8b1e3f" strokeWidth="2" />
-                      <text x="16" y="28" fontFamily="Arial, sans-serif" fontWeight="bold" fontSize="18" fill="#8b1e3f">
-                        hi.
-                      </text>
-                    </svg>
-                  </div>
-                  <span className="text-3xl font-bold text-[#8b1e3f]">Welcome, John!</span>
-                </div>
+
                 <div className="text-gray-700 mb-6 text-center max-w-2xl mx-auto">
                   You're looking at <span className="font-semibold text-[#8b1e3f]">TechStaffHub</span>, your new tool
                   for work. Here's a quick look at some of the things you can do with TechStaffHub.
                 </div>
-                <div className="grid grid-cols-3 gap-6">
-                  <div className="bg-gradient-to-br from-red-50 to-white rounded-lg p-6 flex flex-col items-center hover:shadow-lg transition-all duration-200 border border-red-100">
+                <div className="grid grid-cols-2 gap-6">
+                  <button
+                    onClick={() => setActiveSection("management")}
+                    className="bg-gradient-to-br from-red-50 to-white rounded-lg p-6 flex flex-col items-center hover:shadow-lg transition-all duration-200 border border-red-100 hover:border-[#8b1e3f]/30"
+                  >
                     <span className="text-4xl mb-3">🗓️</span>
-                    <div className="font-semibold text-[#8b1e3f] text-lg">Request Time Off</div>
+                    <div className="font-semibold text-[#8b1e3f] text-lg">User Management</div>
                     <div className="text-sm text-gray-600 text-center mt-2">
-                      Request time off and check your balances.
+                      Create and manage user accounts for your organization.
                     </div>
-                  </div>
-                  {/* <div className="bg-gradient-to-br from-red-50 to-white rounded-lg p-6 flex flex-col items-center hover:shadow-lg transition-all duration-200 border border-red-100">
-                    <span className="text-4xl mb-3">📇</span>
-                    <div className="font-semibold text-[#8b1e3f] text-lg">Company Directory</div>
-                    <div className="text-sm text-gray-600 text-center mt-2">
-                      Search for coworkers and their contact info.
-                    </div>
-                  </div> */}
-                  <a
-                    href="/hr/job-applications"
+                  </button>
+
+                  <button
+                    onClick={() => setActiveSection("attendance")}
                     className="bg-gradient-to-br from-red-50 to-white rounded-lg p-6 flex flex-col items-center hover:shadow-lg transition-all duration-200 border border-red-100 hover:border-[#8b1e3f]/30"
                   >
-                    <span className="text-4xl mb-3">📋</span>
-                    <div className="font-semibold text-[#8b1e3f] text-lg">Job Applications</div>
+                    <span className="text-4xl mb-3">🗓️</span>
+                    <div className="font-semibold text-[#8b1e3f] text-lg">My Attendance</div>
                     <div className="text-sm text-gray-600 text-center mt-2">
-                      Manage job applications and applicants.
+                      Check your latest and previous attendances.
                     </div>
-                  </a>
-                  <a
-                    href="/hr/resume-review"
-                    className="bg-gradient-to-br from-red-50 to-white rounded-lg p-6 flex flex-col items-center hover:shadow-lg transition-all duration-200 border border-red-100 hover:border-[#8b1e3f]/30"
-                  >
-                    <span className="text-4xl mb-3">📄</span>
-                    <div className="font-semibold text-[#8b1e3f] text-lg">Resume Review</div>
-                    <div className="text-sm text-gray-600 text-center mt-2">AI-powered resume analysis and review.</div>
-                  </a>
-                  <a
-                    href="/hr/announcements"
-                    className="bg-gradient-to-br from-red-50 to-white rounded-lg p-6 flex flex-col items-center hover:shadow-lg transition-all duration-200 border border-red-100 hover:border-[#8b1e3f]/30"
-                  >
-                    <span className="text-4xl mb-3">📢</span>
-                    <div className="font-semibold text-[#8b1e3f] text-lg">Announcements</div>
-                    <div className="text-sm text-gray-600 text-center mt-2">
-                      Create and manage company announcements.
-                    </div>
-                  </a>
+                  </button>
+
                   <button
                     onClick={() => setActiveSection("timelog")}
                     className="bg-gradient-to-br from-red-50 to-white rounded-lg p-6 flex flex-col items-center hover:shadow-lg transition-all duration-200 border border-red-100 hover:border-[#8b1e3f]/30"
@@ -346,6 +335,7 @@ const HrPage = () => {
                       View and manage employee attendance records.
                     </div>
                   </button>
+
                   <button
                     onClick={() => (canAccessLeaveManagement() ? setActiveSection("leave") : null)}
                     disabled={!canAccessLeaveManagement()}
@@ -367,20 +357,56 @@ const HrPage = () => {
                       </span>
                     )}
                   </button>
+                    <a
+                    href="/hr/notifications"
+                    className="bg-gradient-to-br from-red-50 to-white rounded-lg p-6 flex flex-col items-center hover:shadow-lg transition-all duration-200 border border-red-100 hover:border-[#8b1e3f]/30"
+                  >
+                    <span className="text-4xl mb-3">🔔</span>
+                    <div className="font-semibold text-[#8b1e3f] text-lg">Create Notifications</div>
+                    <div className="text-sm text-gray-600 text-center mt-2">
+                      Send notifications to employees and manage communications.
+                    </div>
+                  </a>
                 </div>
               </div>
             </>
           )}
 
           {/* Timelog Management Section */}
-          {activeSection === "timelog" && <TimelogManagement />}
+          {activeSection === "timelog" && (
+            <div className="space-y-6">
+              <button
+                onClick={() => setActiveSection("dashboard")}
+                className="flex items-center gap-2 text-[#8b1e3f] hover:text-[#8b1e3f]/80 font-semibold transition-colors mb-4"
+              >
+                <span>←</span> Back to Dashboard
+              </button>
+              <TimelogManagement />
+            </div>
+          )}
 
           {/* HR Attendance Summary Section */}
-          {activeSection === "attendance" && <HrAttendanceSummary />}
+          {activeSection === "attendance" && (
+            <div className="space-y-6">
+              <button
+                onClick={() => setActiveSection("dashboard")}
+                className="flex items-center gap-2 text-[#8b1e3f] hover:text-[#8b1e3f]/80 font-semibold transition-colors mb-4"
+              >
+                <span>←</span> Back to Dashboard
+              </button>
+              <HrAttendanceSummary />
+            </div>
+          )}
 
           {/* Leave Management Section */}
           {activeSection === "leave" && (
             <div className="space-y-6">
+              <button
+                onClick={() => setActiveSection("dashboard")}
+                className="flex items-center gap-2 text-[#8b1e3f] hover:text-[#8b1e3f]/80 font-semibold transition-colors mb-4"
+              >
+                <span>←</span> Back to Dashboard
+              </button>
               {/* Leave Management Tabs */}
               <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl p-4 border border-red-100">
                 <div className="flex gap-4 border-b border-red-100 pb-3 mb-4">
@@ -411,7 +437,7 @@ const HrPage = () => {
 
                 {/* Tab Content */}
                 {leaveTab === "manage" && canManageLeaveRequests() && (
-                  <HrLeaveManagement 
+                  <HrLeaveManagement
                     currentPage={manageRequestsPage}
                     onPageChange={setManageRequestsPage}
                     itemsPerPage={2}
@@ -442,8 +468,8 @@ const HrPage = () => {
                       <LeaveBalanceCard employeeId={employeeId} />
                     </div>
                     <div>
-                      <LeaveRequestsList 
-                        employeeId={employeeId} 
+                      <LeaveRequestsList
+                        employeeId={employeeId}
                         currentPage={myRequestsPage}
                         onPageChange={setMyRequestsPage}
                         itemsPerPage={2}
@@ -458,6 +484,12 @@ const HrPage = () => {
           {/* User Management Section */}
           {activeSection === "management" && (
             <div className="space-y-6">
+              <button
+                onClick={() => setActiveSection("dashboard")}
+                className="flex items-center gap-2 text-[#8b1e3f] hover:text-[#8b1e3f]/80 font-semibold transition-colors mb-4"
+              >
+                <span>←</span> Back to Dashboard
+              </button>
               {/* Management Tabs */}
               <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl p-4 border border-red-100">
                 <div className="flex gap-4 border-b border-red-100 pb-3 mb-4">
@@ -507,31 +539,7 @@ const HrPage = () => {
                     {/* User List Component */}
                     <UserList onViewProfile={handleViewProfile} />
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* <div className="bg-white/90 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-red-100">
-                        <h3 className="text-lg font-semibold text-[#8b1e3f] mb-4">HR Staff Management</h3>
-                        <p className="text-gray-600 mb-4">
-                          Create and manage HR staff accounts with appropriate permissions.
-                        </p>
-                        <button
-                          onClick={() => setShowCreateHRForm(true)}
-                          className="w-full bg-red-50 text-[#8b1e3f] px-4 py-3 rounded-lg hover:bg-red-100 transition-all duration-200 font-semibold border border-red-200"
-                        >
-                          Create New HR Account
-                        </button>
-                      </div> */}
-
-                      {/* <div className="bg-white/90 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-red-100">
-                        <h3 className="text-lg font-semibold text-[#8b1e3f] mb-4">Employee Management</h3>
-                        <p className="text-gray-600 mb-4">Create and manage employee accounts for the organization.</p>
-                        <button
-                          onClick={() => setShowCreateEmployeeForm(true)}
-                          className="w-full bg-green-50 text-green-700 px-4 py-3 rounded-lg hover:bg-green-100 transition-all duration-200 font-semibold border border-green-200"
-                        >
-                          Create New Employee Account
-                        </button>
-                      </div> */}
-                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
                   </div>
                 )}
 
@@ -588,68 +596,127 @@ const HrPage = () => {
             </div>
           )}
 
-          {/* Announcements section - only show on dashboard
-          {activeSection === "dashboard" && (
-            <>
-              <div className="bg-white/90 backdrop-blur-sm rounded-lg border border-red-100 p-4 mt-6 shadow-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" className="inline-block text-[#8b1e3f]">
-                    <path d="M12 20v-6" stroke="#8b1e3f" strokeWidth="2" strokeLinecap="round" />
-                    <path d="M6 12a6 6 0 0 1 12 0" stroke="#8b1e3f" strokeWidth="2" fill="none" />
-                    <path d="M12 4v2" stroke="#8b1e3f" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                  <span className="font-semibold text-[#8b1e3f]">COMPANY ANNOUNCEMENTS</span>
+          {/* Notifications Section */}
+          {activeSection === "notifications" && (
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl border border-red-100">
+              {/* Header */}
+              <div className="p-6 border-b border-red-100">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <Bell className="h-6 w-6 text-[#8b1e3f]" />
+                    <h2 className="text-2xl font-bold text-[#8b1e3f]">HR Notifications</h2>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-sm text-gray-600">
+                      {unreadCount > 0 && (
+                        <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                          {unreadCount} unread
+                        </span>
+                      )}
+                    </div>
+                    {visibleNotifications.some((n) => !n.read) && (
+                      <button
+                        onClick={handleMarkAllAsRead}
+                        disabled={markAllAsReadMutation.isPending}
+                        className="bg-[#8b1e3f] text-white px-4 py-2 rounded-lg hover:bg-[#8b1e3f]/90 transition-colors disabled:opacity-50 text-sm font-medium"
+                      >
+                        Mark All as Read
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div className="py-4">
-                  {isLoading ? (
-                    <div className="text-center py-4 text-gray-500">Loading announcements...</div>
-                  ) : announcements.length > 0 ? (
-                    <div className="space-y-4">
-                      {announcements.map((announcement) => (
+              </div>
+
+              {/* Notifications List */}
+              <div className="p-6">
+                {notificationsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8b1e3f]"></div>
+                    <span className="ml-3 text-gray-600">Loading notifications...</span>
+                  </div>
+                ) : visibleNotifications.length === 0 ? (
+                  <div className="p-8 text-center text-gray-500">
+                    <Bell className="mx-auto h-12 w-12 text-gray-300 mb-4" />
+                    <p className="text-lg font-medium text-gray-900 mb-2">No notifications yet</p>
+                    <p className="text-gray-500">You'll see HR-related notifications and updates here</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="divide-y divide-gray-300">
+                      {paginatedNotifications.map((notification) => (
                         <div
-                          key={announcement.id}
-                          className="border-l-4 border-[#8b1e3f] pl-4 py-2 bg-red-50/50 rounded-r-lg"
+                          key={notification.notificationId}
+                          className={`p-6 transition-colors ${
+                            !notification.read ? "bg-[#8b1e3f]/10 border-l-4 border-l-[#8b1e3f]/80" : ""
+                          }`}
                         >
-                          <h3 className="font-semibold text-[#8b1e3f]">{announcement.title}</h3>
-                          <p className="text-gray-600 text-sm mt-1">{announcement.content}</p>
-                          <div className="text-xs text-gray-500 mt-2">
-                            {announcement.priority} • {announcement.createdBy?.username} •{" "}
-                            {new Date(announcement.createdAt).toLocaleDateString()}
+                          <div className="flex justify-between items-start">
+                            <div className="flex space-x-4 flex-1">
+                              <div className="flex-shrink-0">
+                                <div
+                                  className={`w-12 h-12 rounded-full flex items-center justify-center text-xl ${getNotificationColor(notification.type)}`}
+                                >
+                                  {getNotificationIcon(notification.type)}
+                                </div>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="text-lg font-semibold text-gray-900 truncate">{notification.title}</h3>
+                                  {!notification.read && (
+                                    <span className="bg-[#8b1e3f] text-white text-xs px-2 py-1 rounded-full font-medium">
+                                      NEW
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-gray-700 mb-3 leading-relaxed">{notification.message}</p>
+                                <div className="flex items-center text-sm text-gray-500 space-x-2">
+                                  <span
+                                    className={`px-2 py-1 rounded-full text-xs font-medium ${getNotificationColor(notification.type)}`}
+                                  >
+                                    {notification.type.replace("_", " ")}
+                                  </span>
+                                  <span>•</span>
+                                  <span>{new Date(notification.createdAt).toLocaleDateString()}</span>
+                                  <span>•</span>
+                                  <span>{new Date(notification.createdAt).toLocaleTimeString()}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex space-x-2 ml-4">
+                              {!notification.read && (
+                                <button
+                                  onClick={() => handleMarkAsRead(notification.notificationId)}
+                                  disabled={markAsReadMutation.isPending}
+                                  className="p-2 text-[#8b1e3f] hover:bg-[#8b1e3f]/20 rounded-lg transition-colors disabled:opacity-50"
+                                  title="Mark as read"
+                                >
+                                  <Eye size={16} />
+                                </button>
+                              )}
+                              <button
+                                onClick={() => handleDeleteNotification(notification.notificationId)}
+                                className="p-2 text-red-600 hover:bg-red-200 rounded-lg transition-colors"
+                                title="Delete notification"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))}
                     </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-6">
-                      <svg width="40" height="40" fill="none" viewBox="0 0 24 24" className="mb-2 text-red-200">
-                        <path d="M12 2v20" stroke="#fecaca" strokeWidth="2" />
-                        <path d="M2 12h20" stroke="#fecaca" strokeWidth="2" />
-                      </svg>
-                      <span className="text-gray-500 text-center">No announcements available</span>
-                      </div>
-                  )}
-                </div>
-              </div> */}
-              {/* Welcome to TechStaffHub section
-              <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-4 mt-6 flex flex-col items-center justify-center text-center border border-red-100">
-                <div className="font-semibold mb-2 flex items-center gap-2 text-[#8b1e3f]">
-                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24" className="inline-block text-[#8b1e3f]">
-                    <rect x="3" y="5" width="18" height="14" rx="2" stroke="#8b1e3f" strokeWidth="2" fill="none" />
-                    <path d="M7 8h10M7 12h6" stroke="#8b1e3f" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                  WELCOME TO TECHSTAFFHUB
-                </div>
-                <div className="flex flex-col items-center justify-center mt-4">
-                  <svg width="40" height="40" fill="none" viewBox="0 0 24 24" className="mb-2 text-red-200">
-                    <rect x="4" y="4" width="16" height="16" rx="4" fill="#fecaca" />
-                    <rect x="8" y="8" width="8" height="5" rx="2" fill="#f87171" />
-                    <circle cx="12" cy="15" r="2" fill="#f87171" />
-                  </svg>
-                  <span className="text-gray-500">Nobody will be joining TechStaffHub for the next little while.</span>
-                </div>
+
+                    {/* Custom Pagination */}
+                    <CustomPagination
+                      currentPage={notificationsPage}
+                      totalPages={totalPages}
+                      onPageChange={setNotificationsPage}
+                    />
+                  </>
+                )}
               </div>
-            </>
-          )} */}
+            </div>
+          )}
         </section>
       </main>
 

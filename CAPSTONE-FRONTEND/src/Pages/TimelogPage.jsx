@@ -112,17 +112,17 @@ const TimelogPage = () => {
               <h1 className="text-2xl font-bold text-gray-900">Time Tracking</h1>
               <p className="text-gray-600">Manage your work hours and attendance</p>
             </div>
-            <button
+            {/* <button
               onClick={handleRefresh}
               className="flex items-center space-x-2 bg-red-700 text-white px-4 py-2 rounded-lg hover:bg-red-800 transition-colors"
             >
               <RefreshCw className="h-4 w-4" />
               <span>Refresh</span>
-            </button>
+            </button> */}
           </div>
 
           {/* Timelog Widget */}
-          <TimelogWidget />
+          {/* <TimelogWidget /> */}
 
           {/* Monthly Summary */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">

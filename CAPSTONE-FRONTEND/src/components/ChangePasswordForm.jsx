@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,18 +15,18 @@ const ChangePasswordForm = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  
+
   const changePasswordMutation = useChangePassword()
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!currentPassword || !newPassword || !confirmPassword) return
-    
+
     if (newPassword !== confirmPassword) {
       alert("New passwords do not match")
       return
     }
-    
+
     changePasswordMutation.mutate(
       { currentPassword, newPassword, confirmPassword },
       {
@@ -32,53 +34,51 @@ const ChangePasswordForm = () => {
           setCurrentPassword("")
           setNewPassword("")
           setConfirmPassword("")
-        }
-      }
+        },
+      },
     )
   }
 
   const getPasswordStrength = (password) => {
     if (!password) return { score: 0, text: "", color: "" }
-    
+
     let score = 0
-    let feedback = []
-    
+    const feedback = []
+
     if (password.length >= 8) score++
     else feedback.push("at least 8 characters")
-    
+
     if (/[A-Z]/.test(password)) score++
     else feedback.push("uppercase letter")
-    
+
     if (/[a-z]/.test(password)) score++
     else feedback.push("lowercase letter")
-    
+
     if (/\d/.test(password)) score++
     else feedback.push("number")
-    
-    if (/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)) score++
+
+    if (/[!@#$%^&*()_+\-=[\]{}|;:,.<>?]/.test(password)) score++
     else feedback.push("special character")
-    
+
     const colors = ["text-red-500", "text-red-500", "text-yellow-500", "text-yellow-500", "text-green-500"]
     const texts = ["Very Weak", "Weak", "Fair", "Good", "Strong"]
-    
+
     return {
       score,
       text: score === 5 ? "Strong" : `Missing: ${feedback.join(", ")}`,
-      color: colors[score] || "text-gray-500"
+      color: colors[score] || "text-gray-500",
     }
   }
 
   const passwordStrength = getPasswordStrength(newPassword)
 
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full max-w-6xl mx-auto">
       <CardHeader>
         <CardTitle className="text-xl font-bold text-[#8b1e3f]">Change Password</CardTitle>
-        <CardDescription className="text-[#8b1e3f]">
-          Update your account password for enhanced security
-        </CardDescription>
+        <CardDescription className="text-[#8b1e3f]">Update your account password for enhanced security</CardDescription>
       </CardHeader>
-      
+
       <CardContent>
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-2">
@@ -133,11 +133,7 @@ const ChangePasswordForm = () => {
                 {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-            {newPassword && (
-              <p className={`text-xs ${passwordStrength.color}`}>
-                {passwordStrength.text}
-              </p>
-            )}
+            {newPassword && <p className={`text-xs ${passwordStrength.color}`}>{passwordStrength.text}</p>}
           </div>
 
           <div className="space-y-2">
@@ -175,10 +171,10 @@ const ChangePasswordForm = () => {
               type="submit"
               className="w-full h-12 bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center"
               disabled={
-                changePasswordMutation.isPending || 
-                !currentPassword || 
-                !newPassword || 
-                !confirmPassword || 
+                changePasswordMutation.isPending ||
+                !currentPassword ||
+                !newPassword ||
+                !confirmPassword ||
                 newPassword !== confirmPassword ||
                 passwordStrength.score < 5
               }

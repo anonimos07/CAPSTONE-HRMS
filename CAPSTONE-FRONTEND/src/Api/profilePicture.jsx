@@ -57,12 +57,19 @@ export const resetProfilePicture = async () => {
  * @returns {string} Full URL for the image
  */
 export const getProfilePictureFullUrl = (profilePictureUrl) => {
-  const BACKEND_BASE_URL = 'http://localhost:8080';
-  
+  // If no profile picture or it's already a data URL (Base64), return as is
   if (!profilePictureUrl) {
-    return `${BACKEND_BASE_URL}/default-profile.png`;
+    // Return default SVG as data URL
+    return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNGM0Y0RjYiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjM3IiByPSIxOCIgZmlsbD0iIzlDQTNBRiIvPgogIDxwYXRoIGQ9Ik0yMCA4MEMyMCA2OS41MDY2IDI4LjUwNjYgNjEgMzkgNjFINjFDNzEuNDkzNCA2MSA4MCA2OS41MDY2IDgwIDgwVjEwMEgyMFY4MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+";
   }
   
+  // If it's already a data URL (Base64), return as is
+  if (profilePictureUrl.startsWith('data:')) {
+    return profilePictureUrl;
+  }
+  
+  // For backward compatibility with old file paths
+  const BACKEND_BASE_URL = 'http://localhost:8080';
   if (profilePictureUrl.startsWith('http')) {
     return profilePictureUrl;
   }
