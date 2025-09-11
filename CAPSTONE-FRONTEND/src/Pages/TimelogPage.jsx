@@ -15,6 +15,8 @@ const TimelogPage = () => {
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedTimelog, setSelectedTimelog] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
   const queryClient = useQueryClient();
 
   // Query hooks for edit requests
@@ -99,6 +101,26 @@ const TimelogPage = () => {
       }
     });
   };
+
+  // Pagination logic
+  const totalPages = Math.ceil((monthlyTimelogs?.length || 0) / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentTimelogs = monthlyTimelogs?.slice(startIndex, endIndex) || [];
+
+  // Pagination handlers
+  const handlePreviousPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
+
+  // Reset to first page when month/year changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedMonth, selectedYear]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -226,7 +248,7 @@ const TimelogPage = () => {
                       </td>
                     </tr>
                   ) : monthlyTimelogs?.length > 0 ? (
-                    monthlyTimelogs.map((timelog) => (
+                    currentTimelogs.map((timelog) => (
                       <tr key={timelog.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {formatDate(timelog.logDate)}
@@ -272,6 +294,42 @@ const TimelogPage = () => {
                 </tbody>
               </table>
             </div>
+            
+            {/* Pagination Controls */}
+            {monthlyTimelogs?.length > itemsPerPage && (
+              <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
+                <div className="text-sm text-gray-600">
+                  Showing {startIndex + 1}-{Math.min(endIndex, monthlyTimelogs.length)} of {monthlyTimelogs.length} records
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                      currentPage === 1
+                        ? 'text-gray-400 cursor-not-allowed'
+                        : 'text-[#8b1e3f] hover:bg-[#8b1e3f]/10'
+                    }`}
+                  >
+                    Previous
+                  </button>
+                  <span className="px-3 py-1 text-sm text-gray-600">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                      currentPage === totalPages
+                        ? 'text-gray-400 cursor-not-allowed'
+                        : 'text-[#8b1e3f] hover:bg-[#8b1e3f]/10'
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Edit Request Modal */}
@@ -336,17 +394,17 @@ const TimelogEditRequestModal = ({ timelog, hrStaff, isOpen, onClose, onSubmit, 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white/95 backdrop-blur-sm rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-red-100">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">Request Timelog Edit</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <h3 className="text-lg font-semibold text-[#8b1e3f]">Request Timelog Edit</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-[#8b1e3f]">
             ×
           </button>
         </div>
 
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-medium text-gray-900 mb-2">Current Timelog Details</h4>
+        <div className="mb-6 p-4 bg-red-50/50 rounded-lg border border-red-100">
+          <h4 className="font-medium text-[#8b1e3f] mb-2">Current Timelog Details</h4>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-gray-600">Date:</span>
@@ -377,14 +435,14 @@ const TimelogEditRequestModal = ({ timelog, hrStaff, isOpen, onClose, onSubmit, 
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#8b1e3f] mb-1">
               Select HR Staff to Handle Request *
             </label>
             <select
               value={assignedHrId}
               onChange={(e) => setAssignedHrId(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-[#8b1e3f]/50 focus:border-[#8b1e3f]/50 bg-white/80"
             >
               <option value="">Choose HR Staff...</option>
               {hrStaff.map((hr) => (
@@ -396,7 +454,7 @@ const TimelogEditRequestModal = ({ timelog, hrStaff, isOpen, onClose, onSubmit, 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#8b1e3f] mb-1">
               Reason for Edit Request *
             </label>
             <textarea
@@ -404,38 +462,38 @@ const TimelogEditRequestModal = ({ timelog, hrStaff, isOpen, onClose, onSubmit, 
               onChange={(e) => setReason(e.target.value)}
               required
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-[#8b1e3f]/50 focus:border-[#8b1e3f]/50 bg-white/80"
               placeholder="Please provide a detailed reason for requesting this timelog edit..."
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#8b1e3f] mb-1">
                 Requested Time In
               </label>
               <input
                 type="datetime-local"
                 value={requestedTimeIn}
                 onChange={(e) => setRequestedTimeIn(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-[#8b1e3f]/50 focus:border-[#8b1e3f]/50 bg-white/80"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#8b1e3f] mb-1">
                 Requested Time Out
               </label>
               <input
                 type="datetime-local"
                 value={requestedTimeOut}
                 onChange={(e) => setRequestedTimeOut(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-[#8b1e3f]/50 focus:border-[#8b1e3f]/50 bg-white/80"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#8b1e3f] mb-1">
               Requested Break Duration (minutes)
             </label>
             <input
@@ -443,7 +501,7 @@ const TimelogEditRequestModal = ({ timelog, hrStaff, isOpen, onClose, onSubmit, 
               value={requestedBreakDuration}
               onChange={(e) => setRequestedBreakDuration(e.target.value)}
               min="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-[#8b1e3f]/50 focus:border-[#8b1e3f]/50 bg-white/80"
               placeholder="Enter break duration in minutes"
             />
           </div>
@@ -460,7 +518,7 @@ const TimelogEditRequestModal = ({ timelog, hrStaff, isOpen, onClose, onSubmit, 
             <button
               type="submit"
               disabled={isLoading || !reason.trim() || !assignedHrId}
-              className="px-4 py-2 bg-[#8b1e3f] text-white rounded-lg hover:bg-[#8b1e3f]/60 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 bg-[#8b1e3f] text-white rounded-lg hover:bg-[#8b1e3f]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg"
             >
               {isLoading ? 'Submitting...' : 'Submit Request'}
             </button>

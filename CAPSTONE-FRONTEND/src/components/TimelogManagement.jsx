@@ -17,7 +17,16 @@ const TimelogManagement = () => {
   const itemsPerPage = 6;
 
   // Query hooks
-  const { data: timelogs = [], isLoading, refetch } = useAllTimelogsForHR(search, startDate, endDate);
+  const { data: timelogs = [], isLoading, refetch, error } = useAllTimelogsForHR(search, startDate, endDate);
+  
+  console.log('TimelogManagement render:', {
+    search,
+    startDate, 
+    endDate,
+    timelogsLength: timelogs?.length,
+    firstTimelog: timelogs?.[0]?.user?.username,
+    isLoading
+  });
   
   // Mutation hooks
   const adjustTimelogMutation = useAdjustTimelog();
@@ -29,6 +38,7 @@ const TimelogManagement = () => {
   const paginatedTimelogs = timelogs.slice(startIndex, startIndex + itemsPerPage);
 
   const handleSearch = () => {
+    console.log('Search triggered with:', { search, startDate, endDate });
     setCurrentPage(1); // Reset to first page when searching
     refetch();
   };

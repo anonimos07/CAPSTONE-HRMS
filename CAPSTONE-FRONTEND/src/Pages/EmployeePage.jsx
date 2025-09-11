@@ -32,6 +32,8 @@ const EmployeePage = () => {
   const [activeNavDropdown, setActiveNavDropdown] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('community');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const { data: announcements = [], isLoading } = useActiveAnnouncements();
@@ -116,6 +118,28 @@ const EmployeePage = () => {
     { label: 'Policies', icon: <FiFileText className="w-4 h-4" /> },
     { label: 'IT Helpdesk', icon: <FiSettings className="w-4 h-4" /> }
   ];
+
+  // Pagination logic
+  const totalPages = Math.ceil(announcements.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentAnnouncements = announcements.slice(startIndex, endIndex);
+
+  // Pagination handlers
+  const handlePreviousPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
+
+  // Reset to first page when switching to community tab
+  useEffect(() => {
+    if (activeTab === 'community') {
+      setCurrentPage(1);
+    }
+  }, [activeTab]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-50 relative overflow-hidden">
@@ -206,7 +230,7 @@ const EmployeePage = () => {
                     {isLoading ? (
                       <div className="text-center py-4 text-gray-500">Loading announcements...</div>
                     ) : announcements.length > 0 ? (
-                      announcements.map((announcement) => (
+                      currentAnnouncements.map((announcement) => (
                         <div key={announcement.id} className="flex gap-3 items-start p-3 hover:bg-[#8b1e3f]/20 rounded-lg transition-colors">
                           <div className="w-10 h-10 bg-[#8b1e3f]/20 rounded-full flex items-center justify-center text-[#8b1e3f] font-bold text-sm">
                             {announcement.createdBy?.username?.charAt(0).toUpperCase() || 'A'}
@@ -224,6 +248,42 @@ const EmployeePage = () => {
                       <div className="text-center py-4 text-gray-500">No announcements available</div>
                     )}
                   </div>
+
+                  {/* Pagination Controls */}
+                  {announcements.length > itemsPerPage && (
+                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-[#8b1e3f]/10">
+                      <div className="text-sm text-gray-600">
+                        Showing {startIndex + 1}-{Math.min(endIndex, announcements.length)} of {announcements.length} announcements
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={handlePreviousPage}
+                          disabled={currentPage === 1}
+                          className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                            currentPage === 1
+                              ? 'text-gray-400 cursor-not-allowed'
+                              : 'text-[#8b1e3f] hover:bg-[#8b1e3f]/10'
+                          }`}
+                        >
+                          Previous
+                        </button>
+                        <span className="px-3 py-1 text-sm text-gray-600">
+                          Page {currentPage} of {totalPages}
+                        </span>
+                        <button
+                          onClick={handleNextPage}
+                          disabled={currentPage === totalPages}
+                          className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                            currentPage === totalPages
+                              ? 'text-gray-400 cursor-not-allowed'
+                              : 'text-[#8b1e3f] hover:bg-[#8b1e3f]/10'
+                          }`}
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
 

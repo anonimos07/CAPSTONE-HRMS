@@ -12,9 +12,14 @@ import {
 
 // Query hooks for HR timelog management
 export const useAllTimelogsForHR = (search, startDate, endDate) => {
+  console.log('useAllTimelogsForHR called with:', { search, startDate, endDate });
+  
   return useQuery({
     queryKey: ['timelogs', 'hr', search, startDate, endDate],
-    queryFn: () => getAllTimelogsForHR(search, startDate, endDate),
+    queryFn: () => {
+      console.log('Query function executing with:', { search, startDate, endDate });
+      return getAllTimelogsForHR(search, startDate, endDate);
+    },
     staleTime: 2 * 60 * 1000, // 2 minutes
     cacheTime: 5 * 60 * 1000, // 5 minutes
   });

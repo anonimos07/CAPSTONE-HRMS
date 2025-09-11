@@ -109,7 +109,11 @@ export const getAllTimelogsForHR = async (search, startDate, endDate) => {
   if (startDate) params.startDate = startDate;
   if (endDate) params.endDate = endDate;
   
+  console.log('API call params:', params);
+  console.log('URL will be:', '/timelog/hr/all?' + new URLSearchParams(params).toString());
+  
   const res = await API.get('/timelog/hr/all', { params });
+  console.log('API response:', { status: res.status, dataLength: res.data?.length });
   return res.data;
 };
 

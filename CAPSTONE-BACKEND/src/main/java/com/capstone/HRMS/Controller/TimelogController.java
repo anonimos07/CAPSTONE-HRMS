@@ -382,11 +382,14 @@ public class TimelogController {
     @GetMapping("/hr/all")
     public ResponseEntity<?> getAllTimelogsForHR(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) String startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) String endDate,
             Authentication authentication) {
         try {
             String username = authentication.getName();
+            logger.info("HR timelog request from user: {}, search: '{}', startDate: '{}', endDate: '{}'", 
+                       username, search, startDate, endDate);
+            
             Users user = usersService.getUserByUsername(username);
             if (user == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
@@ -397,10 +400,27 @@ public class TimelogController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
             }
 
-            List<Timelog> timelogs = timelogService.getAllTimelogsWithSearch(search, startDate, endDate);
+            // Convert date strings to LocalDateTime
+            LocalDateTime startDateTime = null;
+            LocalDateTime endDateTime = null;
+            
+            if (startDate != null && !startDate.trim().isEmpty()) {
+                startDateTime = java.time.LocalDate.parse(startDate).atStartOfDay();
+                logger.info("Parsed startDate: {} -> {}", startDate, startDateTime);
+            }
+            if (endDate != null && !endDate.trim().isEmpty()) {
+                endDateTime = java.time.LocalDate.parse(endDate).atTime(23, 59, 59);
+                logger.info("Parsed endDate: {} -> {}", endDate, endDateTime);
+            }
+
+            List<Timelog> timelogs = timelogService.getAllTimelogsWithSearch(search, startDateTime, endDateTime);
+            logger.info("Found {} timelogs for HR request with search='{}', startDateTime={}, endDateTime={}", 
+                       timelogs.size(), search, startDateTime, endDateTime);
             return ResponseEntity.ok(timelogs);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while getting timelogs");
+            logger.error("Error getting timelogs for HR: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while getting timelogs: " + e.getMessage());
         }
     }
 
@@ -408,8 +428,8 @@ public class TimelogController {
     @GetMapping("/hr/download-csv")
     public ResponseEntity<?> downloadTimelogsCSV(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) String startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) String endDate,
             Authentication authentication) {
         try {
             String username = authentication.getName();
@@ -423,7 +443,18 @@ public class TimelogController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
             }
 
-            String csvContent = timelogService.generateTimelogsCSV(search, startDate, endDate);
+            // Convert date strings to LocalDateTime
+            LocalDateTime startDateTime = null;
+            LocalDateTime endDateTime = null;
+            
+            if (startDate != null && !startDate.trim().isEmpty()) {
+                startDateTime = java.time.LocalDate.parse(startDate).atStartOfDay();
+            }
+            if (endDate != null && !endDate.trim().isEmpty()) {
+                endDateTime = java.time.LocalDate.parse(endDate).atTime(23, 59, 59);
+            }
+
+            String csvContent = timelogService.generateTimelogsCSV(search, startDateTime, endDateTime);
             
             return ResponseEntity.ok()
                     .header("Content-Type", "text/csv")

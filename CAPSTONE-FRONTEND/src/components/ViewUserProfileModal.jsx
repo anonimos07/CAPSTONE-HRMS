@@ -72,14 +72,27 @@ const ViewUserProfileModal = ({ isOpen, onClose, userId, userRole }) => {
               {/* Profile Picture and Basic Info */}
               <div className="flex items-center space-x-6">
                 <div className="relative">
-                  <img
-                    src={getProfilePictureFullUrl(userDetails.profilePicture)}
-                    alt="Profile"
-                    className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
-                    onError={(e) => {
-                      e.target.src = getProfilePictureFullUrl(null);
-                    }}
-                  />
+                  {/* Debug: Log the profile picture data */}
+                  {console.log('Profile Picture Data:', userDetails.profilePicture)}
+                  {console.log('Generated URL:', userDetails.profilePicture ? getProfilePictureFullUrl(userDetails.profilePicture) : getProfilePictureFullUrl(null))}
+                  
+                  {userDetails.profilePicture ? (
+                    <img
+                      src={getProfilePictureFullUrl(userDetails.profilePicture)}
+                      alt="Profile"
+                      className="w-24 h-24 rounded-full object-cover border-4 border-gray-200 bg-white"
+                      onLoad={() => console.log('Image loaded successfully')}
+                      onError={(e) => {
+                        console.log('Image failed to load, using fallback');
+                        e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNGM0Y0RjYiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjM3IiByPSIxOCIgZmlsbD0iIzlDQTNBRiIvPgogIDxwYXRoIGQ9Ik0yMCA4MEMyMCA2OS41MDY2IDI4LjUwNjYgNjEgMzkgNjFINjFDNzEuNDkzNCA2MSA4MCA2OS41MDY2IDgwIDgwVjEwMEgyMFY4MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+";
+                      }}
+                    />
+                  ) : (
+                    <div className="w-24 h-24 rounded-full bg-gray-300 border-4 border-gray-200 flex items-center justify-center text-2xl font-bold text-gray-600">
+                      {userDetails.firstName ? userDetails.firstName.charAt(0).toUpperCase() : 
+                       userDetails.username ? userDetails.username.charAt(0).toUpperCase() : '?'}
+                    </div>
+                  )}
                 </div>
                 <div className="flex-1">
                   <h3 className="text-2xl font-bold text-gray-800">

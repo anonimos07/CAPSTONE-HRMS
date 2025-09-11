@@ -203,11 +203,21 @@ const TimelogWidget = () => {
   };
 
   const handlePhotoCapture = (photoBase64) => {
-    if (cameraAction === 'clockIn') {
-      clockInMutation.mutate(photoBase64);
-    } else if (cameraAction === 'clockOut') {
-      clockOutMutation.mutate(photoBase64);
-    }
+    return new Promise((resolve, reject) => {
+      if (cameraAction === 'clockIn') {
+        clockInMutation.mutate(photoBase64, {
+          onSuccess: () => resolve(),
+          onError: (error) => reject(error)
+        });
+      } else if (cameraAction === 'clockOut') {
+        clockOutMutation.mutate(photoBase64, {
+          onSuccess: () => resolve(),
+          onError: (error) => reject(error)
+        });
+      } else {
+        reject(new Error('Invalid camera action'));
+      }
+    });
   };
 
   const handleCameraCancel = () => {
