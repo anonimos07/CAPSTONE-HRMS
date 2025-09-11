@@ -211,15 +211,12 @@ const EmployeePage = () => {
               {activeTab === 'community' && (
                 <>
                   <div className="flex gap-2 mb-6">
-                    <button className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow hover:shadow-md">
-                      <FiMessageSquare className="inline mr-2 w-4 h-4" />
-                      New Post
-                    </button>
-                    <select className="border border-[#8b1e3f] rounded-lg px-3 py-2 text-gray-700 text-sm bg-white/50 focus:border-[#8b1e3f] focus:ring-[#8b1e3f]/60">
-                      <option>Announcements</option>
-                      <option>Discussions</option>
-                      <option>Questions</option>
-                    </select>
+                    <div className="flex items-center">
+                      <h1 className="text-2xl font-bold" style={{ color: "#8b1e3f" }}>
+            Announcements
+            </h1>
+            </div>
+                   
                     <a href="#" className="ml-auto text-[#8b1e3f] hover:text-[#8b1e3f]/60 text-sm font-medium hover:underline transition-colors">
                       Visit Employee Community
                     </a>
