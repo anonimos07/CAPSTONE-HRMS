@@ -217,9 +217,7 @@ const EmployeePage = () => {
             </h1>
             </div>
                    
-                    <a href="#" className="ml-auto text-[#8b1e3f] hover:text-[#8b1e3f]/60 text-sm font-medium hover:underline transition-colors">
-                      Visit Employee Community
-                    </a>
+                    
                   </div>
                   
                   {/* Announcements List */}

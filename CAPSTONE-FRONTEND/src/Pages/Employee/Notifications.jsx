@@ -1,5 +1,5 @@
-import React from 'react';
-import { Bell, Check, Trash2, CheckCheck, Eye } from 'lucide-react';
+import React, { useState } from 'react';
+import { Bell, Check, Trash2, CheckCheck, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import Header from '../../components/Header';
 import { 
   useUserNotifications, 
@@ -16,6 +16,30 @@ const Notifications = () => {
   const markAllAsReadMutation = useMarkAllNotificationsAsRead();
   const deleteMutation = useDeleteNotification();
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // Calculate pagination values
+  const totalItems = allNotifications.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentNotifications = allNotifications.slice(startIndex, endIndex);
+
+  // Pagination handlers
+  const goToPage = (page) => {
+    setCurrentPage(page);
+  };
+
+  const goToPrevious = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
+
+  const goToNext = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
+
   const handleMarkAsRead = (notificationId) => {
     markAsReadMutation.mutate(notificationId);
   };
@@ -26,7 +50,14 @@ const Notifications = () => {
 
   const handleDelete = (notificationId) => {
     if (window.confirm('Are you sure you want to delete this notification?')) {
-      deleteMutation.mutate(notificationId);
+      deleteMutation.mutate(notificationId, {
+        onSuccess: () => {
+          // If we deleted the last item on the current page and we're not on page 1
+          if (currentNotifications.length === 1 && currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+          }
+        }
+      });
     }
   };
 
@@ -46,6 +77,42 @@ const Notifications = () => {
       case 'SYSTEM': return 'border-orange-200 bg-orange-50';
       default: return 'border-gray-200 bg-gray-50';
     }
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) {
+          pages.push(i);
+        }
+        pages.push('...');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1);
+        pages.push('...');
+        for (let i = totalPages - 3; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        pages.push(1);
+        pages.push('...');
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pages.push(i);
+        }
+        pages.push('...');
+        pages.push(totalPages);
+      }
+    }
+    
+    return pages;
   };
 
   return (
@@ -125,68 +192,134 @@ const Notifications = () => {
               <p className="text-gray-500">You'll see company announcements and updates here</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-300">
-              {allNotifications.map((notification) => (
-                <div
-                  key={notification.notificationId}
-                  className={`p-6 transition-colors ${
-                    !notification.read 
-                      ? 'bg-[#8b1e3f]/10 border-l-4 border-l-[#8b1e3f]/80' 
-                      : 'bg-gray-50/50'
-                  }`}
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex space-x-4 flex-1">
-                      <div className="flex-shrink-0">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl ${getNotificationColor(notification.type)}`}>
-                          {getNotificationIcon(notification.type)}
+            <>
+              {/* Pagination Info */}
+              {totalPages > 1 && (
+                <div className="px-6 py-3 border-b border-gray-200 bg-gray-50">
+                  <p className="text-sm text-gray-600">
+                    Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems} notifications
+                  </p>
+                </div>
+              )}
+
+              {/* Notifications */}
+              <div className="divide-y divide-gray-300">
+                {currentNotifications.map((notification) => (
+                  <div
+                    key={notification.notificationId}
+                    className={`p-6 transition-colors ${
+                      !notification.read 
+                        ? 'bg-[#8b1e3f]/10 border-l-4 border-l-[#8b1e3f]/80' 
+                        : 'bg-white'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex space-x-4 flex-1">
+                        <div className="flex-shrink-0">
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl ${
+                            !notification.read 
+                              ? getNotificationColor(notification.type)
+                              : 'border border-gray-200 bg-white text-gray-600'
+                          }`}>
+                            {getNotificationIcon(notification.type)}
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <h3 className="text-lg font-semibold text-gray-900">
+                              {notification.title}
+                            </h3>
+                            {!notification.read && (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#8b1e3f]/10 text-[#8b1e3f]">
+                                New
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-gray-700 mb-3">{notification.message}</p>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <span className="capitalize">{notification.type.toLowerCase().replace('_', ' ')}</span>
+                            <span>•</span>
+                            <span>{new Date(notification.createdAt).toLocaleDateString()}</span>
+                            <span>•</span>
+                            <span>{new Date(notification.createdAt).toLocaleTimeString()}</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <h3 className="text-lg font-semibold text-gray-900">
-                            {notification.title}
-                          </h3>
-                          {!notification.read && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#8b1e3f]/10 text-[#8b1e3f]">
-                              New
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-gray-700 mb-3">{notification.message}</p>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <span className="capitalize">{notification.type.toLowerCase().replace('_', ' ')}</span>
-                          <span>•</span>
-                          <span>{new Date(notification.createdAt).toLocaleDateString()}</span>
-                          <span>•</span>
-                          <span>{new Date(notification.createdAt).toLocaleTimeString()}</span>
-                        </div>
+                      <div className="flex space-x-2 ml-4">
+                        {!notification.read && (
+                          <button
+                            onClick={() => handleMarkAsRead(notification.notificationId)}
+                            disabled={markAsReadMutation.isPending}
+                            className="p-2 text-[#8b1e3f] hover:bg-[#8b1e3f]/20 rounded-lg transition-colors disabled:opacity-50"
+                            title="Mark as read"
+                          >
+                            <Eye size={16} />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleDelete(notification.notificationId)}
+                          disabled={deleteMutation.isPending}
+                          className="p-2 text-red-600 hover:bg-red-200 rounded-lg transition-colors disabled:opacity-50"
+                          title="Delete"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </div>
                     </div>
-                    <div className="flex space-x-2 ml-4">
-                      {!notification.read && (
-                        <button
-                          onClick={() => handleMarkAsRead(notification.notificationId)}
-                          disabled={markAsReadMutation.isPending}
-                          className="p-2 text-[#8b1e3f] hover:bg-[#8b1e3f]/20 rounded-lg transition-colors disabled:opacity-50"
-                          title="Mark as read"
-                        >
-                          <Eye size={16} />
-                        </button>
-                      )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => handleDelete(notification.notificationId)}
-                        disabled={deleteMutation.isPending}
-                        className="p-2 text-red-600 hover:bg-red-200 rounded-lg transition-colors disabled:opacity-50"
-                        title="Delete"
+                        onClick={goToPrevious}
+                        disabled={currentPage === 1}
+                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <Trash2 size={16} />
+                        <ChevronLeft size={16} className="mr-1" />
+                        Previous
                       </button>
+
+                      <div className="flex items-center space-x-1">
+                        {getPageNumbers().map((page, index) => (
+                          <button
+                            key={index}
+                            onClick={() => typeof page === 'number' ? goToPage(page) : null}
+                            disabled={typeof page !== 'number'}
+                            className={`px-3 py-2 text-sm font-medium rounded-md ${
+                              page === currentPage
+                                ? 'bg-[#8b1e3f] text-white'
+                                : typeof page === 'number'
+                                ? 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
+                                : 'text-gray-400 cursor-default'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={goToNext}
+                        disabled={currentPage === totalPages}
+                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Next
+                        <ChevronRight size={16} className="ml-1" />
+                      </button>
+                    </div>
+
+                    <div className="text-sm text-gray-600">
+                      Page {currentPage} of {totalPages}
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </div>
       </div>
