@@ -23,6 +23,7 @@ import {
   useMarkAllNotificationsAsRead,
   useDeleteNotification,
 } from "../Api/hooks/useNotifications"
+import { toast } from 'react-toastify'
 
 const HrPage = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -94,6 +95,7 @@ const HrPage = () => {
       onSuccess: () => {
         setHrForm({ username: "", password: "", position: { title: "" } })
         setShowCreateHRForm(false)
+        toast.success('HR account created successfully!')
       },
     })
   }
@@ -104,6 +106,7 @@ const HrPage = () => {
       onSuccess: () => {
         setEmployeeForm({ username: "", password: "", position: { title: "" } })
         setShowCreateEmployeeForm(false)
+        toast.success('Employee account created successfully!')
       },
     })
   }
@@ -773,9 +776,9 @@ const HrPage = () => {
                 <button
                   type="submit"
                   disabled={createHRMutation.isLoading}
-                  className="px-4 py-2 bg-[#8b1e3f] text-white rounded-lg hover:bg-[#8b1e3f]/90 disabled:opacity-50 transition-all duration-200 shadow-lg"
+                  className="px-4 py-2 bg-[#8b1e3f] text-white rounded-lg hover:bg-[#8b1e3f]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg"
                 >
-                  {createHRMutation.isLoading ? "Creating..." : "Create HR"}
+                  Create HR
                 </button>
               </div>
             </form>
@@ -836,9 +839,9 @@ const HrPage = () => {
                 <button
                   type="submit"
                   disabled={createEmployeeMutation.isLoading}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-all duration-200 shadow-lg"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg"
                 >
-                  {createEmployeeMutation.isLoading ? "Creating..." : "Create Employee"}
+                  Create Employee
                 </button>
               </div>
             </form>

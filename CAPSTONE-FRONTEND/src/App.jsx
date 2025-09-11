@@ -89,7 +89,7 @@ function App() {
       <Route element={<ProtectedRoutes allowedRoles={["HR"]} />}>
       {/* HR routes */}
       <Route path="/hrpage" element={<HrPage />} />
-      <Route path="/Hrprofile" element={<HrProfile />} />
+      <Route path="/hrprofile" element={<HrProfile />} />
       <Route path="/hr-timelog" element={<HRTimelogDashboard />} />
       <Route path="/hr/announcements" element={<Announcements />} />
       <Route path="/hr/job-applications" element={<JobApplications />} />

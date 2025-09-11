@@ -6,7 +6,7 @@ import Header from "../components/Header"
 import ChangePasswordForm from "../components/ChangePasswordForm"
 import ProfilePictureUpload from "../components/ProfilePictureUpload"
 
-const EmployeeProfile = () => {
+const HrProfile = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const queryClient = useQueryClient()
 
@@ -291,4 +291,4 @@ const EmployeeProfile = () => {
   )
 }
 
-export default EmployeeProfile
+export default HrProfile
