@@ -251,31 +251,36 @@ public class TimelogService {
     }
 
     // Get all timelogs with search functionality (HR/Admin)
+    // Supports three search modes:
+    // 1. Employee name only -> Show all records for that specific employee
+    // 2. Date range only -> Show all employees' records within that date range  
+    // 3. Employee name + date range -> Show specific employee's records within that date range
     public List<Timelog> getAllTimelogsWithSearch(String search, LocalDateTime startDate, LocalDateTime endDate) {
-        System.out.println("TimelogService.getAllTimelogsWithSearch called with:");
-        System.out.println("  search: '" + search + "'");
-        System.out.println("  startDate: " + startDate);
-        System.out.println("  endDate: " + endDate);
-        
         try {
             List<Timelog> result;
-            if (search != null && !search.trim().isEmpty()) {
-                System.out.println("Using search query with: " + search.trim());
+            
+            // Check if we have both employee search and date range
+            if (search != null && !search.trim().isEmpty() && (startDate != null || endDate != null)) {
+                // Mode 3: Employee name + date range -> Show specific employee's records within that date range
                 result = timelogRepository.findTimelogsWithSearch(search.trim(), startDate, endDate);
-            } else if (startDate != null || endDate != null) {
-                System.out.println("Using date range query");
+            } 
+            // Check if we only have employee search (no date range)
+            else if (search != null && !search.trim().isEmpty()) {
+                // Mode 1: Employee name only -> Show all records for that specific employee
+                result = timelogRepository.findTimelogsWithSearch(search.trim(), null, null);
+            } 
+            // Check if we only have date range (no employee search)
+            else if (startDate != null || endDate != null) {
+                // Mode 2: Date range only -> Show all employees' records within that date range
                 result = timelogRepository.findTimelogsByDateRange(startDate, endDate);
-            } else {
-                System.out.println("No filters - returning all timelogs");
+            } 
+            // No filters - return all timelogs
+            else {
                 result = timelogRepository.findAllTimelogs();
             }
             
-            System.out.println("Query returned " + result.size() + " timelogs");
             return result;
         } catch (Exception e) {
-            System.err.println("Error in getAllTimelogsWithSearch: " + e.getMessage());
-            e.printStackTrace();
-            // Don't return all timelogs as fallback - rethrow the exception
             throw new RuntimeException("Failed to search timelogs: " + e.getMessage(), e);
         }
     }

@@ -66,9 +66,10 @@ public interface TimelogRepository extends JpaRepository<Timelog, Long> {
     List<Timelog> findTimelogsByUserAndMonth(@Param("user") Users user, @Param("year") int year, @Param("month") int month);
 
     // Find timelogs with search functionality (by username or full name)
-    @Query("SELECT t FROM Timelog t WHERE " +
+    @Query("SELECT t FROM Timelog t LEFT JOIN t.user.employeeDetails ed WHERE " +
            "(LOWER(t.user.username) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(CONCAT(COALESCE(t.user.employeeDetails.firstName, ''), ' ', COALESCE(t.user.employeeDetails.lastName, ''))) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "LOWER(COALESCE(ed.firstName, '')) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(COALESCE(ed.lastName, '')) LIKE LOWER(CONCAT('%', :search, '%'))) " +
            "AND (:startDate IS NULL OR t.logDate >= :startDate) " +
            "AND (:endDate IS NULL OR t.logDate <= :endDate) " +
            "ORDER BY t.logDate DESC")

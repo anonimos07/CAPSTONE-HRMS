@@ -43,10 +43,6 @@ const EmployeePage = () => {
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const employeeId = currentUser.userId;
   
-  // Debug logging for user data
-  console.log('=== DEBUG: EmployeePage User Data ===');
-  console.log('Current user from localStorage:', currentUser);
-  console.log('Employee ID:', employeeId);
 
   // Close dropdowns when clicking outside
   useEffect(() => {

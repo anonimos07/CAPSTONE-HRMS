@@ -404,13 +404,18 @@ public class TimelogController {
             LocalDateTime startDateTime = null;
             LocalDateTime endDateTime = null;
             
-            if (startDate != null && !startDate.trim().isEmpty()) {
-                startDateTime = java.time.LocalDate.parse(startDate).atStartOfDay();
-                logger.info("Parsed startDate: {} -> {}", startDate, startDateTime);
-            }
-            if (endDate != null && !endDate.trim().isEmpty()) {
-                endDateTime = java.time.LocalDate.parse(endDate).atTime(23, 59, 59);
-                logger.info("Parsed endDate: {} -> {}", endDate, endDateTime);
+            try {
+                if (startDate != null && !startDate.trim().isEmpty()) {
+                    startDateTime = java.time.LocalDate.parse(startDate).atStartOfDay();
+                    logger.info("Parsed startDate: {} -> {}", startDate, startDateTime);
+                }
+                if (endDate != null && !endDate.trim().isEmpty()) {
+                    endDateTime = java.time.LocalDate.parse(endDate).atTime(23, 59, 59);
+                    logger.info("Parsed endDate: {} -> {}", endDate, endDateTime);
+                }
+            } catch (Exception dateParseException) {
+                logger.error("Error parsing dates: startDate='{}', endDate='{}'", startDate, endDate, dateParseException);
+                return ResponseEntity.badRequest().body("Invalid date format. Please use YYYY-MM-DD format.");
             }
 
             List<Timelog> timelogs = timelogService.getAllTimelogsWithSearch(search, startDateTime, endDateTime);
