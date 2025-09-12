@@ -2,8 +2,15 @@ import React from 'react';
 import { FiCalendar, FiClock, FiCheck, FiX, FiEye, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useEmployeeLeaveRequests } from '../Api/hooks/useLeaveRequests';
 
-const LeaveRequestsList = ({ employeeId, currentPage, onPageChange, itemsPerPage = 2 }) => {
-  const { data: leaveRequests = [], isLoading } = useEmployeeLeaveRequests();
+const LeaveRequestsList = ({ employeeId, currentPage = 1, onPageChange, itemsPerPage = 2 }) => {
+  const { data: leaveRequests = [], isLoading, error } = useEmployeeLeaveRequests();
+  
+  // Debug logging
+  console.log('=== DEBUG: LeaveRequestsList Component ===');
+  console.log('Employee ID:', employeeId);
+  console.log('Leave requests data:', leaveRequests);
+  console.log('Is loading:', isLoading);
+  console.log('Error:', error);
 
   // Calculate pagination
   const totalPages = Math.ceil(leaveRequests.length / itemsPerPage);

@@ -34,6 +34,7 @@ const EmployeePage = () => {
   const [activeTab, setActiveTab] = useState('community');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  const [leaveRequestsPage, setLeaveRequestsPage] = useState(1);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const { data: announcements = [], isLoading } = useActiveAnnouncements();
@@ -41,6 +42,11 @@ const EmployeePage = () => {
   // Get current user ID from localStorage
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const employeeId = currentUser.userId;
+  
+  // Debug logging for user data
+  console.log('=== DEBUG: EmployeePage User Data ===');
+  console.log('Current user from localStorage:', currentUser);
+  console.log('Employee ID:', employeeId);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -289,7 +295,11 @@ const EmployeePage = () => {
                     <LeaveBalanceCard employeeId={employeeId} />
                   </div>
                   <div>
-                    <LeaveRequestsList employeeId={employeeId} />
+                    <LeaveRequestsList 
+                      employeeId={employeeId} 
+                      currentPage={leaveRequestsPage}
+                      onPageChange={setLeaveRequestsPage}
+                    />
                   </div>
                 </div>
               )}
