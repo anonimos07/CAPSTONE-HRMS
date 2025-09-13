@@ -359,22 +359,38 @@ const TimelogEditRequestModal = ({ timelog, hrStaff, isOpen, onClose, onSubmit, 
   const [requestedTimeIn, setRequestedTimeIn] = useState('');
   const [requestedTimeOut, setRequestedTimeOut] = useState('');
   const [requestedBreakDuration, setRequestedBreakDuration] = useState('');
+  const [isPending, setIsPending] = useState(false);
+
+  // Helper function to format datetime for local timezone
+  const formatDateTimeLocal = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
 
   React.useEffect(() => {
     if (timelog) {
-      setRequestedTimeIn(timelog.timeIn ? new Date(timelog.timeIn).toISOString().slice(0, 16) : '');
-      setRequestedTimeOut(timelog.timeOut ? new Date(timelog.timeOut).toISOString().slice(0, 16) : '');
+      setRequestedTimeIn(formatDateTimeLocal(timelog.timeIn));
+      setRequestedTimeOut(formatDateTimeLocal(timelog.timeOut));
       setRequestedBreakDuration(timelog.breakDurationMinutes || '');
     }
   }, [timelog]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isPending || isLoading) return; // Prevent spam clicking
+    
     if (!reason.trim() || !assignedHrId) {
       alert('Please fill in all required fields');
       return;
     }
 
+    setIsPending(true);
     onSubmit({
       reason: reason.trim(),
       assignedHrId: parseInt(assignedHrId),
@@ -383,6 +399,13 @@ const TimelogEditRequestModal = ({ timelog, hrStaff, isOpen, onClose, onSubmit, 
       requestedBreakDuration: requestedBreakDuration ? parseInt(requestedBreakDuration) : null
     });
   };
+
+  // Reset isPending when modal closes or loading changes
+  React.useEffect(() => {
+    if (!isOpen || !isLoading) {
+      setIsPending(false);
+    }
+  }, [isOpen, isLoading]);
 
   const getEmployeeName = (user) => {
     if (user?.employeeDetails?.firstName && user?.employeeDetails?.lastName) {
@@ -510,17 +533,17 @@ const TimelogEditRequestModal = ({ timelog, hrStaff, isOpen, onClose, onSubmit, 
             <button
               type="button"
               onClick={onClose}
-              disabled={isLoading}
+              disabled={isLoading || isPending}
               className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={isLoading || !reason.trim() || !assignedHrId}
+              disabled={isLoading || isPending || !reason.trim() || !assignedHrId}
               className="px-4 py-2 bg-[#8b1e3f] text-white rounded-lg hover:bg-[#8b1e3f]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg"
             >
-              {isLoading ? 'Submitting...' : 'Submit Request'}
+              {isLoading || isPending ? 'Submitting...' : 'Submit Request'}
             </button>
           </div>
         </form>

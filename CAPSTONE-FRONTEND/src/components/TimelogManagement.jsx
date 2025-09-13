@@ -426,17 +426,33 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
   const [adjustedTimeOut, setAdjustedTimeOut] = useState('');
   const [adjustedBreakDuration, setAdjustedBreakDuration] = useState('');
   const [reason, setReason] = useState('');
+  const [isPending, setIsPending] = useState(false);
+
+  // Helper function to format datetime for local timezone
+  const formatDateTimeLocal = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
 
   React.useEffect(() => {
     if (timelog) {
-      setAdjustedTimeIn(timelog.adjustedTimeIn || timelog.timeIn || '');
-      setAdjustedTimeOut(timelog.adjustedTimeOut || timelog.timeOut || '');
+      setAdjustedTimeIn(formatDateTimeLocal(timelog.adjustedTimeIn || timelog.timeIn));
+      setAdjustedTimeOut(formatDateTimeLocal(timelog.adjustedTimeOut || timelog.timeOut));
       setAdjustedBreakDuration(timelog.adjustedBreakDurationMinutes || timelog.breakDurationMinutes || '');
       setReason(timelog.adjustmentReason || '');
     }
   }, [timelog]);
 
   const handleSave = () => {
+    if (isPending || isLoading) return; // Prevent spam clicking
+    
+    setIsPending(true);
     const adjustmentData = {
       timelogId: timelog.id,
       adjustedTimeIn: adjustedTimeIn || null,
@@ -446,6 +462,13 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
     };
     onSave(adjustmentData);
   };
+
+  // Reset isPending when modal closes or loading changes
+  React.useEffect(() => {
+    if (!isOpen || !isLoading) {
+      setIsPending(false);
+    }
+  }, [isOpen, isLoading]);
 
   const getEmployeeName = (user) => {
     if (user?.employeeDetails?.firstName && user?.employeeDetails?.lastName) {
@@ -482,7 +505,7 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
             </label>
             <input
               type="datetime-local"
-              value={adjustedTimeIn ? new Date(adjustedTimeIn).toISOString().slice(0, 16) : ''}
+              value={adjustedTimeIn}
               onChange={(e) => setAdjustedTimeIn(e.target.value)}
               className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white/80"
             />
@@ -494,7 +517,7 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
             </label>
             <input
               type="datetime-local"
-              value={adjustedTimeOut ? new Date(adjustedTimeOut).toISOString().slice(0, 16) : ''}
+              value={adjustedTimeOut}
               onChange={(e) => setAdjustedTimeOut(e.target.value)}
               className="w-full px-3 py-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white/80"
             />
@@ -531,17 +554,17 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
           <Button
             onClick={onClose}
             variant="outline"
-            disabled={isLoading}
+            disabled={isLoading || isPending}
             className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
           >
             Cancel
           </Button>
           <Button
             onClick={handleSave}
-            disabled={isLoading || !reason.trim()}
+            disabled={isLoading || isPending || !reason.trim()}
             className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-all duration-200 shadow-lg"
           >
-            {isLoading ? 'Saving...' : 'Save Changes'}
+            {isLoading || isPending ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>
       </div>
