@@ -34,21 +34,22 @@ const Header = ({ userRole }) => {
   const navItems = getNavItems()
 
   return (
-    <header className="bg-white shadow-lg border-b">
-      <div className="w-full px-4">
-        <div className="flex justify-between items-center py-6">
-        <div className="flex items-center space-x-2">
-        <div className="bg-[#8b1e3f]/10 p-2 rounded-lg">
-              <Briefcase className="w-6 h-6 text-[#8b1e3f]" />
+    <header className="bg-[#7a1b3a] shadow-lg border-b border-[#6b1832]">
+      <div className="w-full px-6 lg:px-8">
+        <div className="flex justify-between items-center py-4">
+        <div className="flex items-center space-x-4">
+        <div className="bg-white/20 p-2.5 rounded-lg shadow-sm backdrop-blur-sm">
+              <Briefcase className="w-6 h-6 text-white" />
             </div>
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold" style={{ color: "#8b1e3f" }}>
+            <h1 className="text-2xl font-semibold text-white tracking-tight">
             TechStaffHub
             </h1>
+            <span className="ml-2 text-sm text-white/80 font-medium">HRMS</span>
             </div>
           </div>
 
-          <nav className="hidden md:flex flex-1 justify-center space-x-6 mx-8">
+          <nav className="hidden md:flex flex-1 justify-center space-x-1 mx-8">
             {navItems.map((item) => {
               const Icon = item.icon
               const isActive = location.pathname === item.path
@@ -57,20 +58,11 @@ const Header = ({ userRole }) => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive ? "text-white" : "text-gray-600 hover:bg-gray-50"
+                  className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    isActive 
+                      ? "bg-white/20 text-white shadow-sm backdrop-blur-sm" 
+                      : "text-white/80 hover:text-white hover:bg-white/10"
                   }`}
-                  style={isActive ? { backgroundColor: "#8b1e3f" } : { color: "inherit" }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) {
-                      e.target.style.color = "#8b1e3f"
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) {
-                      e.target.style.color = ""
-                    }
-                  }}
                 >
                   <Icon size={16} />
                   <span>{item.label}</span>
@@ -84,7 +76,7 @@ const Header = ({ userRole }) => {
             })}
           </nav>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             {userRole === "HR" && (
               <button
                 onClick={() => {
@@ -96,7 +88,7 @@ const Header = ({ userRole }) => {
                     window.dispatchEvent(event);
                   }, 100);
                 }}
-                className="relative p-2 text-gray-600 hover:text-[#8b1e3f] hover:bg-gray-50 rounded-md transition-colors"
+                className="relative p-2.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
                 title="Notifications"
               >
                 <Bell size={20} />
@@ -110,7 +102,7 @@ const Header = ({ userRole }) => {
             {userRole === "EMPLOYEE" && (
               <Link
                 to="/employee/notifications"
-                className="relative p-2 text-gray-600 hover:text-[#8b1e3f] hover:bg-gray-50 rounded-md transition-colors"
+                className="relative p-2.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
                 title="Notifications"
               >
                 <Bell size={20} />
@@ -121,9 +113,10 @@ const Header = ({ userRole }) => {
                 )}
               </Link>
             )}
+            <div className="h-6 w-px bg-white/30"></div>
             <button
               onClick={handleLogout}
-              className="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+              className="flex items-center space-x-2 px-3 py-2 text-sm text-white/90 hover:text-white hover:bg-red-600/20 rounded-lg transition-all duration-200 border border-white/20 hover:border-red-400/50"
             >
               <LogOut size={16} />
               <span>Logout</span>
@@ -132,8 +125,8 @@ const Header = ({ userRole }) => {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden border-t pt-6 pb-4">
-          <div className="flex flex-wrap gap-3">
+        <div className="md:hidden border-t border-white/20 pt-4 pb-4">
+          <div className="flex flex-wrap gap-2">
             {navItems.map((item) => {
               const Icon = item.icon
               const isActive = location.pathname === item.path
@@ -142,20 +135,11 @@ const Header = ({ userRole }) => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center space-x-2 px-4 py-3 rounded-md text-sm font-medium transition-colors ${
-                    isActive ? "text-white" : "text-gray-600 hover:bg-gray-50"
+                  className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    isActive 
+                      ? "bg-white/20 text-white shadow-sm backdrop-blur-sm" 
+                      : "text-white/80 hover:text-white hover:bg-white/10"
                   }`}
-                  style={isActive ? { backgroundColor: "#8b1e3f" } : { color: "inherit" }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) {
-                      e.target.style.color = "#8b1e3f"
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) {
-                      e.target.style.color = ""
-                    }
-                  }}
                 >
                   <Icon size={16} />
                   <span>{item.label}</span>
@@ -165,6 +149,54 @@ const Header = ({ userRole }) => {
                 </Link>
               )
             })}
+          </div>
+          
+          {/* Mobile Action Buttons */}
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/20">
+            <div className="flex items-center space-x-3">
+              {userRole === "HR" && (
+                <button
+                  onClick={() => {
+                    navigate('/hrpage');
+                    setTimeout(() => {
+                      const event = new CustomEvent('setActiveSection', { detail: 'notifications' });
+                      window.dispatchEvent(event);
+                    }, 100);
+                  }}
+                  className="relative p-2.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+                  title="Notifications"
+                >
+                  <Bell size={20} />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+              )}
+              {userRole === "EMPLOYEE" && (
+                <Link
+                  to="/employee/notifications"
+                  className="relative p-2.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+                  title="Notifications"
+                >
+                  <Bell size={20} />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                      {unreadCount}
+                    </span>
+                  )}
+                </Link>
+              )}
+            </div>
+            
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-2 px-3 py-2 text-sm text-white/90 hover:text-white hover:bg-red-600/20 rounded-lg transition-all duration-200 border border-white/20 hover:border-red-400/50"
+            >
+              <LogOut size={16} />
+              <span>Logout</span>
+            </button>
           </div>
         </div>
       </div>
