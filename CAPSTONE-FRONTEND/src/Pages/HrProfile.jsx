@@ -26,6 +26,7 @@ const HrProfile = () => {
 
   const [form, setForm] = useState(initialFormState)
   const [isEmptyDetails, setIsEmptyDetails] = useState(false)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
 
   const token = localStorage.getItem("token")
 
@@ -70,12 +71,12 @@ const HrProfile = () => {
     onSuccess: (responseData) => {
       console.log("Update success:", responseData)
       queryClient.invalidateQueries({ queryKey: ["employeeDetails"] })
-      alert("Profile updated successfully")
+      setShowConfirmModal(false)
       setIsEmptyDetails(false)
     },
     onError: (error) => {
       console.error("Update error:", error)
-      alert("Failed to update profile")
+      setShowConfirmModal(false)
     },
   })
 
@@ -85,8 +86,16 @@ const HrProfile = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    setShowConfirmModal(true)
+  }
+
+  const confirmSave = () => {
     console.log("Submitting form:", form)
     updateMutation.mutate(form)
+  }
+
+  const cancelSave = () => {
+    setShowConfirmModal(false)
   }
 
   if (isLoading)
@@ -287,6 +296,57 @@ const HrProfile = () => {
           </div>
         </main>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4 border border-red-100">
+            {/* Icon */}
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 bg-[#8b1e3f]/10 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-[#8b1e3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Title */}
+            <h3 className="text-xl font-bold text-[#8b1e3f] text-center mb-4">
+              Confirm Save Changes
+            </h3>
+
+            {/* Message */}
+            <p className="text-gray-600 text-center mb-8">
+              Are you sure you want to save the changes to your profile? This will update your personal information.
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex space-x-4">
+              <button
+                onClick={cancelSave}
+                disabled={updateMutation.isLoading || updateMutation.isPending}
+                className="flex-1 h-12 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <Button
+                onClick={confirmSave}
+                disabled={updateMutation.isLoading || updateMutation.isPending}
+                className="flex-1 h-12 bg-[#8b1e3f] hover:bg-[#8b1e3f]/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {(updateMutation.isLoading || updateMutation.isPending) ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Saving...
+                  </>
+                ) : (
+                  "Confirm Save"
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
