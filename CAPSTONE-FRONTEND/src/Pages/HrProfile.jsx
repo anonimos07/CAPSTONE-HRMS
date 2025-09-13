@@ -30,10 +30,12 @@ const HrProfile = () => {
 
   const token = localStorage.getItem("token")
 
+  const userId = localStorage.getItem('userId');
+  
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["employeeDetails"],
+    queryKey: ["employeeDetails", userId],
     queryFn: fetchCurrentUserDetails,
-    enabled: !!token,
+    enabled: !!token && !!userId,
   })
 
   // Process data with useEffect to ensure it runs every time data changes
@@ -70,7 +72,7 @@ const HrProfile = () => {
     mutationFn: updateUserProfile,
     onSuccess: (responseData) => {
       console.log("Update success:", responseData)
-      queryClient.invalidateQueries({ queryKey: ["employeeDetails"] })
+      queryClient.invalidateQueries({ queryKey: ["employeeDetails", userId] })
       setShowConfirmModal(false)
       setIsEmptyDetails(false)
     },

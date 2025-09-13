@@ -145,9 +145,12 @@ const HrPage = () => {
   const clearNotificationCache = useClearNotificationCache()
 
   const handleLogout = () => {
+    setIsDropdownOpen(false)
+    // Clear all TanStack Query cache when logging out
+    queryClient.clear()
     clearNotificationCache()
     localStorage.clear()
-    navigate("/")
+    window.location.href = "/login"
   }
 
   // Listen for header bell click event

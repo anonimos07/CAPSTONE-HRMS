@@ -5,13 +5,19 @@ import { fetchCurrentUserDetails, updateUserProfile } from '../Api/employee';
 import Header from '../components/Header';
 import ChangePasswordForm from '../components/ChangePasswordForm';
 import ProfilePictureUpload from '../components/ProfilePictureUpload';
+import { useClearNotificationCache } from '../Api/hooks/useNotifications';
 
 const EmployeeProfile = () => {
    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const queryClient = useQueryClient();
 
+  const clearNotificationCache = useClearNotificationCache();
+
   const handleLogout = () => {
     setIsDropdownOpen(false);
+    // Clear all TanStack Query cache when logging out
+    queryClient.clear();
+    clearNotificationCache();
     localStorage.clear();
   };
 
@@ -30,10 +36,12 @@ const EmployeeProfile = () => {
 
   const token = localStorage.getItem('token');
 
+  const userId = localStorage.getItem('userId');
+  
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['employeeDetails'],
+    queryKey: ['employeeDetails', userId],
     queryFn: fetchCurrentUserDetails,
-    enabled: !!token,
+    enabled: !!token && !!userId,
   });
 
   // Process data with useEffect to ensure it runs every time data changes
@@ -72,7 +80,7 @@ const EmployeeProfile = () => {
     mutationFn: updateUserProfile,
     onSuccess: (responseData) => {
       console.log('Update success:', responseData);
-      queryClient.invalidateQueries({ queryKey: ['employeeDetails'] });
+      queryClient.invalidateQueries({ queryKey: ['employeeDetails', userId] });
       setShowConfirmModal(false);
       setIsEmptyDetails(false);
     },

@@ -4,13 +4,14 @@ import { uploadProfilePicture, getProfilePicture, resetProfilePicture } from '..
 export const useProfilePicture = () => {
   const queryClient = useQueryClient();
   const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('userId');
 
   // Query to get current profile picture
   const profilePictureQuery = useQuery({
-    queryKey: ['profilePicture'],
+    queryKey: ['profilePicture', userId],
     queryFn: getProfilePicture,
     staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled: !!token, // Only run query if user is authenticated
+    enabled: !!token && !!userId, // Only run query if user is authenticated
     retry: false, // Don't retry on authentication errors
   });
 
@@ -18,7 +19,7 @@ export const useProfilePicture = () => {
   const uploadMutation = useMutation({
     mutationFn: uploadProfilePicture,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profilePicture'] });
+      queryClient.invalidateQueries({ queryKey: ['profilePicture', userId] });
     },
     onError: (error) => {
       console.error('Error uploading profile picture:', error);
@@ -29,7 +30,7 @@ export const useProfilePicture = () => {
   const resetMutation = useMutation({
     mutationFn: resetProfilePicture,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profilePicture'] });
+      queryClient.invalidateQueries({ queryKey: ['profilePicture', userId] });
     },
     onError: (error) => {
       console.error('Error resetting profile picture:', error);
