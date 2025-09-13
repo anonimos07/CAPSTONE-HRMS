@@ -65,23 +65,57 @@ public interface TimelogRepository extends JpaRepository<Timelog, Long> {
     @Query("SELECT t FROM Timelog t WHERE t.user = :user AND EXTRACT(YEAR FROM t.logDate) = :year AND EXTRACT(MONTH FROM t.logDate) = :month ORDER BY t.logDate DESC")
     List<Timelog> findTimelogsByUserAndMonth(@Param("user") Users user, @Param("year") int year, @Param("month") int month);
 
-    // Find timelogs with search functionality (by username or full name)
+    // Find timelogs with search functionality (by username or full name) - search only
     @Query("SELECT t FROM Timelog t LEFT JOIN t.user.employeeDetails ed WHERE " +
            "(LOWER(t.user.username) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(COALESCE(ed.firstName, '')) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(COALESCE(ed.lastName, '')) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-           "AND (:startDate IS NULL OR t.logDate >= :startDate) " +
-           "AND (:endDate IS NULL OR t.logDate <= :endDate) " +
            "ORDER BY t.logDate DESC")
-    List<Timelog> findTimelogsWithSearch(@Param("search") String search, 
-                                       @Param("startDate") LocalDateTime startDate, 
-                                       @Param("endDate") LocalDateTime endDate);
+    List<Timelog> findTimelogsBySearch(@Param("search") String search);
 
-    // Find timelogs by date range only
+    // Find timelogs with search functionality and date range
+    @Query("SELECT t FROM Timelog t LEFT JOIN t.user.employeeDetails ed WHERE " +
+           "(LOWER(t.user.username) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(COALESCE(ed.firstName, '')) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(COALESCE(ed.lastName, '')) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "AND t.logDate >= :startDate AND t.logDate <= :endDate " +
+           "ORDER BY t.logDate DESC")
+    List<Timelog> findTimelogsWithSearchAndDateRange(@Param("search") String search, 
+                                                    @Param("startDate") LocalDateTime startDate, 
+                                                    @Param("endDate") LocalDateTime endDate);
+
+    // Find timelogs with search functionality and start date only
+    @Query("SELECT t FROM Timelog t LEFT JOIN t.user.employeeDetails ed WHERE " +
+           "(LOWER(t.user.username) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(COALESCE(ed.firstName, '')) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(COALESCE(ed.lastName, '')) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "AND t.logDate >= :startDate " +
+           "ORDER BY t.logDate DESC")
+    List<Timelog> findTimelogsWithSearchAndStartDate(@Param("search") String search, 
+                                                    @Param("startDate") LocalDateTime startDate);
+
+    // Find timelogs with search functionality and end date only
+    @Query("SELECT t FROM Timelog t LEFT JOIN t.user.employeeDetails ed WHERE " +
+           "(LOWER(t.user.username) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(COALESCE(ed.firstName, '')) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+           "LOWER(COALESCE(ed.lastName, '')) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "AND t.logDate <= :endDate " +
+           "ORDER BY t.logDate DESC")
+    List<Timelog> findTimelogsWithSearchAndEndDate(@Param("search") String search, 
+                                                  @Param("endDate") LocalDateTime endDate);
+
+    // Find timelogs by date range only - both dates
     @Query("SELECT t FROM Timelog t WHERE " +
-           "(:startDate IS NULL OR t.logDate >= :startDate) " +
-           "AND (:endDate IS NULL OR t.logDate <= :endDate) " +
+           "t.logDate >= :startDate AND t.logDate <= :endDate " +
            "ORDER BY t.logDate DESC")
     List<Timelog> findTimelogsByDateRange(@Param("startDate") LocalDateTime startDate, 
                                         @Param("endDate") LocalDateTime endDate);
+
+    // Find timelogs by start date only
+    @Query("SELECT t FROM Timelog t WHERE t.logDate >= :startDate ORDER BY t.logDate DESC")
+    List<Timelog> findTimelogsByStartDate(@Param("startDate") LocalDateTime startDate);
+
+    // Find timelogs by end date only
+    @Query("SELECT t FROM Timelog t WHERE t.logDate <= :endDate ORDER BY t.logDate DESC")
+    List<Timelog> findTimelogsByEndDate(@Param("endDate") LocalDateTime endDate);
 }

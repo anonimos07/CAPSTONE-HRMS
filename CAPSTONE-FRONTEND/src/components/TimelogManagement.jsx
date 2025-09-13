@@ -150,7 +150,7 @@ const TimelogManagement = () => {
       </div>
 
       {/* Search and Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="relative">
           <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
@@ -158,21 +158,23 @@ const TimelogManagement = () => {
             placeholder="Search by name or username..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent"
           />
         </div>
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent"
-        />
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent"
-        />
+        <div className="relative">
+          <FiCalendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <input
+            type="date"
+            placeholder="Filter by date"
+            value={startDate}
+            onChange={(e) => {
+              setStartDate(e.target.value);
+              setEndDate(''); // Clear end date when start date changes
+            }}
+            className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent"
+          />
+        </div>
         <Button
           onClick={handleSearch}
           className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/60 text-white"
