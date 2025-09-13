@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Eye, Users, UserX, UserCheck, ChevronLeft, ChevronRight, X, RefreshCw } from 'lucide-react';
 import { getAllUsers, disableUserAccount, enableUserAccount } from '../Api/userManagement';
+import { useAllUsersProfilePictures } from '../Api/hooks/useProfilePicture';
 
 const UserList = ({ onViewProfile }) => {
   const [users, setUsers] = useState([]);
@@ -14,6 +15,13 @@ const UserList = ({ onViewProfile }) => {
   const [usersPerPage] = useState(5);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileUser, setProfileUser] = useState(null);
+
+  // Fetch all profile pictures using bulk API
+  const { profilePictures, isLoading: profilePicturesLoading } = useAllUsersProfilePictures();
+
+  // Debug: Log profile pictures data
+  console.log('Profile Pictures Data:', profilePictures);
+  console.log('Profile Pictures Loading:', profilePicturesLoading);
 
   // Fetch users on component mount and when search term changes
   useEffect(() => {
@@ -205,15 +213,28 @@ const UserList = ({ onViewProfile }) => {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      user.isEnabled ? 'bg-blue-100' : 'bg-gray-100'
-                    }`}>
-                      <span className={`font-semibold text-sm ${
-                        user.isEnabled ? 'text-blue-600' : 'text-gray-500'
+                    {/* Profile Picture with fallback to initials */}
+                    {profilePictures?.[user.userId] ? (
+                      <img 
+                        src={profilePictures[user.userId]} 
+                        alt={`${user.username}'s profile`}
+                        className={`w-10 h-10 rounded-full object-cover ${
+                          user.isEnabled ? '' : 'grayscale opacity-60'
+                        }`}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : (
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
+                        user.isEnabled 
+                          ? 'bg-blue-100 text-blue-700' 
+                          : 'bg-gray-100 text-gray-500'
                       }`}>
-                        {user.username.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
+                        {user.username ? user.username.substring(0, 2).toUpperCase() : 'U'}
+                      </div>
+                    )}
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className={`font-medium truncate ${
@@ -340,15 +361,28 @@ const UserList = ({ onViewProfile }) => {
             
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                  selectedUser.isEnabled ? 'bg-blue-100' : 'bg-gray-100'
-                }`}>
-                  <span className={`font-semibold text-lg ${
-                    selectedUser.isEnabled ? 'text-blue-600' : 'text-gray-500'
+                {/* Profile Picture with fallback to initials */}
+                {profilePictures?.[selectedUser.userId] ? (
+                  <img 
+                    src={profilePictures[selectedUser.userId]} 
+                    alt={`${selectedUser.username}'s profile`}
+                    className={`w-16 h-16 rounded-full object-cover ${
+                      selectedUser.isEnabled ? '' : 'grayscale opacity-60'
+                    }`}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : (
+                  <div className={`w-16 h-16 rounded-full flex items-center justify-center text-xl font-medium ${
+                    selectedUser.isEnabled 
+                      ? 'bg-blue-100 text-blue-700' 
+                      : 'bg-gray-100 text-gray-500'
                   }`}>
-                    {selectedUser.username.charAt(0).toUpperCase()}
-                  </span>
-                </div>
+                    {selectedUser.username ? selectedUser.username.substring(0, 2).toUpperCase() : 'U'}
+                  </div>
+                )}
                 <div>
                   <h4 className="font-medium text-gray-900">@{selectedUser.username}</h4>
                   <p className="text-sm text-gray-500 capitalize">{selectedUser.role.toLowerCase()}</p>
@@ -416,15 +450,28 @@ const UserList = ({ onViewProfile }) => {
             
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
-                  profileUser.isEnabled ? 'bg-blue-100' : 'bg-gray-100'
-                }`}>
-                  <span className={`font-semibold text-xl ${
-                    profileUser.isEnabled ? 'text-blue-600' : 'text-gray-500'
+                {/* Profile Picture with fallback to initials */}
+                {profilePictures?.[profileUser.userId] ? (
+                  <img 
+                    src={profilePictures[profileUser.userId]} 
+                    alt={`${profileUser.username}'s profile`}
+                    className={`w-16 h-16 rounded-full object-cover ${
+                      profileUser.isEnabled ? '' : 'grayscale opacity-60'
+                    }`}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : (
+                  <div className={`w-16 h-16 rounded-full flex items-center justify-center text-xl font-medium ${
+                    profileUser.isEnabled 
+                      ? 'bg-blue-100 text-blue-700' 
+                      : 'bg-gray-100 text-gray-500'
                   }`}>
-                    {profileUser.username.charAt(0).toUpperCase()}
-                  </span>
-                </div>
+                    {profileUser.username ? profileUser.username.substring(0, 2).toUpperCase() : 'U'}
+                  </div>
+                )}
                 <div>
                   <h4 className="font-medium text-gray-900 text-lg">
                     {profileUser.firstName && profileUser.lastName 
@@ -520,15 +567,15 @@ const UserList = ({ onViewProfile }) => {
                   Note: This is a read-only view of the user's profile. You can view all information but cannot make any changes.
                 </p>
               </div>
-            </div>
-            
-            <div className="flex justify-end pt-6 mt-4 border-t border-gray-200">
-              <button
-                onClick={handleCloseProfileModal}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Close
-              </button>
+              
+              <div className="flex justify-end pt-6 mt-4 border-t border-gray-200">
+                <button
+                  onClick={handleCloseProfileModal}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>

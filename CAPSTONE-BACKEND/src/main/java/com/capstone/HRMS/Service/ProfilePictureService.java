@@ -9,6 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -88,5 +91,23 @@ public class ProfilePictureService {
         } else {
             throw new RuntimeException("User not found");
         }
+    }
+
+    public Map<String, String> getAllUsersProfilePictures() {
+        List<Users> allUsers = userRepo.findAll();
+        Map<String, String> profilePictures = new HashMap<>();
+        
+        for (Users user : allUsers) {
+            String profilePictureUrl = defaultProfilePicture;
+            
+            EmployeeDetails employeeDetails = user.getEmployeeDetails();
+            if (employeeDetails != null && employeeDetails.getProfilePicture() != null) {
+                profilePictureUrl = employeeDetails.getProfilePicture();
+            }
+            
+            profilePictures.put(String.valueOf(user.getUserId()), profilePictureUrl);
+        }
+        
+        return profilePictures;
     }
 }

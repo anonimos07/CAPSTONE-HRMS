@@ -562,7 +562,7 @@ const HrPage = () => {
                         </button>
                         <button
                           onClick={() => setShowCreateEmployeeForm(true)}
-                          className="flex items-center space-x-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
+                          className="flex items-center space-x-2 bg-[#8b1e3f] text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
                         >
                           <UserPlus className="h-4 w-4" />
                           <span>Create Employee</span>

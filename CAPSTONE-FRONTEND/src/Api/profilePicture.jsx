@@ -43,6 +43,25 @@ export const getProfilePicture = async () => {
 };
 
 /**
+ * Get profile picture for a specific user (for HR/Admin use)
+ * @param {string} userId - The user ID to get profile picture for
+ * @returns {Promise} API response
+ */
+export const getProfilePictureByUserId = async (userId) => {
+  const response = await api.get(`/picture/${userId}`);
+  return response.data;
+};
+
+/**
+ * Get all users' profile pictures (for HR/Admin use in user management)
+ * @returns {Promise} API response with map of userId -> profilePictureData
+ */
+export const getAllUsersProfilePictures = async () => {
+  const response = await api.get('/pictures/all');
+  return response.data;
+};
+
+/**
  * Reset profile picture to default
  * @returns {Promise} API response
  */
