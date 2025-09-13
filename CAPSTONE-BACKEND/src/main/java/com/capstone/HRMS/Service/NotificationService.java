@@ -53,22 +53,39 @@ public class NotificationService {
     }
 
     public List<Notification> getNotificationsByUser(Users user) {
-        return notificationRepository.findByUserOrderByCreatedAtDesc(user);
+        List<Notification> notifications = notificationRepository.findByUserOrderByCreatedAtDesc(user);
+        System.out.println("DEBUG: getNotificationsByUser for userId=" + user.getUserId() + ", username=" + user.getUsername() + ", found " + notifications.size() + " notifications");
+        for (Notification notif : notifications) {
+            System.out.println("DEBUG: - NotificationId=" + notif.getNotificationId() + ", ownerId=" + notif.getUser().getUserId() + ", read=" + notif.getRead() + ", title=" + notif.getTitle());
+        }
+        return notifications;
     }
 
     public List<Notification> getUnreadNotificationsByUser(Users user) {
-        return notificationRepository.findByUserAndIsReadOrderByCreatedAtDesc(user, false);
+        return notificationRepository.findByUserAndReadOrderByCreatedAtDesc(user, false);
     }
 
     public Long getUnreadNotificationCount(Users user) {
         return notificationRepository.countUnreadNotificationsByUser(user);
     }
 
-    public Notification markAsRead(Long notificationId) {
+    public Notification markAsRead(Long notificationId, Users user) {
+        System.out.println("DEBUG: markAsRead called for notificationId=" + notificationId + ", userId=" + user.getUserId() + ", username=" + user.getUsername());
+        
         Optional<Notification> notification = notificationRepository.findById(notificationId);
         if (notification.isPresent()) {
-            notification.get().setIsRead(true);
-            return notificationRepository.save(notification.get());
+            Notification notif = notification.get();
+            System.out.println("DEBUG: Found notification owned by userId=" + notif.getUser().getUserId() + ", username=" + notif.getUser().getUsername());
+            
+            if (notif.getUser().equals(user)) {
+                System.out.println("DEBUG: User matches, marking as read");
+                notif.setRead(true);
+                return notificationRepository.save(notif);
+            } else {
+                System.out.println("DEBUG: User does NOT match, access denied");
+            }
+        } else {
+            System.out.println("DEBUG: Notification not found");
         }
         return null;
     }
@@ -76,13 +93,16 @@ public class NotificationService {
     public void markAllAsRead(Users user) {
         List<Notification> unreadNotifications = getUnreadNotificationsByUser(user);
         for (Notification notification : unreadNotifications) {
-            notification.setIsRead(true);
+            notification.setRead(true);
         }
         notificationRepository.saveAll(unreadNotifications);
     }
 
-    public void deleteNotification(Long notificationId) {
-        notificationRepository.deleteById(notificationId);
+    public void deleteNotification(Long notificationId, Users user) {
+        Optional<Notification> notification = notificationRepository.findById(notificationId);
+        if (notification.isPresent() && notification.get().getUser().equals(user)) {
+            notificationRepository.deleteById(notificationId);
+        }
     }
 
     public List<Notification> getAllNotifications() {

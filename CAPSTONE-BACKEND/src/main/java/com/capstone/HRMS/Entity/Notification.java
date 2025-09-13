@@ -32,7 +32,7 @@ public class Notification {
     private NotificationType type;
 
     @Column(nullable = false)
-    private Boolean isRead = false;
+    private Boolean read = false;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -52,7 +52,7 @@ public class Notification {
         this.title = title;
         this.message = message;
         this.type = type;
-        this.isRead = false;
+        this.read = false;
     }
 
     public Notification(Users user, String title, String message, NotificationType type, Long relatedEntityId) {
@@ -61,6 +61,6 @@ public class Notification {
         this.message = message;
         this.type = type;
         this.relatedEntityId = relatedEntityId;
-        this.isRead = false;
+        this.read = false;
     }
 }

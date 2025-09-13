@@ -23,8 +23,7 @@ import LeaveRequestForm from '../components/LeaveRequestForm';
 import LeaveBalanceCard from '../components/LeaveBalanceCard';
 import LeaveRequestsList from '../components/LeaveRequestsList';
 import { useActiveAnnouncements } from '../Api';
-
-
+import { useClearNotificationCache } from '../Api/hooks/useNotifications';
 
 const EmployeePage = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);

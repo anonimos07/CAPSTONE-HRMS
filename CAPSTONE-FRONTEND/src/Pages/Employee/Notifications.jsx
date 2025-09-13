@@ -152,8 +152,17 @@ const Notifications = () => {
               disabled={markAllAsReadMutation.isPending}
               className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/80 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors disabled:opacity-50"
             >
-              <CheckCheck size={20} />
-              <span>Mark All Read</span>
+              {markAllAsReadMutation.isPending ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                  <span>Marking...</span>
+                </>
+              ) : (
+                <>
+                  <CheckCheck size={20} />
+                  <span>Mark All Read</span>
+                </>
+              )}
             </button>
           )}
         </div>
@@ -227,7 +236,7 @@ const Notifications = () => {
                     key={notification.notificationId}
                     className={`p-6 transition-colors ${
                       !notification.read 
-                        ? 'bg-[#8b1e3f]/10 border-l-4 border-l-[#8b1e3f]/80' 
+                        ? 'bg-[#8b1e3f]/15 border-l-4 border-l-[#8b1e3f]' 
                         : 'bg-white'
                     }`}
                   >

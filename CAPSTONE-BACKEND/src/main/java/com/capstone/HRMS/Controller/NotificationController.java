@@ -80,7 +80,7 @@ public class NotificationController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             
-            Notification notification = notificationService.markAsRead(notificationId);
+            Notification notification = notificationService.markAsRead(notificationId, user);
             if (notification == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -114,7 +114,7 @@ public class NotificationController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             
-            notificationService.deleteNotification(notificationId);
+            notificationService.deleteNotification(notificationId, user);
             return ResponseEntity.ok("Notification deleted successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
