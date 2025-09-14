@@ -1,5 +1,3 @@
-"use client"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,6 +13,7 @@ const ChangePasswordForm = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [toast, setToast] = useState({ show: false, message: "", type: "" })
 
   const changePasswordMutation = useChangePassword()
 
@@ -23,7 +22,8 @@ const ChangePasswordForm = () => {
     if (!currentPassword || !newPassword || !confirmPassword) return
 
     if (newPassword !== confirmPassword) {
-      alert("New passwords do not match")
+      setToast({ show: true, message: "New passwords do not match", type: "error" })
+      setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
       return
     }
 
@@ -34,6 +34,12 @@ const ChangePasswordForm = () => {
           setCurrentPassword("")
           setNewPassword("")
           setConfirmPassword("")
+          setToast({ show: true, message: "Password changed successfully!", type: "success" })
+          setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
+        },
+        onError: () => {
+          setToast({ show: true, message: "Failed to change password. Please try again.", type: "error" })
+          setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000)
         },
       },
     )
@@ -61,7 +67,6 @@ const ChangePasswordForm = () => {
     else feedback.push("special character")
 
     const colors = ["text-red-500", "text-red-500", "text-yellow-500", "text-yellow-500", "text-green-500"]
-    const texts = ["Very Weak", "Weak", "Fair", "Good", "Strong"]
 
     return {
       score,
@@ -74,13 +79,28 @@ const ChangePasswordForm = () => {
 
   return (
     <Card className="w-full max-w-6xl mx-auto">
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <div
+          className={`fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 ${
+            toast.type === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
+          }`}
+        >
+          {toast.message}
+        </div>
+      )}
+
       <CardHeader>
         <CardTitle className="text-xl font-bold text-[#8b1e3f]">Change Password</CardTitle>
-        <CardDescription className="text-[#8b1e3f]">Update your account password for enhanced security</CardDescription>
+        <CardDescription className="text-[#8b1e3f]">
+          Update your account password for enhanced security
+        </CardDescription>
       </CardHeader>
 
       <CardContent>
         <form className="space-y-6" onSubmit={handleSubmit}>
+          {/* Current Password */}
           <div className="space-y-2">
             <Label htmlFor="currentPassword" className="text-sm font-semibold text-[#8b1e3f]">
               Current Password
@@ -108,6 +128,7 @@ const ChangePasswordForm = () => {
             </div>
           </div>
 
+          {/* New Password */}
           <div className="space-y-2">
             <Label htmlFor="newPassword" className="text-sm font-semibold text-[#8b1e3f]">
               New Password
@@ -136,6 +157,7 @@ const ChangePasswordForm = () => {
             {newPassword && <p className={`text-xs ${passwordStrength.color}`}>{passwordStrength.text}</p>}
           </div>
 
+          {/* Confirm Password */}
           <div className="space-y-2">
             <Label htmlFor="confirmPassword" className="text-sm font-semibold text-[#8b1e3f]">
               Confirm New Password
@@ -166,6 +188,7 @@ const ChangePasswordForm = () => {
             )}
           </div>
 
+          {/* Submit Button */}
           <div className="pt-4">
             <Button
               type="submit"
@@ -191,6 +214,7 @@ const ChangePasswordForm = () => {
           </div>
         </form>
 
+        {/* Password Requirements */}
         <div className="mt-6 p-4 bg-[#8b1e3f]/10 rounded-lg">
           <h4 className="text-sm font-semibold text-[#8b1e3f] mb-2">Password Requirements:</h4>
           <ul className="text-xs text-[#8b1e3f] space-y-1">
