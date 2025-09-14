@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   FiUsers, 
@@ -8,52 +7,20 @@ import {
   FiCalendar, 
   FiBriefcase,
   FiCheckCircle,
-  FiLock,
-  FiBarChart2,
-  FiArrowRight,
-  FiFileText
+  FiArrowRight
 } from 'react-icons/fi';
 import { ParentLayout } from '../Parent/ParentLayout';
+import { motion } from "framer-motion";
+
+import jobImg from "@/assets/job.jpg";
+import attendanceImg from "@/assets/attendance.jpg";
+import timeImg from "@/assets/time.png";
+import leaveImg from "@/assets/leave.png";
+import whyImg from "@/assets/why.jpg";
 
 const Homepage = () => {
   const featuresRef = useRef(null);
-  const signupRef = useRef(null);
   const navigate = useNavigate();
-
-  const features = [
-    {
-      icon: <FiBriefcase className="w-6 h-6 text-[#8b1e3f]" />,
-      title: "Job Applications",
-      description: "Streamline hiring with our applicant tracking system."
-    },
-    {
-      icon: <FiUsers className="w-6 h-6 text-[#8b1e3f]" />,
-      title: "Attendance",
-      description: "Real-time tracking of employee attendance."
-    },
-    {
-      icon: <FiClock className="w-6 h-6 text-[#8b1e3f]" />,
-      title: "Time Tracking",
-      description: "Simple clock in/out with mobile and web access."
-    },
-    {
-      icon: <FiCalendar className="w-6 h-6 text-[#8b1e3f]" />,
-      title: "Leave Management",
-      description: "Automated leave requests and approvals."
-    }
-  ];
-
-  const businessBenefits = [
-    "Complete HR management suite",
-    "Employee self-service portal",
-    "Advanced reporting and analytics"
-  ];
-
-  const employeeBenefits = [
-    "Easy time tracking",
-    "Simple leave requests",
-    "Access to HR documents"
-  ];
 
   const scrollTo = (ref) => {
     ref.current?.scrollIntoView({ behavior: 'smooth' });
@@ -61,101 +28,202 @@ const Homepage = () => {
 
   const scrollToRef = (refName) => {
     if (refName === 'features') scrollTo(featuresRef);
-    if (refName === 'signup') scrollTo(signupRef);
   };
 
   return (
     <ParentLayout scrollToRef={scrollToRef}>
-      <section className="py-28 px-4 text-center bg-gradient-to-br from-[#8b1e3f]/10 to-[#8b1e3f]/20">
+      
+      {/* HERO */}
+      <motion.section 
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="py-28 px-4 text-center bg-gradient-to-br from-[#7a1b3a]/10 to-[#7a1b3a]/20"
+      >
         <div className="max-w-4xl mx-auto">
-          <div className="inline-flex items-center px-4 py-2 bg-[#8b1e3f]/10 text-[#8b1e3f] rounded-full mb-4">
-            <FiCheckCircle className="mr-2" /> I Rated HR Software 2025
+          <div className="inline-flex items-center px-4 py-2 bg-[#7a1b3a]/10 text-[#7a1b3a] rounded-full mb-4">
+            <FiCheckCircle className="mr-2" /> TechStaffHub HR Solution
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-[#8b1e3f] mb-6">
-            Modern HR Management <span className="text-[#8b1e3f]">Simplified</span>
+          <h1 className="text-4xl md:text-5xl font-bold text-[#7a1b3a] mb-6">
+            Simplify HR with <span className="text-[#7a1b3a]">TechStaffHub</span>
           </h1>
-          <p className="text-xl text-[#8b1e3f] mb-8 max-w-2xl mx-auto">
-            Join thousands of businesses transforming their HR operations with our all-in-one platform
+          <p className="text-xl text-[#7a1b3a] mb-8 max-w-2xl mx-auto">
+            All-in-One HR Solution for Growing Businesses
           </p>
           <div className="flex justify-center space-x-4">
             <Button 
               onClick={() => navigate('/hiring')}
-              className="bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white px-8 py-6 text-lg flex items-center"
+              className="bg-[#7a1b3a] hover:bg-[#7a1b3a]/70 text-white px-8 py-6 text-lg flex items-center"
             >
               View Open Positions <FiArrowRight className="ml-2" />
             </Button>
             <Button 
               onClick={() => scrollToRef('features')} 
               variant="outline" 
-              className="text-[#8b1e3f] border-[#8b1e3f]/50 hover:bg-[#8b1e3f]/20 px-8 py-6 text-lg"
+              className="text-[#7a1b3a] border-[#7a1b3a]/50 hover:bg-[#7a1b3a]/20 px-8 py-6 text-lg"
             >
               Learn More
             </Button>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      <section ref={featuresRef} className="py-20 px-4 max-w-6xl mx-auto">
+      {/* FEATURES (Vertical Alternating) */}
+      <motion.section
+        ref={featuresRef}
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="py-20 px-4 max-w-6xl mx-auto"
+      >
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-[#8b1e3f] mb-4">
+          <h2 className="text-3xl font-bold text-[#7a1b3a] mb-4">
             Complete HR Management Solution
           </h2>
-          <p className="text-lg text-[#8b1e3f] max-w-2xl mx-auto">
+          <p className="text-lg text-[#7a1b3a] max-w-2xl mx-auto">
             Everything you need to manage your workforce efficiently
           </p>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {features.map((feature, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow border-[#8b1e3f]/10 hover:border-[#8b1e3f]/20">
-              <CardHeader>
-                <div className="bg-[#8b1e3f]/20 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  {feature.icon}
-                </div>
-                <CardTitle className="text-[#8b1e3f]">{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{feature.description}</CardDescription>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
 
-      <section ref={signupRef} className="py-20 px-4 bg-white">
-        <div className="max-w-6xl mx-auto bg-gradient-to-r from-[#8b1e3f]/10 to-[#8b1e3f]/20 rounded-2xl p-8 md:p-12">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-[#8b1e3f] mb-4">
-              Ready to Transform Your HR Operations?
-            </h2>
-            <p className="text-lg text-[#8b1e3f] max-w-2xl mx-auto">
-              Choose the plan that works best for your organization
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-12">
-        
-            <div className="space-y-6 bg-white p-8 rounded-xl shadow-sm">
-              <h3 className="text-xl font-semibold text-[#8b1e3f] flex items-center">
-                <FiUsers className="mr-2" /> For Employees
+        <div className="space-y-20">
+          {/* Job Applications */}
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <img 
+              src={jobImg} 
+              alt="Job Applications" 
+              className="rounded-xl shadow-md w-full h-64 object-cover bg-gray-100"
+            />
+            <div>
+              <h3 className="text-2xl font-bold text-[#7a1b3a] mb-4">
+                Job Applications
               </h3>
-              <ul className="space-y-4 text-[#8b1e3f]">
-                {employeeBenefits.map((benefit, index) => (
-                  <li key={index} className="flex items-start">
-                    <FiCheckCircle className="text-[#8b1e3f] mr-3 mt-0.5 flex-shrink-0" />
-                    <span>{benefit}</span>
-                  </li>
-                ))}
-              </ul>
-              <Button 
-                variant="outline" 
-                className="w-full text-[#8b1e3f] border-[#8b1e3f] hover:bg-[#8b1e3f]/20 py-6 text-lg"
-                onClick={() => navigate('/login')}
-              >
-                Employee Portal
-              </Button>
+              <p className="text-lg text-gray-700 mb-3">
+                Streamline hiring with our applicant tracking system. 
+              </p>
+              <p className="text-gray-600">
+                From posting jobs to managing resumes, our system ensures 
+                a smooth and professional recruitment process. Save time, 
+                attract top talent, and make data-driven hiring decisions 
+                with ease.
+              </p>
             </div>
           </div>
+
+          {/* Attendance Tracking */}
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="order-2 md:order-1">
+              <h3 className="text-2xl font-bold text-[#7a1b3a] mb-4">
+                Attendance Tracking
+              </h3>
+              <p className="text-lg text-gray-700 mb-3">
+                Real-time tracking of employee attendance.
+              </p>
+              <p className="text-gray-600">
+                Monitor presence, late arrivals, and absences with 
+                precision. Our system gives managers and HR teams 
+                powerful insights, helping you maintain accountability 
+                while supporting flexible work arrangements.
+              </p>
+            </div>
+            <img 
+              src={attendanceImg} 
+              alt="Attendance Tracking" 
+              className="rounded-xl shadow-md w-full h-64 object-cover bg-gray-100 order-1 md:order-2"
+            />
+          </div>
+
+          {/* Time Tracking */}
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <img 
+              src={timeImg} 
+              alt="Time Tracking" 
+              className="rounded-xl shadow-md w-full h-64 object-cover bg-gray-100"
+            />
+            <div>
+              <h3 className="text-2xl font-bold text-[#7a1b3a] mb-4">
+                Time Tracking
+              </h3>
+              <p className="text-lg text-gray-700 mb-3">
+                Simple clock in/out with mobile and web access.
+              </p>
+              <p className="text-gray-600">
+                Employees can log their hours easily from anywhere, 
+                ensuring accurate timesheets. Managers gain real-time 
+                visibility into productivity, enabling better project 
+                planning and payroll accuracy.
+              </p>
+            </div>
+          </div>
+
+          {/* Leave Management */}
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="order-2 md:order-1">
+              <h3 className="text-2xl font-bold text-[#7a1b3a] mb-4">
+                Leave Management
+              </h3>
+              <p className="text-lg text-gray-700 mb-3">
+                Automated leave requests and approvals.
+              </p>
+              <p className="text-gray-600">
+                Empower employees to request time off in seconds while 
+                managers approve with a single click. Our leave 
+                management system tracks balances, ensures compliance, 
+                and helps maintain a balanced workforce.
+              </p>
+            </div>
+            <img 
+              src={leaveImg} 
+              alt="Leave Management" 
+              className="rounded-xl shadow-md w-full h-64 object-cover bg-gray-100 order-1 md:order-2"
+            />
+          </div>
         </div>
-      </section>
+      </motion.section>
+
+      {/* WHY CHOOSE TECHSTAFFHUB */}
+      <motion.section
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="py-20 px-4 bg-white"
+      >
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center bg-gradient-to-r from-[#7a1b3a]/10 to-[#7a1b3a]/20 rounded-2xl p-8 md:p-12 shadow-md">
+          
+          {/* IMAGE */}
+          <img 
+            src={whyImg} 
+            alt="Why Choose TechStaffHub" 
+            className="rounded-xl shadow-lg w-full h-80 object-cover bg-gray-100"
+          />
+          
+          {/* TEXT */}
+          <div>
+            <h2 className="text-3xl font-bold text-[#7a1b3a] mb-6">
+              Why Choose TechStaffHub?
+            </h2>
+            <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+              TechStaffHub is built to simplify human resource management for both
+              employees and administrators. Instead of juggling multiple tools, our
+              platform brings everything into one clean, modern system.
+            </p>
+            <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+              From handling job applications and tracking attendance to managing
+              leave requests and work hours, TechStaffHub ensures that every
+              process is smooth, transparent, and accessible anytime. This helps
+              businesses stay efficient while giving employees the tools they need
+              to succeed.
+            </p>
+            <p className="text-lg text-gray-700 leading-relaxed">
+              With an intuitive interface, real-time tracking, and automation
+              features, TechStaffHub not only saves time but also empowers your
+              workforce. It’s a smarter way to manage HR — simple, reliable, and
+              built for modern teams.
+            </p>
+          </div>
+        </div>
+      </motion.section>
     </ParentLayout>
   );
 };
