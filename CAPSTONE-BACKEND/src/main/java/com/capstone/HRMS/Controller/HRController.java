@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/hr")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "${frontend.url}")
 public class HRController {
     private final HRService hrService;
     private final EmployeeService employeeService;

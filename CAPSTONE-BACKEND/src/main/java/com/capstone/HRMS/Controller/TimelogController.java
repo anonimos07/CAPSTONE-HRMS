@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/timelog")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "${frontend.url}")
 public class TimelogController {
 
     private static final Logger logger = LoggerFactory.getLogger(TimelogController.class);

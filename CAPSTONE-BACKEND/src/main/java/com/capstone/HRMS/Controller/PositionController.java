@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/positions")
+@RequestMapping("/api/position")
+@CrossOrigin(origins = "${frontend.url}")
 public class PositionController {
 
     private final PositionService positionService;

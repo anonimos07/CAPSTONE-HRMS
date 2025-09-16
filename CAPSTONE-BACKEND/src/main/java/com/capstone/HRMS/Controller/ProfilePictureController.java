@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/profile")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "${frontend.url}")
 public class ProfilePictureController {
 
     @Autowired

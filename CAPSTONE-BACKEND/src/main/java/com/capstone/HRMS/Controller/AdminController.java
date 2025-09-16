@@ -19,6 +19,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "${frontend.url}")
 public class AdminController {
 
     private final AdminService adminService;

@@ -22,6 +22,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/employee")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "${frontend.url}")
 public class EmployeeController {
     private final EmployeeService employeeService;
     private final UserRepo userRepo;

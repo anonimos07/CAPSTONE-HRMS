@@ -14,7 +14,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 @RestController
-@RequestMapping("/api/ai")
+@RequestMapping("/api/resume-review")
+@CrossOrigin(origins = "${frontend.url}")
 public class ResumeReviewController {
 
     @Autowired

@@ -21,7 +21,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/applications")
-@CrossOrigin(origins = "*") // Allow your frontend to connect
+@CrossOrigin(origins = "${frontend.url}")
 public class JobApplicationController {
 
     private final JobApplicationService jobApplicationService;
