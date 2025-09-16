@@ -25,7 +25,7 @@ jobs:
           distribution: 'microsoft'
 
       - name: Build with Maven
-        run: cd CAPSTONE-BACKEND && mvn clean install
+        run: cd CAPSTONE-BACKEND && mvn clean install -e -X
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
