@@ -131,7 +131,7 @@ public class NotificationController {
         }
     }
 
-    // Send notification to specific user (HR/Admin only)
+
     @PostMapping("/send/{userId}")
     public ResponseEntity<String> sendNotificationToUser(
             @PathVariable Long userId,
@@ -141,7 +141,7 @@ public class NotificationController {
             String username = authentication.getName();
             Users sender = usersService.getUserByUsername(username);
             
-            // Check if sender has HR or ADMIN role
+
             if (!sender.getRole().equals(Role.HR) && !sender.getRole().equals(Role.ADMIN)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
             }
@@ -165,7 +165,7 @@ public class NotificationController {
         }
     }
 
-    // Send notification to all users (HR/Admin only)
+
     @PostMapping("/send-all")
     public ResponseEntity<String> sendNotificationToAll(
             @RequestBody Map<String, String> request,
@@ -174,7 +174,7 @@ public class NotificationController {
             String username = authentication.getName();
             Users sender = usersService.getUserByUsername(username);
             
-            // Check if sender has HR or ADMIN role
+
             if (!sender.getRole().equals(Role.HR) && !sender.getRole().equals(Role.ADMIN)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
             }
@@ -193,7 +193,7 @@ public class NotificationController {
         }
     }
 
-    // Send notification to users by role (HR/Admin only)
+
     @PostMapping("/send-role/{role}")
     public ResponseEntity<String> sendNotificationToRole(
             @PathVariable String role,

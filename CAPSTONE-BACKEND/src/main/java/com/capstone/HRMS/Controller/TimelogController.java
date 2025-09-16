@@ -254,7 +254,7 @@ public class TimelogController {
         }
     }
 
-    // Get all timelogs (HR/Admin only)
+    // Get all timelogs
     @GetMapping("/all")
     public ResponseEntity<?> getAllTimelogs(Authentication authentication) {
         try {
@@ -264,7 +264,7 @@ public class TimelogController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
             }
 
-            // Check if user has HR or Admin role
+
             if (user.getRole().name().equals("HR") || user.getRole().name().equals("ADMIN")) {
                 List<Timelog> timelogs = timelogService.getAllTimelogs();
                 return ResponseEntity.ok(timelogs);
@@ -359,7 +359,7 @@ public class TimelogController {
         }
     }
 
-    // Delete timelog (Admin only)
+    // Delete timelog
     @DeleteMapping("/{timelogId}")
     public ResponseEntity<?> deleteTimelog(@PathVariable Long timelogId, Authentication authentication) {
         try {
@@ -378,7 +378,7 @@ public class TimelogController {
         }
     }
 
-    // Get all timelogs with search functionality (HR/Admin only)
+    // Get all timelogs with search functionality
     @GetMapping("/hr/all")
     public ResponseEntity<?> getAllTimelogsForHR(
             @RequestParam(required = false) String search,
@@ -395,12 +395,12 @@ public class TimelogController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
             }
 
-            // Check if user has HR or Admin role
+
             if (!user.getRole().name().equals("HR") && !user.getRole().name().equals("ADMIN")) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
             }
 
-            // Convert date strings to LocalDateTime
+
             LocalDateTime startDateTime = null;
             LocalDateTime endDateTime = null;
             
@@ -443,12 +443,12 @@ public class TimelogController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
             }
 
-            // Check if user has HR or Admin role
+
             if (!user.getRole().name().equals("HR") && !user.getRole().name().equals("ADMIN")) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
             }
 
-            // Convert date strings to LocalDateTime
+
             LocalDateTime startDateTime = null;
             LocalDateTime endDateTime = null;
             
@@ -470,7 +470,7 @@ public class TimelogController {
         }
     }
 
-    // Get single timelog by ID (HR/Admin only)
+    // Get single timelog by ID
     @GetMapping("/hr/{timelogId}")
     public ResponseEntity<?> getTimelogById(@PathVariable Long timelogId, Authentication authentication) {
         try {

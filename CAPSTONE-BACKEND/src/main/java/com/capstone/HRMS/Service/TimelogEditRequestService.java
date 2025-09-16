@@ -21,7 +21,7 @@ public class TimelogEditRequestService {
     @Autowired
     private NotificationService notificationService;
 
-    // Create a new timelog edit request
+
     public TimelogEditRequest createEditRequest(Timelog timelog, Users employee, Users assignedHr, 
                                                String reason, LocalDateTime requestedTimeIn, 
                                                LocalDateTime requestedTimeOut, Long requestedBreakDuration) {
@@ -32,7 +32,7 @@ public class TimelogEditRequestService {
         
         TimelogEditRequest savedRequest = timelogEditRequestRepository.save(request);
         
-        // Send notification to assigned HR
+
         String employeeName = getEmployeeName(employee);
         String notificationTitle = "New Timelog Edit Request";
         String notificationMessage = String.format(
@@ -53,32 +53,32 @@ public class TimelogEditRequestService {
         return savedRequest;
     }
 
-    // Get all HR staff for dropdown
+
     public List<Users> getAllHrStaff() {
         return userRepository.findByRole(Role.HR);
     }
 
-    // Get requests by employee
+
     public List<TimelogEditRequest> getRequestsByEmployee(Users employee) {
         return timelogEditRequestRepository.findByEmployeeOrderByCreatedDateDesc(employee);
     }
 
-    // Get requests assigned to HR
+
     public List<TimelogEditRequest> getRequestsByHr(Users hr) {
         return timelogEditRequestRepository.findByAssignedHrOrderByCreatedDateDesc(hr);
     }
 
-    // Get pending requests by HR
+
     public List<TimelogEditRequest> getPendingRequestsByHr(Users hr) {
         return timelogEditRequestRepository.findPendingRequestsByHr(hr);
     }
 
-    // Get all pending requests (for admin)
+
     public List<TimelogEditRequest> getAllPendingRequests() {
         return timelogEditRequestRepository.findAllPendingRequests();
     }
 
-    // Approve request
+
     public TimelogEditRequest approveRequest(Long requestId, Users hrUser, String hrResponse) {
         TimelogEditRequest request = timelogEditRequestRepository.findById(requestId)
                 .orElseThrow(() -> new RuntimeException("Request not found"));
@@ -95,7 +95,7 @@ public class TimelogEditRequestService {
         
         TimelogEditRequest savedRequest = timelogEditRequestRepository.save(request);
         
-        // Send notification to employee
+
         String notificationTitle = "Timelog Edit Request Approved";
         String notificationMessage = String.format(
             "Your timelog edit request for %s has been approved by %s.", 
@@ -114,7 +114,7 @@ public class TimelogEditRequestService {
         return savedRequest;
     }
 
-    // Reject request
+
     public TimelogEditRequest rejectRequest(Long requestId, Users hrUser, String hrResponse) {
         TimelogEditRequest request = timelogEditRequestRepository.findById(requestId)
                 .orElseThrow(() -> new RuntimeException("Request not found"));
@@ -131,7 +131,7 @@ public class TimelogEditRequestService {
         
         TimelogEditRequest savedRequest = timelogEditRequestRepository.save(request);
         
-        // Send notification to employee
+
         String notificationTitle = "Timelog Edit Request Rejected";
         String notificationMessage = String.format(
             "Your timelog edit request for %s has been rejected by %s. Reason: %s", 
@@ -151,18 +151,18 @@ public class TimelogEditRequestService {
         return savedRequest;
     }
 
-    // Get request by ID
+
     public TimelogEditRequest getRequestById(Long requestId) {
         return timelogEditRequestRepository.findById(requestId)
                 .orElseThrow(() -> new RuntimeException("Request not found"));
     }
 
-    // Count pending requests for HR
+
     public Long countPendingRequestsByHr(Users hr) {
         return timelogEditRequestRepository.countPendingRequestsByHr(hr);
     }
 
-    // Check if user can process request
+
     private boolean canProcessRequest(Users hrUser, TimelogEditRequest request) {
         if (hrUser.getRole() == Role.ADMIN) {
             return true;
@@ -173,7 +173,7 @@ public class TimelogEditRequestService {
         return false;
     }
 
-    // Helper method to get employee name
+
     private String getEmployeeName(Users user) {
         if (user.getEmployeeDetails() != null) {
             String firstName = user.getEmployeeDetails().getFirstName();
