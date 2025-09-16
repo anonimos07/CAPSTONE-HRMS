@@ -30,7 +30,7 @@ public class LeaveRequestService {
 
     @Transactional
     public LeaveRequest submitLeaveRequest(Users employee, LeaveType leaveType, LocalDate startDate, LocalDate endDate, String reason) {
-        // Validate dates
+
         if (startDate.isAfter(endDate)) {
             throw new IllegalArgumentException("Start date cannot be after end date");
         }
@@ -39,16 +39,16 @@ public class LeaveRequestService {
             throw new IllegalArgumentException("Cannot request leave for past dates");
         }
 
-        // Check for overlapping leave requests
+
         List<LeaveRequest> overlappingRequests = leaveRequestRepository.findOverlappingLeaveRequests(employee, startDate, endDate);
         if (!overlappingRequests.isEmpty()) {
             throw new IllegalArgumentException("You already have a leave request for overlapping dates");
         }
 
-        // Calculate days requested
+
         long daysRequested = startDate.datesUntil(endDate.plusDays(1)).count();
 
-        // Check leave balance
+
         int currentYear = Year.now().getValue();
         Optional<LeaveBalance> leaveBalance = leaveBalanceRepository.findByEmployeeAndLeaveTypeAndYear(employee, leaveType, currentYear);
         
@@ -56,11 +56,11 @@ public class LeaveRequestService {
             throw new IllegalArgumentException("Insufficient leave balance. Available: " + leaveBalance.get().getRemainingDays() + " days");
         }
 
-        // Create leave request
+
         LeaveRequest leaveRequest = new LeaveRequest(employee, leaveType, startDate, endDate, reason);
         LeaveRequest savedRequest = leaveRequestRepository.save(leaveRequest);
 
-        // Notify HR users
+
         notifyHRUsers(savedRequest);
 
         return savedRequest;
@@ -78,17 +78,17 @@ public class LeaveRequestService {
             throw new IllegalArgumentException("Leave request is not pending");
         }
 
-        // Update request status
+
         request.setStatus(LeaveStatus.APPROVED);
         request.setApprovedBy(approver);
         request.setApprovalComments(comments);
 
-        // Update leave balance
+
         updateLeaveBalance(request.getEmployee(), request.getLeaveType(), (int) request.getDaysRequested());
 
         LeaveRequest savedRequest = leaveRequestRepository.save(request);
 
-        // Notify employee
+
         String approverName = approver.getEmployeeDetails().getFirstName() + " " + approver.getEmployeeDetails().getLastName();
         String approverPosition = approver.getPosition() != null ? approver.getPosition().getTitle() : "HR";
         
@@ -115,14 +115,14 @@ public class LeaveRequestService {
             throw new IllegalArgumentException("Leave request is not pending");
         }
 
-        // Update request status
+
         request.setStatus(LeaveStatus.REJECTED);
         request.setApprovedBy(approver);
         request.setApprovalComments(comments);
 
         LeaveRequest savedRequest = leaveRequestRepository.save(request);
 
-        // Notify employee
+
         String approverName = approver.getEmployeeDetails().getFirstName() + " " + approver.getEmployeeDetails().getLastName();
         String approverPosition = approver.getPosition() != null ? approver.getPosition().getTitle() : "HR";
         
@@ -149,7 +149,7 @@ public class LeaveRequestService {
         int currentYear = Year.now().getValue();
         List<LeaveBalance> balances = leaveBalanceRepository.findByEmployeeAndYear(employee, currentYear);
         
-        // Initialize balances if they don't exist
+
         if (balances.isEmpty()) {
             initializeEmployeeLeaveBalances(employee, currentYear);
             balances = leaveBalanceRepository.findByEmployeeAndYear(employee, currentYear);
@@ -165,7 +165,7 @@ public class LeaveRequestService {
 
     @Transactional
     public void initializeEmployeeLeaveBalances(Users employee, int year) {
-        // Standard leave allocations
+
         LeaveBalance annualLeave = new LeaveBalance(employee, LeaveType.ANNUAL, 21, year);
         LeaveBalance sickLeave = new LeaveBalance(employee, LeaveType.SICK, 10, year);
         LeaveBalance personalLeave = new LeaveBalance(employee, LeaveType.PERSONAL, 5, year);
@@ -196,9 +196,9 @@ public class LeaveRequestService {
                         " has submitted a " + leaveRequest.getLeaveType() + " leave request from " + 
                         leaveRequest.getStartDate() + " to " + leaveRequest.getEndDate();
 
-        // Determine who should be notified based on the requester's role
+
         if (leaveRequest.getEmployee().getRole() == Role.HR) {
-            // If HR is requesting leave, notify HR-Supervisor and HR-Manager
+
             List<Users> hrSupervisors = userRepo.findByPositionTitle("HR-Supervisor");
             List<Users> hrManagers = userRepo.findByPositionTitle("HR-Manager");
             
@@ -209,7 +209,7 @@ public class LeaveRequestService {
                 notificationService.createNotification(user, title, message, NotificationType.GENERAL, leaveRequest.getId());
             }
         } else {
-            // If employee is requesting leave, notify HR users and HR-Supervisor
+
             List<Users> hrUsers = userRepo.findByRole(Role.HR);
             List<Users> hrSupervisors = userRepo.findByPositionTitle("HR-Supervisor");
 

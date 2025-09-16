@@ -68,7 +68,7 @@ public class EmailService {
             mailSender.send(message);
             
         } catch (Exception e) {
-            // Log the error but don't throw exception for confirmation emails
+
             System.err.println("Failed to send password change confirmation email: " + e.getMessage());
         }
     }

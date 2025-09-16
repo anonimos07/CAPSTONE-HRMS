@@ -116,7 +116,7 @@ public class PasswordResetController {
                     .body(Map.of("success", false, "message", "Password confirmation is required"));
             }
 
-            // Get user ID from username (you may need to adjust this based on your JWT implementation)
+
             Long userId = getUserIdFromUsername(username);
             
             passwordResetService.changePassword(userId, currentPassword, newPassword, confirmPassword);

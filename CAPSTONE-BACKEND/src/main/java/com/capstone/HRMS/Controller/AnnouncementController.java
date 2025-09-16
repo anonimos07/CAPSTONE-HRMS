@@ -36,7 +36,7 @@ public class AnnouncementController {
                 return ResponseEntity.badRequest().body("User not found");
             }
 
-            // Check if user has HR role
+
             if (createdBy.getRole() != Role.HR && createdBy.getRole() != Role.ADMIN) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Only HR and Admin users can create announcements");
@@ -157,7 +157,7 @@ public class AnnouncementController {
                 return ResponseEntity.badRequest().body("User not found");
             }
 
-            // Check if user has HR role
+
             if (user.getRole() != Role.HR && user.getRole() != Role.ADMIN) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Only HR and Admin users can deactivate announcements");
@@ -184,7 +184,7 @@ public class AnnouncementController {
                 return ResponseEntity.badRequest().body("User not found");
             }
 
-            // Check if user has HR role
+
             if (user.getRole() != Role.HR && user.getRole() != Role.ADMIN) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Only HR and Admin users can delete announcements");

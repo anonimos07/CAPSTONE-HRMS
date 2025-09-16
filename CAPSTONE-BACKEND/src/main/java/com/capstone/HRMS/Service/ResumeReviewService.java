@@ -25,7 +25,7 @@ public class ResumeReviewService {
 
     public String reviewResume(String resumeText) {
         try {
-            getApiKey(); // Debug log the API key
+            getApiKey();
             
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();

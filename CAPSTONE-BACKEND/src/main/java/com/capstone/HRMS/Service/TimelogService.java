@@ -18,24 +18,24 @@ public class TimelogService {
 
     // Clock in with photo
     public Timelog clockIn(Users user, String photoBase64) {
-        // Check if user is already clocked in
+
         Optional<Timelog> activeTimelog = timelogRepository.findActiveTimelogByUser(user);
         if (activeTimelog.isPresent()) {
             throw new RuntimeException("User is already clocked in or on break");
         }
 
-        // Check if there's already a timelog for today
+
         Optional<Timelog> todayTimelog = timelogRepository.findTodayTimelogByUser(user, LocalDateTime.now());
         
         Timelog timelog;
         if (todayTimelog.isPresent()) {
-            // Update existing timelog for today
+
             timelog = todayTimelog.get();
             timelog.setTimeIn(LocalDateTime.now());
             timelog.setTimeInPhoto(photoBase64);
             timelog.setStatus(TimelogStatus.CLOCKED_IN);
         } else {
-            // Create new timelog for today
+
             timelog = new Timelog(user, LocalDateTime.now());
             timelog.setTimeIn(LocalDateTime.now());
             timelog.setTimeInPhoto(photoBase64);
@@ -62,13 +62,13 @@ public class TimelogService {
         timelog.setTimeOutPhoto(photoBase64);
         timelog.setStatus(TimelogStatus.CLOCKED_OUT);
 
-        // If user was on break, end the break
+
         if (timelog.getBreakTimeStart() != null && timelog.getBreakTimeEnd() == null) {
             timelog.setBreakTimeEnd(LocalDateTime.now());
             timelog.calculateBreakDuration();
         }
 
-        // Calculate total worked hours
+
         timelog.updateTotalWorkedHours();
         
         return timelogRepository.save(timelog);
@@ -159,7 +159,7 @@ public class TimelogService {
     // HR Adjustment methods
     public Timelog adjustTimelog(Long timelogId, Users hrUser, LocalDateTime adjustedTimeIn, 
                                 LocalDateTime adjustedTimeOut, Long adjustedBreakDuration, String reason) {
-        // Check if HR user has permission to adjust
+
         if (!canAdjustTimelogs(hrUser)) {
             throw new RuntimeException("User does not have permission to adjust timelogs");
         }
@@ -178,7 +178,7 @@ public class TimelogService {
         timelog.setAdjustmentDate(LocalDateTime.now());
         timelog.setUpdatedDate(LocalDateTime.now());
 
-        // Recalculate total worked hours with adjustments
+
         timelog.updateTotalWorkedHours();
 
         return timelogRepository.save(timelog);
@@ -201,7 +201,7 @@ public class TimelogService {
         return false;
     }
 
-    // Get all timelogs (for HR/Admin dashboard)
+    // Get all timelogs
     public List<Timelog> getAllTimelogs() {
         return timelogRepository.findAllTimelogs();
     }
@@ -250,46 +250,42 @@ public class TimelogService {
                 .orElseThrow(() -> new RuntimeException("Timelog not found with ID: " + id));
     }
 
-    // Get all timelogs with search functionality (HR/Admin)
-    // Supports three search modes:
-    // 1. Employee name only -> Show all records for that specific employee
-    // 2. Date range only -> Show all employees' records within that date range  
-    // 3. Employee name + date range -> Show specific employee's records within that date range
+
     public List<Timelog> getAllTimelogsWithSearch(String search, LocalDateTime startDate, LocalDateTime endDate) {
         try {
             List<Timelog> result;
             
-            // Check if we have employee search
+
             if (search != null && !search.trim().isEmpty()) {
-                // Check if we also have date range
+
                 if (startDate != null && endDate != null) {
-                    // Mode 3: Employee name + both dates
+
                     result = timelogRepository.findTimelogsWithSearchAndDateRange(search.trim(), startDate, endDate);
                 } else if (startDate != null) {
-                    // Mode 3: Employee name + start date only
+
                     result = timelogRepository.findTimelogsWithSearchAndStartDate(search.trim(), startDate);
                 } else if (endDate != null) {
-                    // Mode 3: Employee name + end date only
+
                     result = timelogRepository.findTimelogsWithSearchAndEndDate(search.trim(), endDate);
                 } else {
-                    // Mode 1: Employee name only
+
                     result = timelogRepository.findTimelogsBySearch(search.trim());
                 }
             } 
-            // Check if we only have date range (no employee search)
+
             else if (startDate != null || endDate != null) {
                 if (startDate != null && endDate != null) {
-                    // Mode 2: Both dates
+
                     result = timelogRepository.findTimelogsByDateRange(startDate, endDate);
                 } else if (startDate != null) {
-                    // Mode 2: Start date only
+
                     result = timelogRepository.findTimelogsByStartDate(startDate);
                 } else {
-                    // Mode 2: End date only
+
                     result = timelogRepository.findTimelogsByEndDate(endDate);
                 }
             } 
-            // No filters - return all timelogs
+
             else {
                 result = timelogRepository.findAllTimelogs();
             }

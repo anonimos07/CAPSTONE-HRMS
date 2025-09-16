@@ -29,7 +29,7 @@ public class JobApplicationService {
 
         JobApplication savedApplication = jobApplicationRepository.save(application);
         
-        // Notify HR users in the same position
+
         String notificationTitle = "New Job Application";
         String notificationMessage = fullName + " has applied for the " + positionTitle + " position.";
         notificationService.notifyUsersByRole(Role.HR, notificationTitle, notificationMessage, 

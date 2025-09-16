@@ -42,7 +42,7 @@ public class EmployeeController {
 
         Users dbEmp = dbEmpOpt.get();
         
-        // Check if account is disabled
+
         if (!dbEmp.isEnabled()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap("error", "Your account has been disabled"));
         }

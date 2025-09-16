@@ -43,7 +43,7 @@ public class AdminController {
 
         Users dbAdmin = dbAdminOpt.get();
         
-        // Check if account is disabled
+
         if (!dbAdmin.isEnabled()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap("error", "Your account has been disabled"));
         }

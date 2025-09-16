@@ -43,7 +43,7 @@ public class HRController {
 
         Users dbHr = dbHrOpt.get();
         
-        // Check if account is disabled
+
         if (!dbHr.isEnabled()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Collections.singletonMap("error", "Your account has been disabled"));
         }
@@ -152,7 +152,7 @@ public class HRController {
                     userInfo.put("position", user.getPosition() != null ? user.getPosition().getTitle() : "No Position");
                     userInfo.put("isEnabled", user.isEnabled());
                     
-                    // Add basic employee details if available
+
                     if (user.getEmployeeDetails() != null) {
                         EmployeeDetails details = user.getEmployeeDetails();
                         userInfo.put("firstName", details.getFirstName());
@@ -190,14 +190,14 @@ public class HRController {
             Users user = userOpt.get();
             Map<String, Object> userDetails = new HashMap<>();
             
-            // Basic user info
+
             userDetails.put("userId", user.getUserId());
             userDetails.put("username", user.getUsername());
             userDetails.put("role", user.getRole().name());
             userDetails.put("position", user.getPosition() != null ? user.getPosition().getTitle() : "No Position");
             userDetails.put("isEnabled", user.isEnabled());
             
-            // Employee details
+
             if (user.getEmployeeDetails() != null) {
                 EmployeeDetails details = user.getEmployeeDetails();
                 userDetails.put("firstName", details.getFirstName() != null ? details.getFirstName() : "");

@@ -24,7 +24,7 @@ public class AnnouncementService {
         Announcement announcement = new Announcement(title, content, createdBy);
         Announcement savedAnnouncement = announcementRepository.save(announcement);
         
-        // Notify all users about the new announcement
+
         String notificationTitle = "New Announcement: " + title;
         String notificationMessage = "A new announcement has been posted by " + createdBy.getUsername();
         notificationService.notifyAllUsers(notificationTitle, notificationMessage, NotificationType.ANNOUNCEMENT);
@@ -36,7 +36,7 @@ public class AnnouncementService {
         Announcement announcement = new Announcement(title, content, createdBy, priority);
         Announcement savedAnnouncement = announcementRepository.save(announcement);
         
-        // Notify all users about the new announcement
+
         String notificationTitle = "New Announcement: " + title;
         String notificationMessage = "A new " + priority.toString().toLowerCase() + " priority announcement has been posted by " + createdBy.getUsername();
         notificationService.notifyAllUsers(notificationTitle, notificationMessage, NotificationType.ANNOUNCEMENT);

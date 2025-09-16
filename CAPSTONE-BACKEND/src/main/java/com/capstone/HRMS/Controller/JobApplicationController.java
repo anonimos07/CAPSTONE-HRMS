@@ -48,7 +48,7 @@ public class JobApplicationController {
         }
 
         try {
-            // Use the service to submit the application
+
             jobApplicationService.submitApplication(position, email, contact, fullName, file);
             return ResponseEntity.ok("Application submitted successfully!");
         } catch (Exception e) {
@@ -139,7 +139,7 @@ public class JobApplicationController {
                 return ResponseEntity.notFound().build();
             }
 
-            // Get the application to determine the original filename
+
             JobApplication application = jobApplicationService.getApplicationById(id).orElse(null);
             String filename = application != null ? application.getFileName() : "resume.pdf";
 

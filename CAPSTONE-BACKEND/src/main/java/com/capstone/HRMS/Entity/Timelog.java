@@ -34,11 +34,10 @@ public class Timelog {
     private LocalDateTime breakTimeEnd;
 
     @Column(columnDefinition = "TEXT")
-    private String timeInPhoto; // Base64 encoded photo
+    private String timeInPhoto;
 
     @Column(columnDefinition = "TEXT")
-    private String timeOutPhoto; // Base64 encoded photo
-
+    private String timeOutPhoto;
     @Column(name = "total_worked_hours")
     private Double totalWorkedHours;
 

@@ -30,7 +30,7 @@ public class TimelogEditRequestController {
     @Autowired
     private UsersService usersService;
 
-    // Create a new timelog edit request
+
     @PostMapping("/create")
     public ResponseEntity<?> createEditRequest(@RequestBody Map<String, Object> request, Authentication authentication) {
         try {

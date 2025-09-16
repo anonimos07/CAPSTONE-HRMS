@@ -19,7 +19,7 @@ public interface TimelogRepository extends JpaRepository<Timelog, Long> {
     @Query("SELECT t FROM Timelog t WHERE t.user = :user AND t.status != 'CLOCKED_OUT' ORDER BY t.createdDate DESC")
     Optional<Timelog> findActiveTimelogByUser(@Param("user") Users user);
 
-    // Find today's timelog for a user
+    // Find today timelog for a user
     @Query("SELECT t FROM Timelog t WHERE t.user = :user AND CAST(t.logDate AS date) = CAST(:date AS date)")
     Optional<Timelog> findTodayTimelogByUser(@Param("user") Users user, @Param("date") LocalDateTime date);
 

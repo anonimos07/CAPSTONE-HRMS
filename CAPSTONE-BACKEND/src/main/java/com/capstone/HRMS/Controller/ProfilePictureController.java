@@ -95,7 +95,7 @@ public class ProfilePictureController {
                     .body(Map.of("success", false, "message", "Authentication required"));
             }
 
-            // Check if user has HR role
+
             boolean isHR = authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_HR") || 
                                 auth.getAuthority().equals("ROLE_HR_SUPERVISOR"));

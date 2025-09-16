@@ -70,11 +70,6 @@ public class ResumeReviewController {
              PDDocument document = PDDocument.load(inputStream)) {
 
             PDFTextStripper pdfStripper = new PDFTextStripper();
-
-            // Optional: Set page range if needed
-            // pdfStripper.setStartPage(1);
-            // pdfStripper.setEndPage(document.getNumberOfPages());
-
             String text = pdfStripper.getText(document);
 
             return text.replaceAll("\\s+", " ").trim();
