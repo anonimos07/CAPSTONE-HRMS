@@ -53,6 +53,7 @@ public class SecConfig {
                                 "api/notifications/all",
                                 "api/timelog/time-in",
                                 "/api/job-positions",
+                                "/api/health",
                                 "/default-profile.png",
                                 "/*.png",
                                 "/*.jpg",
