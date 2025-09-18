@@ -21,6 +21,8 @@ services:
         sync: false
       - key: GMAIL_PASSWORD
         sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
       - key: FRONTEND_URL
         value: https://capstone-hrms.vercel.app
       - key: SPRING_PROFILES_ACTIVE

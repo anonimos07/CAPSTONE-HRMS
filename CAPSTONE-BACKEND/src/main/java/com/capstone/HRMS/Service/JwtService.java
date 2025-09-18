@@ -23,12 +23,19 @@ public class JwtService {
     private String secretkey = "";
 
     public JwtService(){
-        try {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA256");
-            SecretKey sk = keyGenerator.generateKey();
-            secretkey = Base64.getEncoder().encodeToString(sk.getEncoded());
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+        // Use environment variable for consistent secret key across deployments
+        secretkey = System.getenv("JWT_SECRET_KEY");
+        
+        // Fallback to generated key for local development if env var not set
+        if (secretkey == null || secretkey.isEmpty()) {
+            try {
+                KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA256");
+                SecretKey sk = keyGenerator.generateKey();
+                secretkey = Base64.getEncoder().encodeToString(sk.getEncoded());
+                System.out.println("WARNING: Using generated JWT secret key. Set JWT_SECRET_KEY environment variable for production.");
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
