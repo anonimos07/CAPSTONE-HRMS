@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: hrms-backend
+    runtime: docker
+    dockerfilePath: ./CAPSTONE-BACKEND/Dockerfile
+    dockerContext: ./CAPSTONE-BACKEND
+    plan: free
+    region: singapore
+    branch: main
+    healthCheckPath: /api/health
+    envVars:
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: anthropic.api.key
+        sync: false
+      - key: GMAIL_USERNAME
+        sync: false
+      - key: GMAIL_PASSWORD
+        sync: false
+      - key: FRONTEND_URL
+        value: https://capstone-hrms.vercel.app
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+    buildCommand: ""
+    startCommand: ""
