@@ -254,9 +254,12 @@ const TimelogWidget = () => {
 
   const formatTime = (dateString) => {
     if (!dateString) return '--:--';
-    return new Date(dateString).toLocaleTimeString('en-US', {
+    // Create date object and ensure it's displayed in local timezone
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
     });
   };
 
