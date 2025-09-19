@@ -58,12 +58,22 @@ const TimelogPage = () => {
 
   const formatTime = (dateString) => {
     if (!dateString) return '--:--';
-    // Create date object and ensure it's displayed in local timezone
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', {
+    
+    // Handle LocalDateTime from Spring Boot backend for Philippines timezone (UTC+8)
+    let date;
+    if (dateString.includes('T') && !dateString.includes('Z') && !dateString.includes('+')) {
+      // LocalDateTime format from Spring Boot - treat as UTC and convert to Philippines time
+      date = new Date(dateString + 'Z'); // Add Z to indicate UTC
+    } else {
+      date = new Date(dateString);
+    }
+    
+    // Format for Philippines locale
+    return date.toLocaleTimeString('en-PH', {
       hour: '2-digit',
       minute: '2-digit',
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      hour12: true,
+      timeZone: 'Asia/Manila'
     });
   };
 
