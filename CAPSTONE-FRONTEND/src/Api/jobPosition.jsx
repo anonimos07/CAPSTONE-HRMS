@@ -1,48 +1,67 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_JOB_POSITION || 'http://localhost:8080/api/job-positions';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_JOB_POSITION;
 
-// Create axios instance with base configuration
-const jobPositionApi = axios.create({
-  baseURL: API_BASE_URL,
-});
+// Get authentication token from localStorage
+const getAuthToken = () => {
+  return localStorage.getItem('token');
+};
 
-// Add request interceptor to include JWT token
-jobPositionApi.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+// Create axios instance with auth headers
+const createAuthHeaders = () => ({
+  headers: {
+    'Authorization': `Bearer ${getAuthToken()}`,
+    'Content-Type': 'application/json'
   }
-);
+});
 
 // Job Position API functions
 export const createJobPosition = async (jobPositionData) => {
-  const response = await jobPositionApi.post('/add', jobPositionData);
-  return response.data;
+  try {
+    const response = await axios.post(`${API_BASE_URL}/add`, jobPositionData, createAuthHeaders());
+    return response.data;
+  } catch (error) {
+    console.error('Error creating job position:', error);
+    throw error;
+  }
 };
 
 export const getAllJobPositions = async () => {
-  const response = await jobPositionApi.get('');
-  return response.data;
+  try {
+    const response = await axios.get(`${API_BASE_URL}`, createAuthHeaders());
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching job positions:', error);
+    throw error;
+  }
 };
 
 export const getJobPositionById = async (id) => {
-  const response = await jobPositionApi.get(`/${id}`);
-  return response.data;
+  try {
+    const response = await axios.get(`${API_BASE_URL}/${id}`, createAuthHeaders());
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching job position by ID:', error);
+    throw error;
+  }
 };
 
 export const updateJobPosition = async (id, jobPositionData) => {
-  const response = await jobPositionApi.put(`/${id}`, jobPositionData);
-  return response.data;
+  try {
+    const response = await axios.put(`${API_BASE_URL}/${id}`, jobPositionData, createAuthHeaders());
+    return response.data;
+  } catch (error) {
+    console.error('Error updating job position:', error);
+    throw error;
+  }
 };
 
 export const deleteJobPosition = async (id) => {
-  const response = await jobPositionApi.delete(`/${id}`);
-  return response.data;
+  try {
+    const response = await axios.delete(`${API_BASE_URL}/${id}`, createAuthHeaders());
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting job position:', error);
+    throw error;
+  }
 };
