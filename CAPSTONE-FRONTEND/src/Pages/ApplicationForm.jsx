@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { FiUser, FiMail, FiPhone, FiBriefcase, FiArrowLeft } from 'react-icons/fi';
+import { FiUser, FiMail, FiPhone, FiBriefcase, FiArrowLeft, FiCheck, FiX } from 'react-icons/fi';
 import { ParentLayout } from '../Parent/ParentLayout';
 import { useAllJobPositions } from '../Api/hooks/useJobPositions';
 import { useSubmitJobApplication } from '../Api';
@@ -21,6 +21,10 @@ export const ApplicationForm = () => {
     fullName: '',
     file: null
   });
+  
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,18 +43,20 @@ export const ApplicationForm = () => {
     const file = formData.file;
 
     if (!allowedTypes.includes(file.type)) {
-      alert("Only PDF, DOC, and DOCX files are allowed!");
+      setModalMessage("Only PDF, DOC, and DOCX files are allowed!");
+      setShowErrorModal(true);
       return;
     }
 
     submitMutation.mutate(formData, {
       onSuccess: () => {
-        alert('Application submitted successfully!');
-        navigate('/');
+        setModalMessage('Application submitted successfully!');
+        setShowSuccessModal(true);
       },
       onError: (error) => {
         console.error('Submission error:', error);
-        alert(`Failed to submit application: ${error.message}`);
+        setModalMessage(`Failed to submit application: ${error.message}`);
+        setShowErrorModal(true);
       }
     });
   };
@@ -158,6 +164,83 @@ export const ApplicationForm = () => {
             </form>
           </div>
         </div>
+
+        {/* Success Modal */}
+        {showSuccessModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white/95 backdrop-blur-sm rounded-lg p-6 w-full max-w-md shadow-2xl border border-green-100">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-green-600">Success</h3>
+                <button 
+                  onClick={() => setShowSuccessModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <FiX size={20} />
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                    <FiCheck className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-gray-800">{modalMessage}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end pt-6 mt-4 border-t border-gray-200">
+                <button
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    navigate('/');
+                  }}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Error Modal */}
+        {showErrorModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white/95 backdrop-blur-sm rounded-lg p-6 w-full max-w-md shadow-2xl border border-red-100">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-red-600">Error</h3>
+                <button 
+                  onClick={() => setShowErrorModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <FiX size={20} />
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                    <FiX className="w-6 h-6 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="text-gray-800">{modalMessage}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end pt-6 mt-4 border-t border-gray-200">
+                <button
+                  onClick={() => setShowErrorModal(false)}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </ParentLayout>
   );

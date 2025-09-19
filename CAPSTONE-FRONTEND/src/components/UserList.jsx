@@ -15,6 +15,8 @@ const UserList = ({ onViewProfile }) => {
   const [usersPerPage] = useState(5);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileUser, setProfileUser] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Fetch all profile pictures using bulk API
   const { profilePictures, isLoading: profilePicturesLoading } = useAllUsersProfilePictures();
@@ -116,11 +118,13 @@ const UserList = ({ onViewProfile }) => {
       handleCloseStatusModal();
       
       // Show success message
-      alert(`User account ${newStatus ? 'enabled' : 'disabled'} successfully!`);
+      setSuccessMessage(`User account ${newStatus ? 'enabled' : 'disabled'} successfully!`);
+      setShowSuccessModal(true);
       
     } catch (error) {
       console.error('Error updating user status:', error);
-      alert(`Failed to ${newStatus ? 'enable' : 'disable'} user account. Please try again.`);
+      setSuccessMessage(`Failed to ${newStatus ? 'enable' : 'disable'} user account. Please try again.`);
+      setShowSuccessModal(true);
     }
   };
 
@@ -576,6 +580,43 @@ const UserList = ({ onViewProfile }) => {
                   Close
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/95 backdrop-blur-sm rounded-lg p-6 w-full max-w-md shadow-2xl border border-green-100">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-green-600">Success</h3>
+              <button 
+                onClick={() => setShowSuccessModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                  <UserCheck className="w-6 h-6 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-gray-800">{successMessage}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end pt-6 mt-4 border-t border-gray-200">
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                OK
+              </button>
             </div>
           </div>
         </div>
