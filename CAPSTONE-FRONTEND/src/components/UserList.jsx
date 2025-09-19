@@ -17,6 +17,7 @@ const UserList = ({ onViewProfile }) => {
   const [profileUser, setProfileUser] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [pendingUserId, setPendingUserId] = useState(null);
 
   // Fetch all profile pictures using bulk API
   const { profilePictures, isLoading: profilePicturesLoading } = useAllUsersProfilePictures();
@@ -98,6 +99,7 @@ const UserList = ({ onViewProfile }) => {
   };
 
   const handleAccountStatusChanged = async (userId, newStatus) => {
+    setPendingUserId(userId);
     try {
       // Call the appropriate API based on the new status
       if (newStatus) {
@@ -125,6 +127,8 @@ const UserList = ({ onViewProfile }) => {
       console.error('Error updating user status:', error);
       setSuccessMessage(`Failed to ${newStatus ? 'enable' : 'disable'} user account. Please try again.`);
       setShowSuccessModal(true);
+    } finally {
+      setPendingUserId(null);
     }
   };
 
@@ -274,13 +278,19 @@ const UserList = ({ onViewProfile }) => {
                   </button>
                   <button
                     onClick={() => handleStatusChange(user)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors whitespace-nowrap ${
+                    disabled={pendingUserId === user.userId}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed ${
                       user.isEnabled 
                         ? 'bg-red-600 text-white hover:bg-red-700' 
                         : 'bg-green-600 text-white hover:bg-green-700'
                     }`}
                   >
-                    {user.isEnabled ? (
+                    {pendingUserId === user.userId ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        {user.isEnabled ? 'Disabling...' : 'Enabling...'}
+                      </>
+                    ) : user.isEnabled ? (
                       <>
                         <UserX size={16} />
                         Disable
@@ -425,13 +435,21 @@ const UserList = ({ onViewProfile }) => {
               </button>
               <button
                 onClick={() => handleAccountStatusChanged(selectedUser.userId, !selectedUser.isEnabled)}
-                className={`px-4 py-2 text-white rounded-lg transition-colors ${
+                disabled={pendingUserId === selectedUser.userId}
+                className={`px-4 py-2 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${
                   selectedUser.isEnabled 
                     ? 'bg-red-600 hover:bg-red-700' 
                     : 'bg-green-600 hover:bg-green-700'
                 }`}
               >
-                {selectedUser.isEnabled ? 'Disable Account' : 'Enable Account'}
+                {pendingUserId === selectedUser.userId ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    {selectedUser.isEnabled ? 'Disabling...' : 'Enabling...'}
+                  </>
+                ) : (
+                  selectedUser.isEnabled ? 'Disable Account' : 'Enable Account'
+                )}
               </button>
             </div>
           </div>

@@ -67,6 +67,7 @@ public class SecConfig {
                         .requestMatchers("/api/positions/add", "/api/positions/getPositions").hasAnyRole("HR", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/hr/**","/api/resume-review/review-resume-file").hasRole("HR")
+                        .requestMatchers(HttpMethod.GET, "/api/job-positions/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/job-positions/**").hasRole("HR")
                         .requestMatchers(HttpMethod.PUT, "/api/job-positions/**").hasRole("HR")
                         .requestMatchers(HttpMethod.DELETE, "/api/job-positions/**").hasRole("HR")
