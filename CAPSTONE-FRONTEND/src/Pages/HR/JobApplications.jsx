@@ -50,7 +50,7 @@ const JobApplications = () => {
   const submitStatusUpdate = () => {
     updateStatusMutation.mutate(
       {
-        id: selectedApplication.id,
+        id: selectedApplication.jobApplicationId,
         statusData: statusUpdate,
       },
       {
