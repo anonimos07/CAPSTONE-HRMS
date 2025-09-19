@@ -18,7 +18,7 @@ const createAuthHeaders = () => ({
 // Get all users with optional search
 export const getAllUsers = async (searchTerm = '') => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/hr/users`, {
+    const response = await axios.get(`${API_BASE_URL}/users`, {
       ...createAuthHeaders(),
       params: {
         search: searchTerm
@@ -34,7 +34,7 @@ export const getAllUsers = async (searchTerm = '') => {
 // Get specific user details
 export const getUserDetails = async (userId) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/hr/users/${userId}`, createAuthHeaders());
+    const response = await axios.get(`${API_BASE_URL}/users/${userId}`, createAuthHeaders());
     return response.data;
   } catch (error) {
     console.error('Error fetching user details:', error);
@@ -45,7 +45,7 @@ export const getUserDetails = async (userId) => {
 // Disable user account
 export const disableUserAccount = async (userId) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/hr/users/${userId}/disable`, {}, createAuthHeaders());
+    const response = await axios.put(`${API_BASE_URL}/users/${userId}/disable`, {}, createAuthHeaders());
     return response.data;
   } catch (error) {
     console.error('Error disabling user account:', error);
@@ -56,7 +56,7 @@ export const disableUserAccount = async (userId) => {
 // Enable user account
 export const enableUserAccount = async (userId) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/hr/users/${userId}/enable`, {}, createAuthHeaders());
+    const response = await axios.put(`${API_BASE_URL}/users/${userId}/enable`, {}, createAuthHeaders());
     return response.data;
   } catch (error) {
     console.error('Error enabling user account:', error);
