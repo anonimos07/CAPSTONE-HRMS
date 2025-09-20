@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +24,15 @@ public class EmailService {
             System.out.println("DEBUG: Attempting to send password reset email to: " + toEmail);
             System.out.println("DEBUG: From email configured as: " + fromEmail);
             System.out.println("DEBUG: Frontend URL: " + frontendUrl);
+            System.out.println("DEBUG: Using SendGrid SMTP configuration");
+            
+            // Debug mail sender configuration
+            if (mailSender instanceof JavaMailSenderImpl) {
+                JavaMailSenderImpl impl = (JavaMailSenderImpl) mailSender;
+                System.out.println("DEBUG: Mail host: " + impl.getHost());
+                System.out.println("DEBUG: Mail port: " + impl.getPort());
+                System.out.println("DEBUG: Mail username: " + impl.getUsername());
+            }
             
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
