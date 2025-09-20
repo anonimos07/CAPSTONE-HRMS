@@ -20,6 +20,10 @@ public class EmailService {
 
     public void sendPasswordResetEmail(String toEmail, String token, String firstName) {
         try {
+            System.out.println("DEBUG: Attempting to send password reset email to: " + toEmail);
+            System.out.println("DEBUG: From email configured as: " + fromEmail);
+            System.out.println("DEBUG: Frontend URL: " + frontendUrl);
+            
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
             message.setTo(toEmail);
@@ -41,9 +45,13 @@ public class EmailService {
             );
             
             message.setText(emailBody);
+            System.out.println("DEBUG: About to send email via mailSender...");
             mailSender.send(message);
+            System.out.println("DEBUG: Email sent successfully!");
             
         } catch (Exception e) {
+            System.err.println("ERROR: Failed to send email - " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Failed to send password reset email", e);
         }
     }
