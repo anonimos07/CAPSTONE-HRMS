@@ -31,6 +31,8 @@ import ForgotPassword from './Pages/ForgotPassword';
 import ResetPassword from './Pages/ResetPassword';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+// Custom hook for dynamic document title
+import useDocumentTitle from './hooks/useDocumentTitle';
 
 const qry = new QueryClient({
   defaultOptions: {
@@ -44,11 +46,17 @@ const qry = new QueryClient({
   },
 });
 
+// Component to handle document title updates
+const DocumentTitleUpdater = () => {
+  useDocumentTitle();
+  return null;
+};
+
 function App() {
   return (
-
-<QueryClientProvider client={qry}>
-    <ToastContainer />
+    <QueryClientProvider client={qry}>
+      <DocumentTitleUpdater />
+      <ToastContainer />
   
     <Routes>
 
