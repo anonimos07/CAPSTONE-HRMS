@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { ArrowLeft, Lock, BookOpen, Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react"
+import { ArrowLeft, Lock, BookOpen, Eye, EyeOff, CheckCircle, AlertCircle, X } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useResetPassword, useValidateResetToken } from "../hooks/usePasswordReset"
 
@@ -17,6 +17,8 @@ const ResetPassword = () => {
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [showErrorModal, setShowErrorModal] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
   
   const resetPasswordMutation = useResetPassword()
   const { data: tokenValidation, isLoading: isValidating, error: validationError } = useValidateResetToken(token)
@@ -32,7 +34,8 @@ const ResetPassword = () => {
     if (!newPassword || !confirmPassword) return
     
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match")
+      setErrorMessage("Passwords do not match")
+      setShowErrorModal(true)
       return
     }
     
@@ -41,6 +44,11 @@ const ResetPassword = () => {
       {
         onSuccess: () => {
           setIsSuccess(true)
+        },
+        onError: (error) => {
+          const message = error.response?.data?.message || error.message || "An error occurred while resetting your password"
+          setErrorMessage(message)
+          setShowErrorModal(true)
         }
       }
     )
@@ -78,6 +86,60 @@ const ResetPassword = () => {
   }
 
   const passwordStrength = getPasswordStrength(newPassword)
+
+  // Error Modal Component
+  const ErrorModal = () => {
+    if (!showErrorModal) return null
+
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform animate-in fade-in-0 zoom-in-95 duration-200">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="p-2 bg-red-100 rounded-full mr-3">
+                  <AlertCircle className="h-5 w-5 text-red-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-[#8b1e3f]">Password Reset Error</h3>
+              </div>
+              <button
+                onClick={() => setShowErrorModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="mb-6">
+              <p className="text-gray-700 leading-relaxed">{errorMessage}</p>
+              
+              {errorMessage.includes("Password must contain") && (
+                <div className="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
+                  <h4 className="font-medium text-red-800 mb-2">Password Requirements:</h4>
+                  <ul className="text-sm text-red-700 space-y-1">
+                    <li>• At least 8 characters long</li>
+                    <li>• At least one uppercase letter (A-Z)</li>
+                    <li>• At least one lowercase letter (a-z)</li>
+                    <li>• At least one number (0-9)</li>
+                    <li>• At least one special character (!@#$%^&*)</li>
+                  </ul>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setShowErrorModal(false)}
+                className="flex-1 bg-[#8b1e3f] hover:bg-[#8b1e3f]/80 text-white font-medium"
+              >
+                Try Again
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (isValidating) {
     return (
@@ -281,6 +343,9 @@ const ResetPassword = () => {
           </div>
         </div>
       </div>
+      
+      {/* Error Modal */}
+      <ErrorModal />
     </div>
   )
 }
