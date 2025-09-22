@@ -1,17 +1,27 @@
 package com.capstone.HRMS.Service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 @Service
 public class EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
+    @Value("${brevo.api.url}")
+    private String brevoApiUrl;
+
+    @Value("${brevo.api.key}")
+    private String brevoApiKey;
 
     @Value("${spring.mail.from}")
     private String fromEmail;
@@ -19,25 +29,15 @@ public class EmailService {
     @Value("${app.frontend.url:http://localhost:5173}")
     private String frontendUrl;
 
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     public void sendPasswordResetEmail(String toEmail, String token, String firstName) {
         try {
             System.out.println("DEBUG: Attempting to send password reset email to: " + toEmail);
             System.out.println("DEBUG: From email configured as: " + fromEmail);
             System.out.println("DEBUG: Frontend URL: " + frontendUrl);
-            System.out.println("DEBUG: Using Brevo SMTP configuration");
-            
-            // Debug mail sender configuration
-            if (mailSender instanceof JavaMailSenderImpl) {
-                JavaMailSenderImpl impl = (JavaMailSenderImpl) mailSender;
-                System.out.println("DEBUG: Mail host: " + impl.getHost());
-                System.out.println("DEBUG: Mail port: " + impl.getPort());
-                System.out.println("DEBUG: Mail username: " + impl.getUsername());
-            }
-            
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(toEmail);
-            message.setSubject("Password Reset Request - HRMS");
+            System.out.println("DEBUG: Using Brevo HTTP API");
             
             String resetLink = frontendUrl + "/reset-password?token=" + token;
             
@@ -54,10 +54,8 @@ public class EmailService {
                 resetLink
             );
             
-            message.setText(emailBody);
-            System.out.println("DEBUG: About to send email via mailSender...");
-            mailSender.send(message);
-            System.out.println("DEBUG: Email sent successfully!");
+            sendBrevoEmail(toEmail, "Password Reset Request - HRMS", emailBody);
+            System.out.println("DEBUG: Email sent successfully via Brevo API!");
             
         } catch (Exception e) {
             System.err.println("ERROR: Failed to send email - " + e.getMessage());
@@ -68,11 +66,6 @@ public class EmailService {
 
     public void sendPasswordChangeConfirmation(String toEmail, String firstName) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(toEmail);
-            message.setSubject("Password Changed Successfully - HRMS");
-            
             String emailBody = String.format(
                 "Dear %s,\n\n" +
                 "Your password has been successfully changed for your HRMS account.\n\n" +
@@ -82,12 +75,61 @@ public class EmailService {
                 firstName != null ? firstName : "User"
             );
             
-            message.setText(emailBody);
-            mailSender.send(message);
+            sendBrevoEmail(toEmail, "Password Changed Successfully - HRMS", emailBody);
             
         } catch (Exception e) {
-
             System.err.println("Failed to send password change confirmation email: " + e.getMessage());
+        }
+    }
+
+    private void sendBrevoEmail(String toEmail, String subject, String content) {
+        try {
+            System.out.println("DEBUG: Sending email via Brevo API to: " + toEmail);
+            System.out.println("DEBUG: API URL: " + brevoApiUrl);
+            
+            // Create headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("api-key", brevoApiKey);
+            
+            // Create email payload
+            Map<String, Object> emailPayload = new HashMap<>();
+            
+            // Sender
+            Map<String, String> sender = new HashMap<>();
+            sender.put("email", fromEmail);
+            sender.put("name", "HRMS Team");
+            emailPayload.put("sender", sender);
+            
+            // Recipients
+            List<Map<String, String>> recipients = new ArrayList<>();
+            Map<String, String> recipient = new HashMap<>();
+            recipient.put("email", toEmail);
+            recipients.add(recipient);
+            emailPayload.put("to", recipients);
+            
+            // Subject and content
+            emailPayload.put("subject", subject);
+            emailPayload.put("textContent", content);
+            
+            // Create HTTP entity
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(emailPayload, headers);
+            
+            // Send request
+            ResponseEntity<String> response = restTemplate.exchange(
+                brevoApiUrl,
+                HttpMethod.POST,
+                entity,
+                String.class
+            );
+            
+            System.out.println("DEBUG: Brevo API response status: " + response.getStatusCode());
+            System.out.println("DEBUG: Brevo API response body: " + response.getBody());
+            
+        } catch (Exception e) {
+            System.err.println("ERROR: Failed to send email via Brevo API - " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to send email via Brevo API", e);
         }
     }
 }
