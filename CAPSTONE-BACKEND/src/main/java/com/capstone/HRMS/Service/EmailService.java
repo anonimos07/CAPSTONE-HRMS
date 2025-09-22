@@ -24,7 +24,7 @@ public class EmailService {
             System.out.println("DEBUG: Attempting to send password reset email to: " + toEmail);
             System.out.println("DEBUG: From email configured as: " + fromEmail);
             System.out.println("DEBUG: Frontend URL: " + frontendUrl);
-            System.out.println("DEBUG: Using SendGrid SMTP configuration");
+            System.out.println("DEBUG: Using Brevo SMTP configuration");
             
             // Debug mail sender configuration
             if (mailSender instanceof JavaMailSenderImpl) {
