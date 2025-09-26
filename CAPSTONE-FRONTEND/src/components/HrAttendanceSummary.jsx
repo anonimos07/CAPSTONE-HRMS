@@ -43,9 +43,20 @@ const HrAttendanceSummary = () => {
 
   const formatTime = (dateString) => {
     if (!dateString) return '--:--';
-    return new Date(dateString).toLocaleTimeString('en-US', {
+    
+    let date;
+    if (dateString.includes('T') && !dateString.includes('Z') && !dateString.includes('+')) {
+      // LocalDateTime format from Spring Boot - treat as UTC and convert to Philippines time
+      date = new Date(dateString + 'Z');
+    } else {
+      date = new Date(dateString);
+    }
+    
+    return date.toLocaleTimeString('en-PH', {
       hour: '2-digit',
       minute: '2-digit',
+      hour12: true,
+      timeZone: 'Asia/Manila'
     });
   };
 

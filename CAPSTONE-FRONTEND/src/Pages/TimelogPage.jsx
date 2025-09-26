@@ -61,11 +61,13 @@ const TimelogPage = () => {
     
     let date;
     if (dateString.includes('T') && !dateString.includes('Z') && !dateString.includes('+')) {
-      date = new Date(dateString + 'Z'); 
+      // LocalDateTime format from Spring Boot - treat as UTC and convert to Philippines time
+      date = new Date(dateString + 'Z');
+    } else {
       date = new Date(dateString);
     }
     
-
+    // Format for Philippines locale
     return date.toLocaleTimeString('en-PH', {
       hour: '2-digit',
       minute: '2-digit',
