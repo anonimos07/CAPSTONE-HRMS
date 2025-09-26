@@ -276,21 +276,48 @@ const TimelogWidget = () => {
   const calculateWorkedHours = () => {
     if (!todayTimelog?.timeIn) return '0.0';
     
+    // If user just clocked in and hasn't clocked out yet, calculate real-time hours
     const timeIn = new Date(todayTimelog.timeIn);
     const timeOut = todayTimelog.timeOut ? new Date(todayTimelog.timeOut) : new Date();
     const breakDuration = todayTimelog.breakDurationMinutes || 0;
     
+    // Calculate the difference in minutes
     const totalMinutes = (timeOut - timeIn) / (1000 * 60) - breakDuration;
-    return Math.max(0, totalMinutes / 60).toFixed(1);
+    const hours = Math.max(0, totalMinutes / 60);
+    
+    // If the user is currently clocked in (no timeOut), show real-time calculation
+    // If the user has clocked out, use the stored totalWorkedHours if available
+    if (!todayTimelog.timeOut) {
+      // Real-time calculation for active sessions
+      return hours.toFixed(1);
+    } else {
+      // Use stored value for completed sessions, fallback to calculated value
+      return (todayTimelog.totalWorkedHours || hours).toFixed(1);
+    }
   };
 
   const currentStatus = statusData?.status || 'CLOCKED_OUT';
   const isLoading = statusLoading || isProcessing || clockInMutation.isPending || clockOutMutation.isPending || startBreakMutation.isPending || endBreakMutation.isPending;
 
+  // Real-time updates when user is clocked in
+  useEffect(() => {
+    let interval;
+    if (currentStatus === 'CLOCKED_IN' || currentStatus === 'ON_BREAK') {
+      // Update every 30 seconds when clocked in to show real-time hours
+      interval = setInterval(() => {
+        queryClient.invalidateQueries({ queryKey: ['today-timelog'] });
+      }, 30000); // 30 seconds
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [currentStatus, queryClient]);
+
   // Debug logging
-  // console.log('Debug - Status Data:', statusData);
-  // console.log('Debug - Current Status:', currentStatus);
-  // console.log('Debug - Today Timelog:', todayTimelog);
+  console.log('Debug - Status Data:', statusData);
+  console.log('Debug - Current Status:', currentStatus);
+  console.log('Debug - Today Timelog:', todayTimelog);
+  console.log('Debug - Calculated Hours:', calculateWorkedHours());
 
   return (
     <>

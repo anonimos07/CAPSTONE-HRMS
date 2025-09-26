@@ -157,7 +157,7 @@ const TimelogPage = () => {
           </div>
 
           {/* Timelog Widget */}
-          {/* <TimelogWidget /> */}
+          <TimelogWidget />
 
           {/* Monthly Summary */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
