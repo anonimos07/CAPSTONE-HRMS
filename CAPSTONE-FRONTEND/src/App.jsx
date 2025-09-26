@@ -16,22 +16,17 @@ import ProtectedRoutes from './utils/ProtectedRoutes';
 import TimelogPage from './Pages/TimelogPage';
 import HRTimelogDashboard from './Pages/HRTimelogDashboard';
 import TestAuth from './components/TestAuth';
-// New HR pages
 import Announcements from './Pages/HR/Announcements';
 import JobApplications from './Pages/HR/JobApplications';
 import ResumeReview from './Pages/HR/ResumeReview';
 import HRNotifications from './Pages/HR/Notifications';
-// New Employee pages
 import Notifications from './Pages/Employee/Notifications';
-// Admin pages
 import AdminPage from './Pages/AdminPage';
 import AdminLogin from './Pages/AdminLogin';
-// Password reset pages
 import ForgotPassword from './Pages/ForgotPassword';
 import ResetPassword from './Pages/ResetPassword';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// Custom hook for dynamic document title
 import useDocumentTitle from './hooks/useDocumentTitle';
 
 const qry = new QueryClient({
@@ -46,7 +41,7 @@ const qry = new QueryClient({
   },
 });
 
-// Component to handle document title updates
+// handle document title updates
 const DocumentTitleUpdater = () => {
   useDocumentTitle();
   return null;
@@ -74,12 +69,12 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       
-      {/* Quick test redirects */}
-      <Route path="/test-employee" element={<EmployeePage />} />
+   
+      {/* <Route path="/test-employee" element={<EmployeePage />} />
       <Route path="/test-hr" element={<HrPage />} />
       <Route path="/test-timelog" element={<TimelogPage />} />
       <Route path="/test-hr-dashboard" element={<HRTimelogDashboard />} />
-      <Route path="/test-auth" element={<TestAuth />} />
+      <Route path="/test-auth" element={<TestAuth />} /> */}
        
        
      
@@ -87,7 +82,6 @@ function App() {
        
 
       <Route element={<ProtectedRoutes allowedRoles={["EMPLOYEE"]} />}>
-       {/* Employee routes */}
       <Route path="/employeepage" element={<EmployeePage />} />
       <Route path="/employeeprofile" element={<EmployeeProfile />} />
       <Route path="/timelog" element={<TimelogPage />} />
@@ -95,7 +89,6 @@ function App() {
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["HR"]} />}>
-      {/* HR routes */}
       <Route path="/hrpage" element={<HrPage />} />
       <Route path="/hrprofile" element={<HrProfile />} />
       <Route path="/hr-timelog" element={<HRTimelogDashboard />} />
@@ -106,7 +99,6 @@ function App() {
       </Route>
 
       <Route element={<ProtectedRoutes allowedRoles={["ADMIN"]} />}>
-      {/* Admin routes */}
       <Route path="/adminpage" element={<AdminPage />} />
       </Route>
 

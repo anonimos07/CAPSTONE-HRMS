@@ -12,7 +12,7 @@ const JobApplications = () => {
   const [statusUpdate, setStatusUpdate] = useState({ status: "", reviewNotes: "" })
   const [showJobPostModal, setShowJobPostModal] = useState(false)
   const [jobPostData, setJobPostData] = useState({ title: "", description: "", requirements: "", department: "" })
-  const [activeTab, setActiveTab] = useState("applications") // 'applications' or 'positions'
+  const [activeTab, setActiveTab] = useState("applications") 
   const [toast, setToast] = useState({ show: false, message: "", type: "" })
 
   const { data: applications = [], isLoading: applicationsLoading } = useAllApplications()

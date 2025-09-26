@@ -62,7 +62,6 @@ const AdminPage = () => {
     e.preventDefault();
     createAdminMutation.mutate(adminForm, {
       onSuccess: (data) => {
-        // Store admin data in localStorage similar to login
         localStorage.setItem('token', data.token);
         localStorage.setItem('userId', data.userId);
         localStorage.setItem('username', data.username);
@@ -81,7 +80,6 @@ const AdminPage = () => {
       onSuccess: () => {
         setPositionForm({ title: '' });
         setShowCreatePositionForm(false);
-        // Force refetch positions data
         queryClient.invalidateQueries({ queryKey: ['positions'] });
       }
     });

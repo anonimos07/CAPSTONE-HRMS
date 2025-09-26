@@ -38,13 +38,13 @@ const HrPage = () => {
   const [selectedUserId, setSelectedUserId] = useState(null)
   const [selectedUserRole, setSelectedUserRole] = useState(null)
 
-  // Pagination states
+
   const [manageRequestsPage, setManageRequestsPage] = useState(1)
   const [myRequestsPage, setMyRequestsPage] = useState(1)
   const [notificationsPage, setNotificationsPage] = useState(1)
   const notificationsPerPage = 5
 
-  // Delete modal state
+
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     notificationId: null,
@@ -59,28 +59,28 @@ const HrPage = () => {
   const { createHRMutation, createEmployeeMutation } = useHr()
   const { data: positions = [], createPositionMutation } = usePositions()
 
-  // Notification hooks
+
   const { data: notifications = [], isLoading: notificationsLoading } = useUserNotifications()
   const markAsReadMutation = useMarkNotificationAsRead()
   const markAllAsReadMutation = useMarkAllNotificationsAsRead()
   const deleteMutation = useDeleteNotification()
 
-  // Get current user ID from localStorage
+ 
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}")
   const employeeId = currentUser.userId
 
-  // Check if user can manage leave requests (HR-Manager or HR-Supervisor only)
+ 
   const canManageLeaveRequests = () => {
     const userPosition = localStorage.getItem("position")
     return userPosition === "HR-Manager" || userPosition === "HR-Supervisor"
   }
 
-  // Check if user can access leave management page (all HR users)
+  
   const canAccessLeaveManagement = () => {
     return currentUser.role === "HR"
   }
 
-  // Form states
+  
   const [hrForm, setHrForm] = useState({
     username: "",
     password: "",
@@ -146,14 +146,13 @@ const HrPage = () => {
 
   const handleLogout = () => {
     setIsDropdownOpen(false)
-    // Clear all TanStack Query cache when logging out
+
     queryClient.clear()
     clearNotificationCache()
     localStorage.clear()
     window.location.href = "/login"
   }
 
-  // Listen for header bell click event
   useEffect(() => {
     const handleSetActiveSection = (event) => {
       setActiveSection(event.detail)
@@ -165,11 +164,10 @@ const HrPage = () => {
     }
   }, [])
 
-  // Notification handlers
+
   const handleMarkAsRead = (notificationId) => {
     markAsReadMutation.mutate(notificationId, {
       onSuccess: () => {
-        // Optionally show success feedback
         console.log('Notification marked as read successfully');
       },
       onError: (error) => {
@@ -200,7 +198,6 @@ const HrPage = () => {
   const confirmDelete = () => {
     deleteMutation.mutate(deleteModal.notificationId, {
       onSuccess: () => {
-        // If we deleted the last item on the current page and we're not on page 1
         if (paginatedNotifications.length === 1 && notificationsPage > 1) {
           setNotificationsPage(notificationsPage - 1)
         }
@@ -217,11 +214,9 @@ const HrPage = () => {
     setDeleteModal({ isOpen: false, notificationId: null, notificationTitle: '' })
   }
 
-  // Use notifications directly from API
   const visibleNotifications = notifications || []
   const unreadCount = visibleNotifications.filter((notification) => !notification.read).length
 
-  // Notification icon and color helpers
   const getNotificationIcon = (type) => {
     switch (type) {
       case "ANNOUNCEMENT":
@@ -256,14 +251,14 @@ const HrPage = () => {
     }
   }
 
-  // Pagination logic for notifications
+
   const totalNotifications = visibleNotifications.length
   const totalPages = Math.ceil(totalNotifications / notificationsPerPage)
   const startIndex = (notificationsPage - 1) * notificationsPerPage
   const endIndex = startIndex + notificationsPerPage
   const paginatedNotifications = visibleNotifications.slice(startIndex, endIndex)
 
-  // Custom pagination function
+
   const CustomPagination = ({ currentPage, totalPages, onPageChange }) => {
     if (totalPages <= 1) return null
 
@@ -306,25 +301,25 @@ const HrPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50">
       <Header userRole="HR" />
 
-      {/* Main Content */}
-      <main className="flex gap-8 px-8 py-8">
-        {/* Left Sidebar */}
-        <aside className="w-1/4">
-          {/* User Card */}
 
-          {/* Timelog Widget */}
+      <main className="flex gap-8 px-8 py-8">
+
+        <aside className="w-1/4">
+     
+
+       
           <TimelogWidget />
 
           {/* Spacing */}
           <div className="h-4"></div>
 
-          {/* Philippine Holidays Calendar */}
+      
           <PhilippineHolidaysCalendar />
         </aside>
 
-        {/* Center Content */}
+   
         <section className="flex-1">
-          {/* Dashboard Section */}
+     
           {activeSection === "dashboard" && (
             <>
               <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl p-8 mb-6 relative border border-red-100">
@@ -392,7 +387,7 @@ const HrPage = () => {
                     )}
                   </button>
                   
-                  {/* Centered Create Notifications button */}
+             
                   <div className="col-span-2 flex justify-center">
                     <a
                       href="/hr/notifications"
@@ -555,7 +550,6 @@ const HrPage = () => {
                 {managementTab === "users" && (
                   <div className="space-y-6">
                     <div className="flex justify-between items-center">
-                      {/* <h2 className="text-2xl font-bold text-[#8b1e3f]">User Management</h2> */}
                       <div className="flex space-x-3">
                         <button
                           onClick={() => setShowCreateHRForm(true)}
@@ -637,7 +631,6 @@ const HrPage = () => {
           {/* Notifications Section */}
           {activeSection === "notifications" && (
             <div className="space-y-6">
-              {/* Add Back to Dashboard button */}
               <button
                 onClick={() => setActiveSection("dashboard")}
                 className="flex items-center gap-2 text-[#8b1e3f] hover:text-[#8b1e3f]/80 font-semibold transition-colors mb-4"
@@ -944,7 +937,6 @@ const HrPage = () => {
       {deleteModal.isOpen && (
         <div className="fixed inset-0 bg-black/30 backdrop-transparent-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-            {/* Warning Icon */}
             <div className="flex justify-center mb-4">
               <div className="relative">
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center animate-pulse">
@@ -954,17 +946,14 @@ const HrPage = () => {
               </div>
             </div>
 
-            {/* Title */}
             <h3 className="text-lg font-semibold text-gray-900 text-center mb-2">
               Delete notification
             </h3>
 
-            {/* Message */}
             <p className="text-gray-600 text-center mb-6">
               Are you sure you want to delete this notification? This action cannot be undone.
             </p>
 
-            {/* Action Buttons */}
             <div className="flex space-x-3">
               <button
                 onClick={cancelDelete}

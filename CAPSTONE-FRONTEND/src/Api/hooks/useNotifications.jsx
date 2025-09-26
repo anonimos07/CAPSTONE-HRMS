@@ -15,15 +15,15 @@ import {
 export const useUserNotifications = () => {
   const userId = localStorage.getItem('userId');
   
-  console.log('DEBUG: useUserNotifications - userId from localStorage:', userId);
+  // console.log('DEBUG: useUserNotifications - userId from localStorage:', userId);
   
   return useQuery({
     queryKey: ['notifications', 'user', userId],
     queryFn: () => {
-      console.log('DEBUG: Calling getUserNotifications API');
+      // console.log('DEBUG: Calling getUserNotifications API');
       return getUserNotifications();
     },
-    enabled: !!userId, // Only run query if userId exists
+    enabled: !!userId, 
     onSuccess: (data) => {
       console.log('DEBUG: getUserNotifications success:', data);
     },
@@ -39,7 +39,7 @@ export const useUnreadNotifications = () => {
   return useQuery({
     queryKey: ['notifications', 'unread', userId],
     queryFn: getUnreadNotifications,
-    enabled: !!userId, // Only run query if userId exists
+    enabled: !!userId, 
   });
 };
 
@@ -49,8 +49,8 @@ export const useUnreadNotificationCount = () => {
   return useQuery({
     queryKey: ['notifications', 'unread', 'count', userId],
     queryFn: getUnreadNotificationCount,
-    refetchInterval: 30000, // Refetch every 30 seconds
-    enabled: !!userId, // Only run query if userId exists
+    refetchInterval: 30000, 
+    enabled: !!userId,
   });
 };
 
@@ -60,7 +60,7 @@ export const useAllNotifications = () => {
   return useQuery({
     queryKey: ['notifications', 'all', userId],
     queryFn: getAllNotifications,
-    enabled: !!userId, // Only run query if userId exists
+    enabled: !!userId, 
   });
 };
 
@@ -72,7 +72,6 @@ export const useMarkNotificationAsRead = () => {
   return useMutation({
     mutationFn: markNotificationAsRead,
     onSuccess: (data, notificationId) => {
-      // Update user notifications cache
       queryClient.setQueryData(['notifications', 'user', userId], (old) => {
         if (!old) return old;
         return old.map(notification => 
@@ -82,13 +81,13 @@ export const useMarkNotificationAsRead = () => {
         );
       });
 
-      // Update unread notifications cache
+ 
       queryClient.setQueryData(['notifications', 'unread', userId], (old) => {
         if (!old) return old;
         return old.filter(notification => notification.notificationId !== notificationId);
       });
 
-      // Invalidate and refetch all notification queries
+   
       queryClient.invalidateQueries({ queryKey: ['notifications', 'user', userId] });
       queryClient.invalidateQueries({ queryKey: ['notifications', 'unread', userId] });
       queryClient.invalidateQueries({ queryKey: ['notifications', 'unread', 'count', userId] });
@@ -106,16 +105,16 @@ export const useMarkAllNotificationsAsRead = () => {
   return useMutation({
     mutationFn: markAllNotificationsAsRead,
     onSuccess: () => {
-      // Update user notifications cache - mark all as read
+
       queryClient.setQueryData(['notifications', 'user', userId], (old) => {
         if (!old) return old;
         return old.map(notification => ({ ...notification, read: true }));
       });
 
-      // Clear unread notifications cache
+
       queryClient.setQueryData(['notifications', 'unread', userId], []);
 
-      // Invalidate and refetch all notification queries
+
       queryClient.invalidateQueries({ queryKey: ['notifications', 'user', userId] });
       queryClient.invalidateQueries({ queryKey: ['notifications', 'unread', userId] });
       queryClient.invalidateQueries({ queryKey: ['notifications', 'unread', 'count', userId] });
@@ -133,7 +132,6 @@ export const useDeleteNotification = () => {
   return useMutation({
     mutationFn: deleteNotification,
     onSuccess: () => {
-      // Invalidate all notification-related queries for this specific user
       queryClient.invalidateQueries({ queryKey: ['notifications', 'user', userId] });
       queryClient.invalidateQueries({ queryKey: ['notifications', 'unread', userId] });
       queryClient.invalidateQueries({ queryKey: ['notifications', 'unread', 'count', userId] });
@@ -153,13 +151,12 @@ export const useSendNotification = () => {
       }
     },
     onSuccess: () => {
-      // Invalidate notifications for all users since we don't know who received them
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
   });
 };
 
-// Utility function to clear notification cache when switching users
+
 export const useClearNotificationCache = () => {
   const queryClient = useQueryClient();
   

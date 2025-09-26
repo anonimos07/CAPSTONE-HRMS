@@ -32,7 +32,6 @@ const CameraCapture = ({ onCapture, onCancel, isOpen }) => {
       setIsConfirming(true);
       try {
         await onCapture(capturedImage);
-        // Don't reset captured image here - let parent component handle cleanup
       } catch (err) {
         setError('Failed to confirm photo: ' + err.message);
       } finally {
@@ -52,7 +51,7 @@ const CameraCapture = ({ onCapture, onCancel, isOpen }) => {
     onCancel();
   };
 
-  // Reset state when modal closes
+ 
   React.useEffect(() => {
     if (!isOpen) {
       setCapturedImage(null);

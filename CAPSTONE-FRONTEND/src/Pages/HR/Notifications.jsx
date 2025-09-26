@@ -11,15 +11,15 @@ const Notifications = () => {
   const [formData, setFormData] = useState({
     title: "",
     message: "",
-    recipient: "all", // 'all' or 'individual'
+    recipient: "all", 
     userId: "",
   })
   const [currentPage, setCurrentPage] = useState(1)
   const [toast, setToast] = useState({ show: false, message: "", type: "" })
   const [filters, setFilters] = useState({
-    sortOrder: "desc", // 'asc' or 'desc'
-    type: "all", // 'all', 'ANNOUNCEMENT', 'JOB_APPLICATION'
-    month: "all" // 'all', '1', '2', ... '12'
+    sortOrder: "desc",
+    type: "all",
+    month: "all" 
   })
   
   const notificationsPerPage = 5
@@ -31,7 +31,7 @@ const Notifications = () => {
 
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => ({ ...prev, [filterName]: value }))
-    setCurrentPage(1) // Reset to first page when filters change
+    setCurrentPage(1)
   }
 
   const handleSendNotification = (e) => {
@@ -73,15 +73,15 @@ const Notifications = () => {
     }
   }
 
-  // Filter and sort notifications
+ 
   const filteredNotifications = notifications
     .filter(notification => {
-      // Filter by type
+  
       if (filters.type !== "all" && notification.type !== filters.type) {
         return false
       }
       
-      // Filter by month
+  
       if (filters.month !== "all") {
         const notificationMonth = new Date(notification.createdAt).getMonth() + 1
         if (notificationMonth !== parseInt(filters.month)) {
@@ -92,7 +92,7 @@ const Notifications = () => {
       return true
     })
     .sort((a, b) => {
-      // Sort by date
+   
       if (filters.sortOrder === "asc") {
         return new Date(a.createdAt) - new Date(b.createdAt)
       } else {
@@ -100,7 +100,7 @@ const Notifications = () => {
       }
     })
 
-  // Calculate pagination
+
   const totalPages = Math.ceil(filteredNotifications.length / notificationsPerPage)
   const indexOfLastNotification = currentPage * notificationsPerPage
   const indexOfFirstNotification = indexOfLastNotification - notificationsPerPage
@@ -123,7 +123,7 @@ const Notifications = () => {
     }
   }
 
-  // Get month names for filter
+  
   const monthOptions = [
     { value: "all", label: "All Months" },
     { value: "1", label: "January" },

@@ -15,7 +15,6 @@ const EmployeeProfile = () => {
 
   const handleLogout = () => {
     setIsDropdownOpen(false);
-    // Clear all TanStack Query cache when logging out
     queryClient.clear();
     clearNotificationCache();
     localStorage.clear();
@@ -44,21 +43,21 @@ const EmployeeProfile = () => {
     enabled: !!token && !!userId,
   });
 
-  // Process data with useEffect to ensure it runs every time data changes
+
   useEffect(() => {
    
     if (data && !isLoading) {
       console.log('Processing data...', data);
       console.log('Current token:', localStorage.getItem('token'));
       
-      // Check if it's an empty details response
+
       if (data.message === 'Employee details not yet created') {
         console.log('Employee details not created yet');
         setIsEmptyDetails(true);
         return;
       }
       
-      // Try multiple possible response structures
+
       let employeeData = data;
   
       const newFormState = {
@@ -75,7 +74,7 @@ const EmployeeProfile = () => {
     }
   }, [data, isLoading]);
 
-  // Mutation for update
+
   const updateMutation = useMutation({
     mutationFn: updateUserProfile,
     onSuccess: (responseData) => {
@@ -130,7 +129,6 @@ const EmployeeProfile = () => {
       <Header userRole="EMPLOYEE" />
 
       <div className="flex px-8 py-8">
-        {/* Sidebar */}
         <aside className="w-1/4 mr-8">
           {/* Profile Card */}
           <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl mb-6 overflow-hidden border border-red-100">
@@ -192,7 +190,7 @@ const EmployeeProfile = () => {
           </div>
         </aside>
 
-        {/* Main Content */}
+
         <main className="flex-1">
           {/* Profile Form Card */}
           <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl p-8 border border-red-100 mb-8">
@@ -311,7 +309,6 @@ const EmployeeProfile = () => {
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4 border border-red-100">
-            {/* Icon */}
             <div className="flex justify-center mb-6">
               <div className="w-16 h-16 bg-[#8b1e3f]/10 rounded-full flex items-center justify-center">
                 <svg className="w-8 h-8 text-[#8b1e3f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -320,17 +317,15 @@ const EmployeeProfile = () => {
               </div>
             </div>
 
-            {/* Title */}
             <h3 className="text-xl font-bold text-[#8b1e3f] text-center mb-4">
               Confirm Save Changes
             </h3>
 
-            {/* Message */}
             <p className="text-gray-600 text-center mb-8">
               Are you sure you want to save the changes to your profile? This will update your personal information.
             </p>
 
-            {/* Action Buttons */}
+
             <div className="flex space-x-4">
               <button
                 onClick={cancelSave}

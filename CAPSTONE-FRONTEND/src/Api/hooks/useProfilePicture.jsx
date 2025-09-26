@@ -16,9 +16,9 @@ export const useProfilePicture = () => {
   const profilePictureQuery = useQuery({
     queryKey: ['profilePicture', userId],
     queryFn: getProfilePicture,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled: !!token && !!userId, // Only run query if user is authenticated
-    retry: false, // Don't retry on authentication errors
+    staleTime: 5 * 60 * 1000, 
+    enabled: !!token && !!userId, 
+    retry: false,
   });
 
   // Mutation to upload profile picture
@@ -63,9 +63,9 @@ export const useProfilePictureByUserId = (userId) => {
   const profilePictureQuery = useQuery({
     queryKey: ['profilePicture', userId],
     queryFn: () => getProfilePictureByUserId(userId),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled: !!userId, // Only run query if userId is provided
-    retry: false, // Don't retry on authentication errors
+    staleTime: 5 * 60 * 1000, 
+    enabled: !!userId, 
+    retry: false, 
   });
 
   return {
@@ -75,19 +75,19 @@ export const useProfilePictureByUserId = (userId) => {
   };
 };
 
-// Hook for getting all users' profile pictures (for HR/Admin use in user management)
+
 export const useAllUsersProfilePictures = () => {
   const profilePicturesQuery = useQuery({
     queryKey: ['allProfilePictures'],
     queryFn: getAllUsersProfilePictures,
-    staleTime: 10 * 60 * 1000, // 10 minutes - longer cache for bulk data
-    retry: false, // Don't retry on authentication errors
+    staleTime: 10 * 60 * 1000, 
+    retry: false,
   });
 
   // Debug logging
-  console.log('Profile Pictures Query Data:', profilePicturesQuery.data);
-  console.log('Profile Pictures Query Error:', profilePicturesQuery.error);
-  console.log('Profile Pictures Query Loading:', profilePicturesQuery.isLoading);
+  // console.log('Profile Pictures Query Data:', profilePicturesQuery.data);
+  // console.log('Profile Pictures Query Error:', profilePicturesQuery.error);
+  // console.log('Profile Pictures Query Loading:', profilePicturesQuery.isLoading);
 
   return {
     profilePictures: profilePicturesQuery.data?.profilePictures || {},

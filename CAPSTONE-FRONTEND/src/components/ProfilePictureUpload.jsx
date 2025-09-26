@@ -33,26 +33,26 @@ const ProfilePictureUpload = ({ size = 'large' }) => {
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
-      // Validate file type
+   
       if (!file.type.startsWith('image/')) {
         alert('Please select an image file');
         return;
       }
 
-      // Validate file size (max 5MB)
+  
       if (file.size > 5 * 1024 * 1024) {
         alert('File size must be less than 5MB');
         return;
       }
 
-      // Create preview
+
       const reader = new FileReader();
       reader.onload = (e) => {
         setPreviewUrl(e.target.result);
       };
       reader.readAsDataURL(file);
 
-      // Upload file
+   
       uploadProfilePicture(file);
     }
   };
@@ -73,10 +73,10 @@ const ProfilePictureUpload = ({ size = 'large' }) => {
     if (profilePicture?.profilePictureUrl) {
       return getProfilePictureFullUrl(profilePicture.profilePictureUrl);
     }
-    return getProfilePictureFullUrl(null); // Returns SVG default image
+    return getProfilePictureFullUrl(null);
   };
 
-  // Don't render if there's an authentication error
+
   if (error?.response?.status === 401 || error?.response?.status === 403) {
     return (
       <div className={`${sizeClasses[size]} relative rounded-full overflow-hidden border-4 border-gray-200 bg-gray-100`}>
@@ -129,7 +129,7 @@ const ProfilePictureUpload = ({ size = 'large' }) => {
       
       </div>
 
-      {/* Error Messages */}
+   
       {uploadError && (
         <div className="text-red-600 text-sm text-center">
           Error uploading: {uploadError.response?.data?.message || uploadError.message}
@@ -142,7 +142,7 @@ const ProfilePictureUpload = ({ size = 'large' }) => {
         </div>
       )}
 
-      {/* Hidden File Input */}
+    
       <input
         ref={fileInputRef}
         type="file"
@@ -151,7 +151,7 @@ const ProfilePictureUpload = ({ size = 'large' }) => {
         className="hidden"
       />
       
-      {/* Upload Instructions */}
+ 
      
     </div>
   );

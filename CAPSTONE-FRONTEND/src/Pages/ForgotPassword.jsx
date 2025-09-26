@@ -28,7 +28,6 @@ const ForgotPassword = () => {
   if (isSubmitted) {
     return (
       <div className="min-h-screen relative overflow-hidden">
-        {/* Background elements */}
         <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-purple-50">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/30 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-300/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -42,7 +41,6 @@ const ForgotPassword = () => {
                   <CheckCircle className="h-8 w-8 text-green-600" />
                 </div>
 
-                 {/*Change color from purple to violet-red (#8b1e3f)*/}
                 <CardTitle className="text-2xl font-bold text-[#8b1e3f] mb-2">Email Sent!</CardTitle> 
                 <CardDescription className="text-[#8b1e3f] font-medium">
                   Check your inbox for password reset instructions
@@ -60,7 +58,7 @@ const ForgotPassword = () => {
                   <div className="pt-4">
                     <Button
                       onClick={() => navigate("/login")} 
-                      className="w-full h-12 bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white font-semibold" //Change color from purple to violet-red (#8b1e3f)
+                      className="w-full h-12 bg-[#8b1e3f] hover:bg-[#8b1e3f]/70 text-white font-semibold" 
                     >
                       Back to Login
                     </Button>
@@ -72,7 +70,7 @@ const ForgotPassword = () => {
                         setIsSubmitted(false)
                         setIdentifier("")
                       }}
-                      className="w-full h-12 border-[#8b1e3f] text-[#8b1e3f] hover:bg-[#8b1e3f]/70" //Change color from purple to violet-red (#8b1e3f)
+                      className="w-full h-12 border-[#8b1e3f] text-[#8b1e3f] hover:bg-[#8b1e3f]/70" 
                     >
                       Send Another Email
                     </Button>

@@ -7,7 +7,7 @@ import {
   testAdmin,
 } from '../admin';
 
-// Combined admin hook
+
 export const useAdmin = () => {
   const queryClient = useQueryClient();
   
@@ -49,7 +49,7 @@ export const useAdmin = () => {
   };
 };
 
-// Individual hooks for backward compatibility
+
 export const useAdminLogin = () => {
   return useMutation({
     mutationFn: adminLogin,

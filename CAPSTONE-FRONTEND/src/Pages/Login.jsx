@@ -19,7 +19,7 @@ const LoginPage = () => {
   const [isVisible, setIsVisible] = useState(false)
   const [isExiting, setIsExiting] = useState(false)
 
-  // 🔹 Toast State
+
   const [toast, setToast] = useState({ show: false, message: "", type: "" })
   const showToast = (message, type = "error") => {
     setToast({ show: true, message, type })
@@ -77,7 +77,6 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* 🔹 Toast Notification */}
       {toast.show && (
         <div className={`fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 ${
           toast.type === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
@@ -86,7 +85,7 @@ const LoginPage = () => {
         </div>
       )}
 
-      {/* Left side - EMP.jpg background with diamond cuts */}
+
       <div className="absolute inset-0 flex">
         <div className="flex-1 relative">
           <div
@@ -104,7 +103,6 @@ const LoginPage = () => {
           ></div>
         </div>
 
-        {/* Right side - login form area */}
         <div className="flex-1 relative">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50/80 via-white to-indigo-50/60">
             <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl animate-pulse"></div>

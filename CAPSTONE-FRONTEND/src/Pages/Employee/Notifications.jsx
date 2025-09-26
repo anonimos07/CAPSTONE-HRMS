@@ -16,25 +16,25 @@ const Notifications = () => {
   const markAllAsReadMutation = useMarkAllNotificationsAsRead();
   const deleteMutation = useDeleteNotification();
 
-  // Pagination state
+ 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // Delete modal state
+
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     notificationId: null,
     notificationTitle: ''
   });
 
-  // Calculate pagination values
+
   const totalItems = allNotifications.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentNotifications = allNotifications.slice(startIndex, endIndex);
 
-  // Pagination handlers
+
   const goToPage = (page) => {
     setCurrentPage(page);
   };
@@ -66,7 +66,7 @@ const Notifications = () => {
   const confirmDelete = () => {
     deleteMutation.mutate(deleteModal.notificationId, {
       onSuccess: () => {
-        // If we deleted the last item on the current page and we're not on page 1
+       
         if (currentNotifications.length === 1 && currentPage > 1) {
           setCurrentPage(currentPage - 1);
         }
@@ -97,7 +97,7 @@ const Notifications = () => {
     }
   };
 
-  // Generate page numbers for pagination
+
   const getPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;

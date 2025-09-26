@@ -39,7 +39,7 @@ const TimelogManagement = () => {
 
   const handleSearch = () => {
     console.log('Search triggered with:', { search, startDate, endDate });
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1); 
     refetch();
   };
 
@@ -170,7 +170,7 @@ const TimelogManagement = () => {
             value={startDate}
             onChange={(e) => {
               setStartDate(e.target.value);
-              setEndDate(''); // Clear end date when start date changes
+              setEndDate(''); 
             }}
             className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8b1e3f] focus:border-transparent"
           />
@@ -420,7 +420,7 @@ const TimelogManagement = () => {
   );
 };
 
-// Edit Timelog Modal Component - UPDATED
+// Edit Timelog 
 const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
   const [adjustedTimeIn, setAdjustedTimeIn] = useState('');
   const [adjustedTimeOut, setAdjustedTimeOut] = useState('');
@@ -428,7 +428,7 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
   const [reason, setReason] = useState('');
   const [isPending, setIsPending] = useState(false);
 
-  // Helper function to format datetime for local timezone
+
   const formatDateTimeLocal = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -450,7 +450,7 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
   }, [timelog]);
 
   const handleSave = () => {
-    if (isPending || isLoading) return; // Prevent spam clicking
+    if (isPending || isLoading) return;
     
     setIsPending(true);
     const adjustmentData = {
@@ -463,7 +463,7 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
     onSave(adjustmentData);
   };
 
-  // Reset isPending when modal closes or loading changes
+
   React.useEffect(() => {
     if (!isOpen || !isLoading) {
       setIsPending(false);
@@ -572,7 +572,7 @@ const EditTimelogModal = ({ timelog, isOpen, onClose, onSave, isLoading }) => {
   );
 };
 
-// Photo Verification Modal Component - UPDATED
+
 const PhotoVerificationModal = ({ photo, photoType, isOpen, onClose }) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);

@@ -50,7 +50,7 @@ export const deleteNotification = async (notificationId) => {
   return res.data;
 };
 
-// Get all notifications (admin function)
+
 export const getAllNotifications = async () => {
   const res = await API.get('/all');
   return res.data;

@@ -2,9 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { forgotPassword, resetPassword, changePassword, validateResetToken } from '../Api/passwordReset';
 import { toast } from 'sonner';
 
-/**
- * Hook for forgot password functionality
- */
+
 export const useForgotPassword = () => {
   return useMutation({
     mutationFn: forgotPassword,
@@ -18,9 +16,6 @@ export const useForgotPassword = () => {
   });
 };
 
-/**
- * Hook for resetting password with token
- */
 export const useResetPassword = () => {
   return useMutation({
     mutationFn: ({ token, newPassword, confirmPassword }) => 

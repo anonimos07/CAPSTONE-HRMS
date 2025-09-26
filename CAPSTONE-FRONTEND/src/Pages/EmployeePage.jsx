@@ -39,12 +39,12 @@ const EmployeePage = () => {
   const dropdownRef = useRef(null);
   const { data: announcements = [], isLoading } = useActiveAnnouncements();
 
-  // Get current user ID from localStorage
+ 
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const employeeId = currentUser.userId;
   
 
-  // Close dropdowns when clicking outside
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -58,7 +58,7 @@ const EmployeePage = () => {
   }, []);
 
   const handleLogout = () => {
-    // Clear all TanStack Query cache when logging out
+
     queryClient.clear();
     clearNotificationCache();
     localStorage.clear();
@@ -124,13 +124,13 @@ const EmployeePage = () => {
     { label: 'IT Helpdesk', icon: <FiSettings className="w-4 h-4" /> }
   ];
 
-  // Pagination logic
+ 
   const totalPages = Math.ceil(announcements.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentAnnouncements = announcements.slice(startIndex, endIndex);
 
-  // Pagination handlers
+
   const handlePreviousPage = () => {
     setCurrentPage(prev => Math.max(prev - 1, 1));
   };
@@ -139,7 +139,7 @@ const EmployeePage = () => {
     setCurrentPage(prev => Math.min(prev + 1, totalPages));
   };
 
-  // Reset to first page when switching to community tab
+ 
   useEffect(() => {
     if (activeTab === 'community') {
       setCurrentPage(1);
@@ -148,12 +148,10 @@ const EmployeePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-50 relative overflow-hidden">
-      {/* Decorative background elements */}
       <div className="absolute inset-0">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/30 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-300/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
         
-        {/* Grid pattern overlay */}
         <div className="absolute inset-0 opacity-[0.02]">
           <div
             className="h-full w-full"
@@ -168,27 +166,27 @@ const EmployeePage = () => {
         </div>
       </div>
 
-      {/* Main content */}
+     
       <div className="relative z-10">
         <Header userRole="EMPLOYEE" />
 
-        {/* Main Content */}
+       
         <main className="px-8 py-6 grid grid-cols-3 gap-6">
-          {/* Left Column */}
+        
           <section className="col-span-1 flex flex-col gap-6">
-            {/* User Card */}
+       
           
-            {/* Timelog Widget */}
+           
             <TimelogWidget />
 
-            {/* Philippine Holidays Calendar */}
+         
             <PhilippineHolidaysCalendar />
 
           </section>
 
-          {/* Center/Right Column */}
+       
           <section className="col-span-2 flex flex-col gap-6">
-            {/* Employee Community & Leave Request Tabs */}
+        
             <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm p-6 border border-[#8b1e3f]/10">
               <div className="flex gap-8 border-b border-[#8b1e3f]/10 pb-3 mb-4">
                 <button 
@@ -212,7 +210,7 @@ const EmployeePage = () => {
                   Leave Requests
                 </button>
               </div>
-              {/* Tab Content */}
+          
               {activeTab === 'community' && (
                 <>
                   <div className="flex gap-2 mb-6">
@@ -249,7 +247,7 @@ const EmployeePage = () => {
                     )}
                   </div>
 
-                  {/* Pagination Controls */}
+          
                   {announcements.length > itemsPerPage && (
                     <div className="flex items-center justify-between mt-6 pt-4 border-t border-[#8b1e3f]/10">
                       <div className="text-sm text-gray-600">

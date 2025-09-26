@@ -27,10 +27,10 @@ const TimelogPage = () => {
   const { data: monthlyTimelogs, isLoading: monthlyLoading } = useQuery({
     queryKey: ['monthly-timelogs', selectedYear, selectedMonth],
     queryFn: () => getMonthlyTimelogs(selectedYear, selectedMonth),
-    staleTime: 0, // Always consider stale to catch HR adjustments immediately
-    cacheTime: 1 * 60 * 1000, // 1 minute
-    refetchOnWindowFocus: true, // Refetch when user returns to tab
-    refetchInterval: 30 * 1000, // Refetch every 30 seconds
+    staleTime: 0,
+    cacheTime: 1 * 60 * 1000, 
+    refetchOnWindowFocus: true,
+    refetchInterval: 30 * 1000,
   });
 
   // Fetch total hours for current month
@@ -41,10 +41,10 @@ const TimelogPage = () => {
       const endDate = new Date(selectedYear, selectedMonth, 0, 23, 59, 59).toISOString();
       return getTotalWorkedHours(startDate, endDate);
     },
-    staleTime: 0, // Always consider stale to catch HR adjustments immediately
-    cacheTime: 1 * 60 * 1000, // 1 minute
-    refetchOnWindowFocus: true, // Refetch when user returns to tab
-    refetchInterval: 30 * 1000, // Refetch every 30 seconds
+    staleTime: 0, 
+    cacheTime: 1 * 60 * 1000,
+    refetchOnWindowFocus: true, 
+    refetchInterval: 30 * 1000, 
   });
 
   const formatDate = (dateString) => {
@@ -59,16 +59,13 @@ const TimelogPage = () => {
   const formatTime = (dateString) => {
     if (!dateString) return '--:--';
     
-    // Handle LocalDateTime from Spring Boot backend for Philippines timezone (UTC+8)
     let date;
     if (dateString.includes('T') && !dateString.includes('Z') && !dateString.includes('+')) {
-      // LocalDateTime format from Spring Boot - treat as UTC and convert to Philippines time
-      date = new Date(dateString + 'Z'); // Add Z to indicate UTC
-    } else {
+      date = new Date(dateString + 'Z'); 
       date = new Date(dateString);
     }
     
-    // Format for Philippines locale
+
     return date.toLocaleTimeString('en-PH', {
       hour: '2-digit',
       minute: '2-digit',
@@ -115,13 +112,13 @@ const TimelogPage = () => {
     });
   };
 
-  // Pagination logic
+ 
   const totalPages = Math.ceil((monthlyTimelogs?.length || 0) / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentTimelogs = monthlyTimelogs?.slice(startIndex, endIndex) || [];
 
-  // Pagination handlers
+
   const handlePreviousPage = () => {
     setCurrentPage(prev => Math.max(prev - 1, 1));
   };
@@ -130,7 +127,7 @@ const TimelogPage = () => {
     setCurrentPage(prev => Math.min(prev + 1, totalPages));
   };
 
-  // Reset to first page when month/year changes
+
   React.useEffect(() => {
     setCurrentPage(1);
   }, [selectedMonth, selectedYear]);
@@ -365,7 +362,7 @@ const TimelogPage = () => {
   );
 };
 
-// Timelog Edit Request Modal Component
+// Timelog Edit Request Modal
 const TimelogEditRequestModal = ({ timelog, hrStaff, isOpen, onClose, onSubmit, isLoading }) => {
   const [reason, setReason] = useState('');
   const [assignedHrId, setAssignedHrId] = useState('');
@@ -374,11 +371,11 @@ const TimelogEditRequestModal = ({ timelog, hrStaff, isOpen, onClose, onSubmit, 
   const [requestedBreakDuration, setRequestedBreakDuration] = useState('');
   const [isPending, setIsPending] = useState(false);
 
-  // Helper function to format datetime for local timezone
+
   const formatDateTimeLocal = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    // Ensure we're working with local timezone
+
     const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
     const year = localDate.getFullYear();
     const month = String(localDate.getMonth() + 1).padStart(2, '0');
@@ -398,7 +395,7 @@ const TimelogEditRequestModal = ({ timelog, hrStaff, isOpen, onClose, onSubmit, 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (isPending || isLoading) return; // Prevent spam clicking
+    if (isPending || isLoading) return;
     
     if (!reason.trim() || !assignedHrId) {
       alert('Please fill in all required fields');
@@ -415,7 +412,7 @@ const TimelogEditRequestModal = ({ timelog, hrStaff, isOpen, onClose, onSubmit, 
     });
   };
 
-  // Reset isPending when modal closes or loading changes
+ 
   React.useEffect(() => {
     if (!isOpen || !isLoading) {
       setIsPending(false);

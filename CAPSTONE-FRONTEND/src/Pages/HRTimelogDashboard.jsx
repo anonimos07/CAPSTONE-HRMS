@@ -48,7 +48,7 @@ const HRTimelogDashboard = () => {
     queryFn: getIncompleteTimelogs,
   });
 
-  // Adjust timelog mutation
+  // Adjust timelog 
   const adjustTimelogMutation = useMutation({
     mutationFn: adjustTimelog,
     onSuccess: () => {
@@ -63,7 +63,7 @@ const HRTimelogDashboard = () => {
     },
   });
 
-  // Delete timelog mutation
+  // Delete timelog 
   const deleteTimelogMutation = useMutation({
     mutationFn: deleteTimelog,
     onSuccess: () => {
@@ -131,13 +131,13 @@ const HRTimelogDashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+    
       <div>
         <h1 className="text-2xl font-bold text-gray-900">HR Timelog Dashboard</h1>
         <p className="text-gray-600">Monitor and manage employee time tracking</p>
       </div>
 
-      {/* Stats Cards */}
+
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center space-x-2">
@@ -179,7 +179,6 @@ const HRTimelogDashboard = () => {
 
       {/* Current Status */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Clocked In Users */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="p-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">Currently Working</h3>

@@ -103,7 +103,7 @@ const ResumeReview = () => {
               <div
                 className={`relative border-2 border-dashed rounded-lg p-8 transition-colors ${
                   dragActive
-                    ? "border-[#8b1e3f] bg-red-50" // Updated drag active colors to violet-red theme
+                    ? "border-[#8b1e3f] bg-red-50" 
                     : selectedFile
                       ? "border-green-400 bg-green-50"
                       : "border-gray-300 hover:border-gray-400"

@@ -19,14 +19,14 @@ const UserList = ({ onViewProfile }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [pendingUserId, setPendingUserId] = useState(null);
 
-  // Fetch all profile pictures using bulk API
+
   const { profilePictures, isLoading: profilePicturesLoading } = useAllUsersProfilePictures();
 
-  // Debug: Log profile pictures data
+
   console.log('Profile Pictures Data:', profilePictures);
   console.log('Profile Pictures Loading:', profilePicturesLoading);
 
-  // Fetch users on component mount and when search term changes
+ 
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -36,7 +36,7 @@ const UserList = ({ onViewProfile }) => {
       if (searchTerm !== '') {
         fetchUsers();
       }
-    }, 500); // Debounce search
+    }, 500);
 
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
@@ -47,7 +47,7 @@ const UserList = ({ onViewProfile }) => {
     try {
       const response = await getAllUsers(searchTerm);
       setUsers(response.users || []);
-      setCurrentPage(1); // Reset to first page when new search
+      setCurrentPage(1);
     } catch (err) {
       setError('Failed to fetch users. Please try again.');
       console.error('Error fetching users:', err);
@@ -63,7 +63,6 @@ const UserList = ({ onViewProfile }) => {
     fetchUsers();
   };
 
-  // Get current users for pagination
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
@@ -101,14 +100,12 @@ const UserList = ({ onViewProfile }) => {
   const handleAccountStatusChanged = async (userId, newStatus) => {
     setPendingUserId(userId);
     try {
-      // Call the appropriate API based on the new status
       if (newStatus) {
         await enableUserAccount(userId);
       } else {
         await disableUserAccount(userId);
       }
       
-      // Update local state only after successful API call
       setUsers(prevUsers => 
         prevUsers.map(user => 
           user.userId === userId 
@@ -119,7 +116,6 @@ const UserList = ({ onViewProfile }) => {
       
       handleCloseStatusModal();
       
-      // Show success message
       setSuccessMessage(`User account ${newStatus ? 'enabled' : 'disabled'} successfully!`);
       setShowSuccessModal(true);
       

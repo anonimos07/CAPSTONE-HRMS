@@ -17,7 +17,7 @@ export const useSubmitLeaveRequest = () => {
   return useMutation({
     mutationFn: submitLeaveRequest,
     onSuccess: () => {
-      // Invalidate and refetch related queries
+
       queryClient.invalidateQueries({ queryKey: ['leaveRequests'] });
       queryClient.invalidateQueries({ queryKey: ['leaveBalance'] });
       queryClient.invalidateQueries({ queryKey: ['pendingLeaveRequests'] });
@@ -34,12 +34,12 @@ export const usePendingLeaveRequests = () => {
   return useQuery({
     queryKey: ['pendingLeaveRequests'],
     queryFn: getPendingLeaveRequests,
-    refetchInterval: 30000, // Refetch every 30 seconds
-    staleTime: 10000, // Consider data stale after 10 seconds
+    refetchInterval: 30000, 
+    staleTime: 10000, 
   });
 };
 
-// Approve leave request hook
+
 export const useApproveLeaveRequest = () => {
   const queryClient = useQueryClient();
 
@@ -57,7 +57,7 @@ export const useApproveLeaveRequest = () => {
   });
 };
 
-// Reject leave request hook
+
 export const useRejectLeaveRequest = () => {
   const queryClient = useQueryClient();
 
@@ -74,21 +74,21 @@ export const useRejectLeaveRequest = () => {
   });
 };
 
-// Get leave balance hook
+
 export const useLeaveBalance = () => {
   return useQuery({
     queryKey: ['leaveBalance'],
     queryFn: () => getLeaveBalance(),
-    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
+    staleTime: 5 * 60 * 1000, // Consider data maybe 5 minutes
   });
 };
 
-// Get employee leave requests hook
+
 export const useEmployeeLeaveRequests = () => {
   return useQuery({
     queryKey: ['leaveRequests'],
     queryFn: () => getEmployeeLeaveRequests(),
-    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
+    staleTime: 5 * 60 * 1000, // Consider data maybe 5 minutes
   });
 };
 
@@ -97,8 +97,8 @@ export const usePendingRequestsCount = () => {
   return useQuery({
     queryKey: ['pendingRequestsCount'],
     queryFn: getPendingRequestsCount,
-    refetchInterval: 30000, // Refetch every 30 seconds
-    staleTime: 10000, // Consider data stale after 10 seconds
+    refetchInterval: 30000, 
+    staleTime: 10000, 
   });
 };
 

@@ -38,10 +38,10 @@ const PhilippineHolidaysCalendar = () => {
         const dateObj = new Date(h.date);
         const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
         const dd = String(dateObj.getDate()).padStart(2, '0');
-        // Heuristic mapping: treat Public as Regular, others as Special/Non-Working
+ 
         let isRegular = Array.isArray(h.types) ? h.types.includes('Public') : (h.type === 'Public');
         if (/eid/i.test(holidayName)) {
-          // In PH, Eid holidays are Regular by proclamation
+
           isRegular = true;
         }
         mapped[`${mm}-${dd}`] = {
@@ -49,14 +49,14 @@ const PhilippineHolidaysCalendar = () => {
           type: isRegular ? 'Regular Holiday' : 'Special Non-Working Holiday'
         };
       });
-      // Remove any Holy Week entries provided by API to avoid conflicts
+
       Object.keys(mapped).forEach((key) => {
         const n = mapped[key]?.name || '';
         if (/maundy\s+thursday/i.test(n) || /good\s+friday/i.test(n) || /black\s+saturday|holy\s+saturday/i.test(n)) {
           delete mapped[key];
         }
       });
-      // Ensure Holy Week dates are correct for the given year (based on Easter Sunday)
+
       const easterSunday = (() => {
         const a = year % 19;
         const b = Math.floor(year / 100);
@@ -89,7 +89,6 @@ const PhilippineHolidaysCalendar = () => {
     } catch (e) {
       // Fallback to fixed-date holidays for the year
       const fallback = { ...getFallbackFixedDateHolidays(year) };
-      // Compute Holy Week for fallback as well
       const easterSunday = (() => {
         const a = year % 19;
         const b = Math.floor(year / 100);
@@ -120,7 +119,7 @@ const PhilippineHolidaysCalendar = () => {
     }
   };
 
-  // Preload holidays for the current year and when navigating across years
+
   useEffect(() => {
     const y = currentDate.getFullYear();
     ensureYearHolidaysLoaded(y);
@@ -181,12 +180,12 @@ const PhilippineHolidaysCalendar = () => {
   const renderCalendarDays = () => {
     const days = [];
     
-    // Add empty cells for days before the first day of the month
+ 
     for (let i = 0; i < startingDay; i++) {
       days.push(<div key={`empty-${i}`} className="h-10"></div>);
     }
     
-    // Add days of the month
+
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
       const holiday = isHoliday(date);

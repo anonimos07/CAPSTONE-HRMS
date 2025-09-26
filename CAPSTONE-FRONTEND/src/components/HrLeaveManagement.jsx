@@ -4,7 +4,7 @@ import { usePendingLeaveRequests, useApproveLeaveRequest, useRejectLeaveRequest 
 
 const HrLeaveManagement = ({ currentPage, onPageChange, itemsPerPage = 2 }) => {
   const [selectedRequest, setSelectedRequest] = useState(null);
-  const [actionType, setActionType] = useState(null); // 'approve' or 'reject'
+  const [actionType, setActionType] = useState(null);
   const [comments, setComments] = useState('');
   const [toast, setToast] = useState({ show: false, message: "", type: "" });
   const [isProcessing, setIsProcessing] = useState(false);
@@ -62,7 +62,6 @@ const HrLeaveManagement = ({ currentPage, onPageChange, itemsPerPage = 2 }) => {
     setIsProcessing(true);
 
     try {
-      // Get current user info for display
       const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
       const currentPosition = localStorage.getItem('position') || 'HR';
       const userName = currentUser.username || 'HR User';
@@ -83,7 +82,7 @@ const HrLeaveManagement = ({ currentPage, onPageChange, itemsPerPage = 2 }) => {
 
       setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000);
 
-      // Reset state
+   
       setSelectedRequest(null);
       setActionType(null);
       setComments('');
@@ -196,7 +195,7 @@ const HrLeaveManagement = ({ currentPage, onPageChange, itemsPerPage = 2 }) => {
                   </div>
                 )}
 
-                {/* Show approval/rejection info if request is processed */}
+                {/* Show approval/rejection info*/}
                 {request.status !== 'PENDING' && request.approvedBy && (
                   <div className="mb-4">
                     <div className="text-sm font-medium text-gray-700">

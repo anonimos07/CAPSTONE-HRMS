@@ -21,7 +21,7 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor for error handling
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -38,8 +38,8 @@ api.interceptors.response.use(
 
 /**
  * Initiate password reset process
- * @param {string} identifier - Email or username
- * @returns {Promise} API response
+ * @param {string} identifier
+ * @returns {Promise} 
  */
 export const forgotPassword = async (identifier) => {
   const response = await api.post('/forgot-password', {

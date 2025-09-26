@@ -316,10 +316,10 @@ const TimelogWidget = () => {
   }, [currentStatus, queryClient]);
 
  
-  console.log('Debug - Status Data:', statusData);
-  console.log('Debug - Current Status:', currentStatus);
-  console.log('Debug - Today Timelog:', todayTimelog);
-  console.log('Debug - Calculated Hours:', calculateWorkedHours());
+  // console.log('Debug - Status Data:', statusData);
+  // console.log('Debug - Current Status:', currentStatus);
+  // console.log('Debug - Today Timelog:', todayTimelog);
+  // console.log('Debug - Calculated Hours:', calculateWorkedHours());
   
   // debug for time calculation
   if (todayTimelog?.timeIn) {

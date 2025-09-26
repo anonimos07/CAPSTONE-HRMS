@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_PROFILE_PHOTO
 
-// Create axios instance with interceptors for token handling
+
 const api = axios.create({
   baseURL: API_BASE_URL,
 });
@@ -43,8 +43,8 @@ export const getProfilePicture = async () => {
 };
 
 /**
- * Get profile picture for a specific user (for HR/Admin use)
- * @param {string} userId - The user ID to get profile picture for
+ * Get profile picture for a specific user
+ * @param {string} userId - The user ID to get profile picture
  * @returns {Promise} API response
  */
 export const getProfilePictureByUserId = async (userId) => {
@@ -53,8 +53,8 @@ export const getProfilePictureByUserId = async (userId) => {
 };
 
 /**
- * Get all users' profile pictures (for HR/Admin use in user management)
- * @returns {Promise} API response with map of userId -> profilePictureData
+ * Get all users' profile pictures 
+ * @returns {Promise} API response with map of userId 
  */
 export const getAllUsersProfilePictures = async () => {
   const response = await api.get('/pictures/all');
@@ -72,22 +72,21 @@ export const resetProfilePicture = async () => {
 
 /**
  * Get full URL for profile picture
- * @param {string} profilePictureUrl - The relative URL from the API
+ * @param {string} profilePictureUrl 
  * @returns {string} Full URL for the image
  */
 export const getProfilePictureFullUrl = (profilePictureUrl) => {
-  // If no profile picture or it's already a data URL (Base64), return as is
   if (!profilePictureUrl) {
     // Return default SVG as data URL
     return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNGM0Y0RjYiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjM3IiByPSIxOCIgZmlsbD0iIzlDQTNBRiIvPgogIDxwYXRoIGQ9Ik0yMCA4MEMyMCA2OS41MDY2IDI4LjUwNjYgNjEgMzkgNjFINjFDNzEuNDkzNCA2MSA4MCA2OS41MDY2IDgwIDgwVjEwMEgyMFY4MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+";
   }
   
-  // If it's already a data URL (Base64), return as is
+  
   if (profilePictureUrl.startsWith('data:')) {
     return profilePictureUrl;
   }
   
-  // For backward compatibility with old file paths
+  
   const BACKEND_BASE_URL = 'http://localhost:8080';
   if (profilePictureUrl.startsWith('http')) {
     return profilePictureUrl;

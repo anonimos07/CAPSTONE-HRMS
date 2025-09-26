@@ -14,7 +14,7 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// Review resume file (PDF or TXT)
+// Review resume file (PDF)
 export const reviewResumeFile = async (file) => {
   const formData = new FormData();
   formData.append('file', file);

@@ -74,7 +74,6 @@ const LoginHr = () => {
 
   return (
     <>
-      {/* Toast */}
       {toast.show && (
         <div
           className={`fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 ${
@@ -87,7 +86,6 @@ const LoginHr = () => {
 
       <div className="min-h-screen relative overflow-hidden">
         <div className="absolute inset-0 flex">
-          {/* Left side - login form */}
           <div className="flex-1 relative">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-50/80 via-white to-violet-50/60"></div>
 
@@ -102,7 +100,6 @@ const LoginHr = () => {
             >
               <div className="flex items-center justify-start min-h-screen p-4 pl-8 md:pl-16 lg:pl-24">
                 <div className="w-full max-w-md lg:max-w-lg">
-                  {/* Back Button */}
                   <button
                     onClick={() => navigate("/")}
                     className="flex items-center text-[#8b1e3f] hover:text-[#8b1e3f]/80 mb-8 transition-colors group"
@@ -265,7 +262,6 @@ const LoginHr = () => {
             </div>
           </div>
 
-          {/* Right side - HR image */}
           <div className="flex-1 relative">
             <div
               className="absolute inset-0 bg-cover bg-center"

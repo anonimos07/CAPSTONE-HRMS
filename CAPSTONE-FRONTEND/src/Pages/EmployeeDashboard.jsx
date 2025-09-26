@@ -6,7 +6,7 @@ const EmployeeDashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [attendanceStatus, setAttendanceStatus] = useState('Not Checked In');
 
-  // Update time every second
+ 
   React.useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -46,9 +46,9 @@ const EmployeeDashboard = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+     
       <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Top Bar */}
+    
         <header className="bg-white shadow-sm z-10">
           <div className="flex items-center justify-between px-6 py-3">
             <div className="flex items-center space-x-4">

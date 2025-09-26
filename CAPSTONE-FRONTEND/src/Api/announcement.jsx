@@ -14,7 +14,7 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// Create announcement (HR/Admin only)
+// Create announcement (HR)
 export const createAnnouncement = async (announcementData) => {
   const res = await API.post('/create', announcementData);
   return res.data;
@@ -50,19 +50,19 @@ export const getAnnouncementById = async (id) => {
   return res.data;
 };
 
-// Update announcement (HR/Admin only)
+// Update announcement (HR)
 export const updateAnnouncement = async (id, announcementData) => {
   const res = await API.put(`/${id}`, announcementData);
   return res.data;
 };
 
-// Deactivate announcement (HR/Admin only)
+// Deactivate announcement (HR)
 export const deactivateAnnouncement = async (id) => {
   const res = await API.put(`/${id}/deactivate`);
   return res.data;
 };
 
-// Delete announcement (HR/Admin only)
+// Delete announcement (HR)
 export const deleteAnnouncement = async (id) => {
   const res = await API.delete(`/${id}`);
   return res.data;

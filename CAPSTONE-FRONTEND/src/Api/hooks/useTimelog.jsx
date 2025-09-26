@@ -37,7 +37,7 @@ export const useUsersClockedIn = () => {
   return useQuery({
     queryKey: ['users', 'clocked-in'],
     queryFn: getUsersClockedIn,
-    refetchInterval: 30 * 1000, // Refetch every 30 seconds
+    refetchInterval: 30 * 1000, 
   });
 };
 
@@ -45,7 +45,7 @@ export const useUsersOnBreak = () => {
   return useQuery({
     queryKey: ['users', 'on-break'],
     queryFn: getUsersOnBreak,
-    refetchInterval: 30 * 1000, // Refetch every 30 seconds
+    refetchInterval: 30 * 1000, 
   });
 };
 
@@ -53,7 +53,7 @@ export const useIncompleteTimelogs = () => {
   return useQuery({
     queryKey: ['timelogs', 'incomplete'],
     queryFn: getIncompleteTimelogs,
-    staleTime: 1 * 60 * 1000, // 1 minute
+    staleTime: 1 * 60 * 1000, 
   });
 };
 
@@ -64,10 +64,8 @@ export const useAdjustTimelog = () => {
   return useMutation({
     mutationFn: adjustTimelog,
     onSuccess: () => {
-      // Invalidate and refetch all timelog-related data including employee views
       queryClient.invalidateQueries({ queryKey: ['timelogs'] });
       queryClient.invalidateQueries({ queryKey: ['timelog'] });
-      // Use predicate to invalidate all monthly-timelogs queries regardless of parameters
       queryClient.invalidateQueries({ 
         predicate: (query) => query.queryKey[0] === 'monthly-timelogs' 
       });
@@ -91,10 +89,9 @@ export const useDeleteTimelog = () => {
   return useMutation({
     mutationFn: deleteTimelog,
     onSuccess: () => {
-      // Invalidate and refetch all timelog-related data including employee views
+ 
       queryClient.invalidateQueries({ queryKey: ['timelogs'] });
       queryClient.invalidateQueries({ queryKey: ['timelog'] });
-      // Use predicate to invalidate all monthly-timelogs queries regardless of parameters
       queryClient.invalidateQueries({ 
         predicate: (query) => query.queryKey[0] === 'monthly-timelogs' 
       });
@@ -117,7 +114,6 @@ export const useDownloadTimelogsCSV = () => {
   return useMutation({
     mutationFn: ({ search, startDate, endDate }) => downloadTimelogsCSV(search, startDate, endDate),
     onSuccess: (data) => {
-      // Create blob and download
       const blob = new Blob([data], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');

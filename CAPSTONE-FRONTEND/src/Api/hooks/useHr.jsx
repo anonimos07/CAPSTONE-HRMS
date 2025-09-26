@@ -7,7 +7,7 @@ export const useHr = () => {
   const createHRMutation = useMutation({
     mutationFn: createHR,
     onSuccess: () => {
-      // Invalidate any relevant queries if needed
+
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
     onError: (error) => {
@@ -18,7 +18,7 @@ export const useHr = () => {
   const createEmployeeMutation = useMutation({
     mutationFn: createEmployee,
     onSuccess: () => {
-      // Invalidate any relevant queries if needed
+ 
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
     onError: (error) => {

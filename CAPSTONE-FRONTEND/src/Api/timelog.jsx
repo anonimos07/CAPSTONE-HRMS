@@ -71,7 +71,7 @@ export const getMonthlyTimelogs = async (year, month) => {
   return res.data;
 };
 
-// HR/Admin operations
+// HR
 export const adjustTimelog = async (adjustmentData) => {
   const res = await API.post('/timelog/adjust', adjustmentData);
   return res.data;
@@ -102,10 +102,9 @@ export const deleteTimelog = async (timelogId) => {
   return res.data;
 };
 
-// HR-specific timelog management
+// HR timelog management
 export const getAllTimelogsForHR = async (search, startDate, endDate) => {
   const params = {};
-  // Only add parameters if they have actual values (not empty strings)
   if (search && search.trim()) params.search = search.trim();
   if (startDate && startDate.trim()) params.startDate = startDate.trim();
   if (endDate && endDate.trim()) params.endDate = endDate.trim();
@@ -120,7 +119,6 @@ export const getAllTimelogsForHR = async (search, startDate, endDate) => {
 
 export const downloadTimelogsCSV = async (search, startDate, endDate) => {
   const params = {};
-  // Only add parameters if they have actual values (not empty strings)
   if (search && search.trim()) params.search = search.trim();
   if (startDate && startDate.trim()) params.startDate = startDate.trim();
   if (endDate && endDate.trim()) params.endDate = endDate.trim();

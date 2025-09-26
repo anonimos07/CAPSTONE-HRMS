@@ -80,9 +80,7 @@ const Header = ({ userRole }) => {
             {userRole === "HR" && (
               <button
                 onClick={() => {
-                  // Navigate to hrpage and set active section to notifications
                   navigate('/hrpage');
-                  // Dispatch event after a short delay to ensure the page is loaded
                   setTimeout(() => {
                     const event = new CustomEvent('setActiveSection', { detail: 'notifications' });
                     window.dispatchEvent(event);

@@ -33,7 +33,7 @@ const Announcements = () => {
   const announcements = viewMode === "active" ? activeAnnouncements : allAnnouncements
   const isLoading = viewMode === "active" ? loadingActive : loadingAll
 
-  // Pagination logic
+  
   const indexOfLastAnnouncement = currentPage * announcementsPerPage
   const indexOfFirstAnnouncement = indexOfLastAnnouncement - announcementsPerPage
   const currentAnnouncements = announcements.slice(indexOfFirstAnnouncement, indexOfLastAnnouncement)

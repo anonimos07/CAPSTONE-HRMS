@@ -33,7 +33,7 @@ const Homepage = () => {
   return (
     <ParentLayout scrollToRef={scrollToRef}>
       
-      {/* HERO */}
+ 
       <motion.section 
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -68,7 +68,7 @@ const Homepage = () => {
         </div>
       </motion.section>
 
-      {/* FEATURES (Vertical Alternating) */}
+ 
       <motion.section
         ref={featuresRef}
         initial={{ opacity: 0, y: 50 }}

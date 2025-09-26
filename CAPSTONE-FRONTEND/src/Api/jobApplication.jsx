@@ -14,7 +14,7 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// Submit job application with file upload
+
 export const submitJobApplication = async (applicationData) => {
   const formData = new FormData();
   formData.append('position', applicationData.position);
@@ -31,31 +31,31 @@ export const submitJobApplication = async (applicationData) => {
   return res.data;
 };
 
-// Get all applications (HR only)
+
 export const getAllApplications = async () => {
   const res = await API.get('/application');
   return res.data;
 };
 
-// Get application by ID (HR/Admin only)
+
 export const getApplicationById = async (id) => {
   const res = await API.get(`/${id}`);
   return res.data;
 };
 
-// Update application status (HR/Admin only)
+
 export const updateApplicationStatus = async (id, statusData) => {
   const res = await API.put(`/${id}/status`, statusData);
   return res.data;
 };
 
-// Download resume file (HR/Admin only)
+
 export const downloadResume = async (id, filename) => {
   const res = await API.get(`/${id}/download`, {
     responseType: 'blob',
   });
   
-  // Create blob link to download
+
   const url = window.URL.createObjectURL(new Blob([res.data]));
   const link = document.createElement('a');
   link.href = url;

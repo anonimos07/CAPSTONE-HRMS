@@ -12,10 +12,10 @@ const HrAttendanceSummary = () => {
   const { data: monthlyTimelogs, isLoading: monthlyLoading } = useQuery({
     queryKey: ['monthly-timelogs', selectedYear, selectedMonth],
     queryFn: () => getMonthlyTimelogs(selectedYear, selectedMonth),
-    staleTime: 0, // Always consider stale to catch adjustments immediately
-    cacheTime: 1 * 60 * 1000, // 1 minute
-    refetchOnWindowFocus: true, // Refetch when user returns to tab
-    refetchInterval: 30 * 1000, // Refetch every 30 seconds
+    staleTime: 0, 
+    cacheTime: 1 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    refetchInterval: 30 * 1000,
   });
 
   // Fetch total hours for current month for HR user
@@ -26,10 +26,10 @@ const HrAttendanceSummary = () => {
       const endDate = new Date(selectedYear, selectedMonth, 0, 23, 59, 59).toISOString();
       return getTotalWorkedHours(startDate, endDate);
     },
-    staleTime: 0, // Always consider stale to catch adjustments immediately
-    cacheTime: 1 * 60 * 1000, // 1 minute
-    refetchOnWindowFocus: true, // Refetch when user returns to tab
-    refetchInterval: 30 * 1000, // Refetch every 30 seconds
+    staleTime: 0, 
+    cacheTime: 1 * 60 * 1000, 
+    refetchOnWindowFocus: true, 
+    refetchInterval: 30 * 1000, 
   });
 
   const formatDate = (dateString) => {

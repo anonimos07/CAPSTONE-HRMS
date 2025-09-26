@@ -15,7 +15,7 @@ const createAuthHeaders = () => ({
   }
 });
 
-// Job Position API functions
+
 export const createJobPosition = async (jobPositionData) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/add`, jobPositionData, createAuthHeaders());

@@ -12,10 +12,10 @@ export const useAllJobPositions = () => {
   return useQuery({
     queryKey: ['jobPositions'],
     queryFn: getAllJobPositions,
-    staleTime: 5 * 60 * 1000, // 5 minutes - keep data fresh for reasonable time
-    cacheTime: 10 * 60 * 1000, // 10 minutes - keep in cache longer
-    refetchOnWindowFocus: true, // Refetch when window gains focus
-    refetchOnMount: 'always', // Always refetch when component mounts
+    staleTime: 5 * 60 * 1000, 
+    cacheTime: 10 * 60 * 1000, 
+    refetchOnWindowFocus: true, 
+    refetchOnMount: 'always', 
   });
 };
 
