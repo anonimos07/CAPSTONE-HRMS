@@ -31,27 +31,27 @@ const TimelogWidget = () => {
   const { data: statusData, isLoading: statusLoading } = useQuery({
     queryKey: ['timelog-status'],
     queryFn: getCurrentStatus,
-    staleTime: 0, // Always consider data stale
-    refetchOnWindowFocus: true, // Refetch when user returns to tab
+    staleTime: 0, 
+    refetchOnWindowFocus: true, 
   });
 
-  // Fetch today's timelog
+  // Fetch today timelog
   const { data: todayTimelog } = useQuery({
     queryKey: ['today-timelog'],
     queryFn: getTodayTimelog,
-    staleTime: 0, // Always consider stale to catch HR adjustments immediately
-    cacheTime: 1 * 60 * 1000, // 1 minute
-    refetchOnWindowFocus: true, // Refetch when user returns to tab
+    staleTime: 0, 
+    cacheTime: 1 * 60 * 1000, 
+    refetchOnWindowFocus: true,
   });
 
-  // Clock in mutation
+
   const clockInMutation = useMutation({
     mutationFn: clockIn,
     onMutate: () => {
       setIsProcessing(true);
     },
     onSuccess: async () => {
-      // Invalidate and immediately refetch critical queries
+
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['timelog-status'] }),
         queryClient.invalidateQueries({ queryKey: ['today-timelog'] }),
@@ -59,7 +59,7 @@ const TimelogWidget = () => {
         queryClient.refetchQueries({ queryKey: ['today-timelog'] })
       ]);
       
-      // Invalidate other related queries
+
       queryClient.invalidateQueries({ 
         predicate: (query) => query.queryKey[0] === 'monthly-timelogs' 
       });
@@ -80,14 +80,13 @@ const TimelogWidget = () => {
     },
   });
 
-  // Clock out mutation
+
   const clockOutMutation = useMutation({
     mutationFn: clockOut,
     onMutate: () => {
       setIsProcessing(true);
     },
     onSuccess: async () => {
-      // Invalidate and immediately refetch critical queries
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['timelog-status'] }),
         queryClient.invalidateQueries({ queryKey: ['today-timelog'] }),
@@ -95,7 +94,7 @@ const TimelogWidget = () => {
         queryClient.refetchQueries({ queryKey: ['today-timelog'] })
       ]);
       
-      // Invalidate other related queries
+
       queryClient.invalidateQueries({ 
         predicate: (query) => query.queryKey[0] === 'monthly-timelogs' 
       });
@@ -116,14 +115,14 @@ const TimelogWidget = () => {
     },
   });
 
-  // Start break mutation
+
   const startBreakMutation = useMutation({
     mutationFn: startBreak,
     onMutate: () => {
       setIsProcessing(true);
     },
     onSuccess: async () => {
-      // Invalidate and immediately refetch critical queries
+
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['timelog-status'] }),
         queryClient.invalidateQueries({ queryKey: ['today-timelog'] }),
@@ -131,7 +130,7 @@ const TimelogWidget = () => {
         queryClient.refetchQueries({ queryKey: ['today-timelog'] })
       ]);
       
-      // Invalidate other related queries
+
       queryClient.invalidateQueries({ 
         predicate: (query) => query.queryKey[0] === 'monthly-timelogs' 
       });
@@ -148,14 +147,14 @@ const TimelogWidget = () => {
     },
   });
 
-  // End break mutation
+
   const endBreakMutation = useMutation({
     mutationFn: endBreak,
     onMutate: () => {
       setIsProcessing(true);
     },
     onSuccess: async () => {
-      // Invalidate and immediately refetch critical queries
+
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['timelog-status'] }),
         queryClient.invalidateQueries({ queryKey: ['today-timelog'] }),
@@ -163,7 +162,6 @@ const TimelogWidget = () => {
         queryClient.refetchQueries({ queryKey: ['today-timelog'] })
       ]);
       
-      // Invalidate other related queries
       queryClient.invalidateQueries({ 
         predicate: (query) => query.queryKey[0] === 'monthly-timelogs' 
       });
@@ -255,16 +253,15 @@ const TimelogWidget = () => {
   const formatTime = (dateString) => {
     if (!dateString) return '--:--';
     
-    // Handle LocalDateTime from Spring Boot backend for Philippines timezone (UTC+8)
+
     let date;
     if (dateString.includes('T') && !dateString.includes('Z') && !dateString.includes('+')) {
-      // LocalDateTime format from Spring Boot - treat as UTC and convert to Philippines time
-      date = new Date(dateString + 'Z'); // Add Z to indicate UTC
+      date = new Date(dateString + 'Z');
     } else {
       date = new Date(dateString);
     }
     
-    // Format for Philippines locale
+
     return date.toLocaleTimeString('en-PH', {
       hour: '2-digit',
       minute: '2-digit',
@@ -276,22 +273,28 @@ const TimelogWidget = () => {
   const calculateWorkedHours = () => {
     if (!todayTimelog?.timeIn) return '0.0';
     
-    // If user just clocked in and hasn't clocked out yet, calculate real-time hours
-    const timeIn = new Date(todayTimelog.timeIn);
-    const timeOut = todayTimelog.timeOut ? new Date(todayTimelog.timeOut) : new Date();
+ 
+    const parseDateTime = (dateString) => {
+      if (dateString.includes('T') && !dateString.includes('Z') && !dateString.includes('+')) {
+        return new Date(dateString + 'Z');
+      } else {
+        return new Date(dateString);
+      }
+    };
+    
+
+    const timeIn = parseDateTime(todayTimelog.timeIn);
+    const timeOut = todayTimelog.timeOut ? parseDateTime(todayTimelog.timeOut) : new Date();
     const breakDuration = todayTimelog.breakDurationMinutes || 0;
     
-    // Calculate the difference in minutes
+
     const totalMinutes = (timeOut - timeIn) / (1000 * 60) - breakDuration;
     const hours = Math.max(0, totalMinutes / 60);
     
-    // If the user is currently clocked in (no timeOut), show real-time calculation
-    // If the user has clocked out, use the stored totalWorkedHours if available
+
     if (!todayTimelog.timeOut) {
-      // Real-time calculation for active sessions
       return hours.toFixed(1);
     } else {
-      // Use stored value for completed sessions, fallback to calculated value
       return (todayTimelog.totalWorkedHours || hours).toFixed(1);
     }
   };
@@ -299,25 +302,46 @@ const TimelogWidget = () => {
   const currentStatus = statusData?.status || 'CLOCKED_OUT';
   const isLoading = statusLoading || isProcessing || clockInMutation.isPending || clockOutMutation.isPending || startBreakMutation.isPending || endBreakMutation.isPending;
 
-  // Real-time updates when user is clocked in
+
   useEffect(() => {
     let interval;
     if (currentStatus === 'CLOCKED_IN' || currentStatus === 'ON_BREAK') {
-      // Update every 30 seconds when clocked in to show real-time hours
       interval = setInterval(() => {
         queryClient.invalidateQueries({ queryKey: ['today-timelog'] });
-      }, 30000); // 30 seconds
+      }, 30000); // 30 sc
     }
     return () => {
       if (interval) clearInterval(interval);
     };
   }, [currentStatus, queryClient]);
 
-  // Debug logging
+ 
   console.log('Debug - Status Data:', statusData);
   console.log('Debug - Current Status:', currentStatus);
   console.log('Debug - Today Timelog:', todayTimelog);
   console.log('Debug - Calculated Hours:', calculateWorkedHours());
+  
+  // debug for time calculation
+  if (todayTimelog?.timeIn) {
+    const parseDateTime = (dateString) => {
+      if (dateString.includes('T') && !dateString.includes('Z') && !dateString.includes('+')) {
+        return new Date(dateString + 'Z');
+      } else {
+        return new Date(dateString);
+      }
+    };
+    
+    const timeIn = parseDateTime(todayTimelog.timeIn);
+    const timeOut = todayTimelog.timeOut ? parseDateTime(todayTimelog.timeOut) : new Date();
+    const breakDuration = todayTimelog.breakDurationMinutes || 0;
+    // console.log('Debug - TimeIn (parsed):', timeIn);
+    // console.log('Debug - TimeOut (or current):', timeOut);
+    // console.log('Debug - Break Duration:', breakDuration);
+    // console.log('Debug - Time difference (minutes):', (timeOut - timeIn) / (1000 * 60));
+    // console.log('Debug - Raw todayTimelog.timeIn:', todayTimelog.timeIn);
+    // console.log('Debug - TimeIn without Z:', new Date(todayTimelog.timeIn));
+    // console.log('Debug - TimeIn with Z:', new Date(todayTimelog.timeIn + 'Z'));
+  }
 
   return (
     <>
