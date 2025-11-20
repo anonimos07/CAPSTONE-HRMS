@@ -34,7 +34,7 @@ public class ResumeReviewService {
             headers.set("anthropic-version", "2023-06-01");
 
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", "claude-3-5-sonnet-20241022");
+            requestBody.put("model", "claude-sonnet-4-5-20250929");
             requestBody.put("max_tokens", 700);
             
             Map<String, String> message = new HashMap<>();
