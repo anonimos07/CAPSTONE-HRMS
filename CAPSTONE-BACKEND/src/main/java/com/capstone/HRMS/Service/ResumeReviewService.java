@@ -35,7 +35,7 @@ public class ResumeReviewService {
 
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("model", "claude-sonnet-4-5-20250929");
-            requestBody.put("max_tokens", 700);
+            requestBody.put("max_tokens", 5000);
             
             Map<String, String> message = new HashMap<>();
             message.put("role", "user");
